@@ -1,38 +1,16 @@
-# Dependencies
-node_modules
-.pnpm-store
-
-# Build output
+﻿node_modules
 dist
-*.local
-
-# IDE
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS
+build
 .DS_Store
-Thumbs.db
-
-# Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Cache
+.env
+.env.local
+coverage
+.vscode
+.idea
+*.swp
+*.swo
+*~
 .cache
 .temp
 .tmp
-
-# VitePress
-docs/.vitepress/cache
-docs/.vitepress/dist
