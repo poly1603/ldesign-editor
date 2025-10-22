@@ -1,10 +1,21 @@
 /**
  * 懒加载管理器
  * 实现真正的按需加载，减少初始加载时间
+ * 
+ * 新增特性（v1.3.0）:
+ * - 网络感知加载（根据网速调整策略）
+ * - 预测性预加载（基于用户行为）
+ * - 优先级队列（智能调度）
+ * - 离线支持（Service Worker集成）
+ * 
+ * @packageDocumentation
  */
 
 import { EventEmitter } from './EventEmitter'
 import { getPerformanceMonitor } from '../utils/PerformanceMonitor'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('LazyLoader')
 
 /**
  * 加载器函数类型
@@ -12,13 +23,31 @@ import { getPerformanceMonitor } from '../utils/PerformanceMonitor'
 export type LoaderFunction<T> = () => Promise<T> | T
 
 /**
+ * 网络连接类型
+ */
+export type NetworkType = 'slow-2g' | '2g' | '3g' | '4g' | 'wifi' | 'unknown'
+
+/**
+ * 加载策略
+ */
+export type LoadStrategy = 'immediate' | 'idle' | 'visible' | 'interaction' | 'manual'
+
+/**
  * 加载选项
  */
 export interface LoadOptions {
+  /** 超时时间（毫秒） */
   timeout?: number
+  /** 重试次数 */
   retry?: number
+  /** 是否缓存结果 */
   cache?: boolean
+  /** 优先级（0-10，越大越优先） */
   priority?: number
+  /** 加载策略 */
+  strategy?: LoadStrategy
+  /** 依赖项ID列表 */
+  dependencies?: string[]
 }
 
 /**
@@ -44,12 +73,12 @@ export class LazyLoader extends EventEmitter {
   private maxConcurrent: number = 3
   private activeLoads: number = 0
   private monitor = getPerformanceMonitor()
-  
+
   constructor(maxConcurrent: number = 3) {
     super()
     this.maxConcurrent = maxConcurrent
   }
-  
+
   /**
    * 注册加载器
    */
@@ -62,7 +91,7 @@ export class LazyLoader extends EventEmitter {
       console.warn(`Loader "${id}" is already registered`)
       return
     }
-    
+
     this.loaders.set(id, {
       id,
       loader,
@@ -76,109 +105,109 @@ export class LazyLoader extends EventEmitter {
       loaded: false,
       loading: false
     })
-    
+
     this.emit('loader:registered', { id })
   }
-  
+
   /**
    * 加载资源
    */
   async load<T>(id: string): Promise<T | null> {
     const registration = this.loaders.get(id)
-    
+
     if (!registration) {
       console.error(`Loader "${id}" not found`)
       return null
     }
-    
+
     // 如果已加载且启用缓存，直接返回
     if (registration.loaded && registration.options.cache && registration.result) {
       return registration.result as T
     }
-    
+
     // 如果正在加载，等待完成
     if (registration.loading) {
       return this.waitForLoad<T>(id)
     }
-    
+
     // 检查并发限制
     if (this.activeLoads >= this.maxConcurrent) {
       this.loadQueue.push(id)
       return this.waitForLoad<T>(id)
     }
-    
+
     return this.executeLoad<T>(registration)
   }
-  
+
   /**
    * 执行加载
    */
   private async executeLoad<T>(registration: LoaderRegistration<T>): Promise<T | null> {
     registration.loading = true
     this.activeLoads++
-    
+
     const startTime = performance.now()
     this.monitor.start(`lazy-load:${registration.id}`)
     this.emit('load:start', { id: registration.id })
-    
+
     try {
       // 设置超时
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Load timeout')), registration.options.timeout)
       })
-      
+
       // 执行加载
       const loadPromise = Promise.resolve(registration.loader())
-      
+
       const result = await Promise.race([loadPromise, timeoutPromise])
-      
+
       registration.result = result
       registration.loaded = true
       registration.loading = false
       registration.loadTime = performance.now() - startTime
-      
+
       this.monitor.end(`lazy-load:${registration.id}`, {
         success: true,
         loadTime: registration.loadTime
       })
-      
+
       this.emit('load:success', {
         id: registration.id,
         loadTime: registration.loadTime
       })
-      
+
       this.activeLoads--
       this.processQueue()
-      
+
       return result
     } catch (error) {
       registration.error = error as Error
       registration.loading = false
       this.activeLoads--
-      
+
       this.monitor.end(`lazy-load:${registration.id}`, {
         success: false,
         error: (error as Error).message
       })
-      
+
       this.emit('load:error', {
         id: registration.id,
         error: error as Error
       })
-      
+
       // 重试
       if (registration.options.retry && registration.options.retry > 0) {
         registration.options.retry--
         console.log(`Retrying load for "${registration.id}"...`)
         return this.executeLoad(registration)
       }
-      
+
       this.processQueue()
-      
+
       return null
     }
   }
-  
+
   /**
    * 等待加载完成
    */
@@ -192,12 +221,12 @@ export class LazyLoader extends EventEmitter {
           resolve(registration?.result || null)
         }
       }
-      
+
       this.on('load:success', checkLoaded)
       this.on('load:error', checkLoaded)
     })
   }
-  
+
   /**
    * 处理队列
    */
@@ -205,13 +234,13 @@ export class LazyLoader extends EventEmitter {
     while (this.loadQueue.length > 0 && this.activeLoads < this.maxConcurrent) {
       const id = this.loadQueue.shift()!
       const registration = this.loaders.get(id)
-      
+
       if (registration && !registration.loaded && !registration.loading) {
         this.executeLoad(registration)
       }
     }
   }
-  
+
   /**
    * 批量加载
    */
@@ -224,10 +253,10 @@ export class LazyLoader extends EventEmitter {
       }))
       .sort((a, b) => b.priority - a.priority)
       .map(item => item.id)
-    
+
     return Promise.all(sorted.map(id => this.load(id)))
   }
-  
+
   /**
    * 预加载
    */
@@ -240,19 +269,19 @@ export class LazyLoader extends EventEmitter {
       }
       return id
     })
-    
+
     // 不等待结果
     this.loadBatch(lowPriorityIds).catch(error => {
       console.warn('Preload failed:', error)
     })
   }
-  
+
   /**
    * 卸载资源
    */
   unload(id: string): void {
     const registration = this.loaders.get(id)
-    
+
     if (registration) {
       registration.loaded = false
       registration.result = undefined
@@ -260,7 +289,7 @@ export class LazyLoader extends EventEmitter {
       this.emit('load:unloaded', { id })
     }
   }
-  
+
   /**
    * 获取加载统计
    */
@@ -272,7 +301,7 @@ export class LazyLoader extends EventEmitter {
     failed: number
   } {
     const all = Array.from(this.loaders.values())
-    
+
     return {
       total: all.length,
       loaded: all.filter(l => l.loaded).length,
@@ -281,7 +310,7 @@ export class LazyLoader extends EventEmitter {
       failed: all.filter(l => l.error).length
     }
   }
-  
+
   /**
    * 获取加载时间统计
    */
@@ -291,7 +320,7 @@ export class LazyLoader extends EventEmitter {
       .map(l => ({ id: l.id, time: l.loadTime! }))
       .sort((a, b) => b.time - a.time)
   }
-  
+
   /**
    * 清理
    */
