@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDesign Editor - 离线协作演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .editor-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+    }
+
+    .panel-header {
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .panel-header h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-header .status {
+      font-size: 13px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4caf50;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .users-list {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .users-list h4 {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    .user-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .editor-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .info-panel {
+      padding: 20px;
+      background: #f0f4ff;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .info-item {
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .info-item .label {
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .info-item .value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .controls {
+      padding: 15px 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .controls button:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    .controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .log-panel {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+      height: 150px;
+      overflow-y: auto;
+    }
+
+    .conflict-indicator {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      background: #ff9800;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: none;
+      animation: slideDown 0.3s;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateX(-50%) translateY(-100px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .ldesign-editor {
+      min-height: 200px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- 编辑器1 -->
+    <div class="editor-panel">
+      <div class="panel-header">
+        <h2>
+          <span>👤</span>
+          编辑器 A（用户1）
+        </h2>
+        <div class="status">
+          <span class="status-dot" id="status1"></span>
+          <span id="statusText1">未连接</span>
+        </div>
+      </div>
+
+      <div class="users-list">
+        <h4>在线用户</h4>
+        <div id="users1"></div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">操作数</div>
+            <div class="value" id="ops1">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">时钟</div>
+            <div class="value" id="clock1">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">字符数</div>
+            <div class="value" id="chars1">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">冲突</div>
+            <div class="value" id="conflicts1">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="connect1">🔗 连接</button>
+        <button id="disconnect1" disabled>🔌 断开</button>
+        <button id="insert1">➕ 插入文本</button>
+        <button id="delete1">➖ 删除文本</button>
+        <button id="sync1">🔄 手动同步</button>
+      </div>
+
+      <div class="editor-container">
+        <div id="editor1"></div>
+      </div>
+
+      <div class="log-panel" id="log1"></div>
+    </div>
+
+    <!-- 编辑器2 -->
+    <div class="editor-panel">
+      <div class="panel-header">
+        <h2>
+          <span>👤</span>
+          编辑器 B（用户2）
+        </h2>
+        <div class="status">
+          <span class="status-dot" id="status2"></span>
+          <span id="statusText2">未连接</span>
+        </div>
+      </div>
+
+      <div class="users-list">
+        <h4>在线用户</h4>
+        <div id="users2"></div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">操作数</div>
+            <div class="value" id="ops2">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">时钟</div>
+            <div class="value" id="clock2">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">字符数</div>
+            <div class="value" id="chars2">0</div>
+          </div>
+          <div class="info-item">
+            <div class="label">冲突</div>
+            <div class="value" id="conflicts2">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="connect2">🔗 连接</button>
+        <button id="disconnect2" disabled>🔌 断开</button>
+        <button id="insert2">➕ 插入文本</button>
+        <button id="delete2">➖ 删除文本</button>
+        <button id="sync2">🔄 手动同步</button>
+      </div>
+
+      <div class="editor-container">
+        <div id="editor2"></div>
+      </div>
+
+      <div class="log-panel" id="log2"></div>
+    </div>
+  </div>
+
+  <div class="conflict-indicator" id="conflictIndicator">
+    ⚠️ 检测到冲突，已自动解决
+  </div>
+
+  <script type="module">
+    import { Editor, CollaborationManager, CRDT } from '../dist/es/index.js'
+
+    // 日志函数
+    function log(panelId, message, type = 'info') {
+      const logEl = document.getElementById(`log${panelId}`)
+      const time = new Date().toLocaleTimeString()
+      const colors = {
+        info: '#4caf50',
+        warn: '#ff9800',
+        error: '#f44336',
+        debug: '#2196f3'
+      }
+
+      logEl.innerHTML += `
+        <div style="margin-bottom: 2px;">
+          <span style="color: #888;">[${time}]</span>
+          <span style="color: ${colors[type]};">[${type.toUpperCase()}]</span>
+          <span>${message}</span>
+        </div>
+      `
+      logEl.scrollTop = logEl.scrollHeight
+    }
+
+    // 创建编辑器1
+    const editor1 = new Editor({
+      content: '<h3>协作编辑演示</h3><p>这是一个基于CRDT的离线协作编辑器。两个编辑器可以同时编辑，所有更改会自动同步，冲突会自动解决。</p>',
+      placeholder: '开始输入...'
+    })
+    editor1.mount('#editor1')
+
+    // 创建编辑器2
+    const editor2 = new Editor({
+      content: '<h3>协作编辑演示</h3><p>这是一个基于CRDT的离线协作编辑器。两个编辑器可以同时编辑，所有更改会自动同步，冲突会自动解决。</p>',
+      placeholder: '开始输入...'
+    })
+    editor2.mount('#editor2')
+
+    // 创建协作管理器（模拟本地协作）
+    const collab1 = new CollaborationManager(editor1, {
+      user: {
+        id: 'user-1',
+        name: '用户 A',
+        avatar: '👨'
+      }
+    })
+
+    const collab2 = new CollaborationManager(editor2, {
+      user: {
+        id: 'user-2',
+        name: '用户 B',
+        avatar: '👩'
+      }
+    })
+
+    // 模拟P2P同步（本地模拟）
+    collab1.on('remote-operation', (op) => {
+      // 将操作发送到编辑器2
+      collab2['crdt'].applyOperation(op)
+      editor2.setContent(collab2['crdt'].getText())
+      log(2, `收到远程操作: ${op.type}`, 'debug')
+      updateStats(2)
+    })
+
+    collab2.on('remote-operation', (op) => {
+      // 将操作发送到编辑器1
+      collab1['crdt'].applyOperation(op)
+      editor1.setContent(collab1['crdt'].getText())
+      log(1, `收到远程操作: ${op.type}`, 'debug')
+      updateStats(1)
+    })
+
+    // 监听编辑器变化
+    editor1.on('change', () => {
+      updateStats(1)
+      // 模拟发送到编辑器2
+      setTimeout(() => {
+        const state1 = collab1.getCRDTState()
+        const newOps = collab2['crdt'].merge(state1)
+        if (newOps.length > 0) {
+          editor2.setContent(collab2['crdt'].getText())
+          log(2, `同步了 ${newOps.length} 个操作`, 'info')
+        }
+      }, 100)
+    })
+
+    editor2.on('change', () => {
+      updateStats(2)
+      // 模拟发送到编辑器1
+      setTimeout(() => {
+        const state2 = collab2.getCRDTState()
+        const newOps = collab1['crdt'].merge(state2)
+        if (newOps.length > 0) {
+          editor1.setContent(collab1['crdt'].getText())
+          log(1, `同步了 ${newOps.length} 个操作`, 'info')
+        }
+      }, 100)
+    })
+
+    // 更新统计
+    function updateStats(panelId) {
+      const collab = panelId === 1 ? collab1 : collab2
+      const state = collab.getCRDTState()
+
+      document.getElementById(`ops${panelId}`).textContent = state.operations.length
+      document.getElementById(`clock${panelId}`).textContent = state.clock
+      document.getElementById(`chars${panelId}`).textContent = collab['crdt'].getText().length
+    }
+
+    // 更新在线用户
+    function updateUsers(panelId) {
+      const collab = panelId === 1 ? collab1 : collab2
+      const users = collab.getOnlineUsers()
+      const container = document.getElementById(`users${panelId}`)
+
+      container.innerHTML = users.map(user => `
+        <span class="user-badge">
+          <span class="dot" style="background: ${user.color};"></span>
+          <span>${user.avatar} ${user.name}</span>
+        </span>
+      `).join('')
+    }
+
+    // 控制按钮
+    document.getElementById('connect1').addEventListener('click', () => {
+      log(1, '连接到协作服务器...', 'info')
+      document.getElementById('statusText1').textContent = '已连接（本地模拟）'
+      document.getElementById('connect1').disabled = true
+      document.getElementById('disconnect1').disabled = false
+      updateUsers(1)
+    })
+
+    document.getElementById('disconnect1').addEventListener('click', () => {
+      log(1, '断开连接', 'info')
+      document.getElementById('statusText1').textContent = '未连接'
+      document.getElementById('connect1').disabled = false
+      document.getElementById('disconnect1').disabled = true
+    })
+
+    document.getElementById('insert1').addEventListener('click', () => {
+      editor1.insertText('测试插入 ')
+      log(1, '插入文本', 'info')
+    })
+
+    document.getElementById('delete1').addEventListener('click', () => {
+      const text = editor1.getContent()
+      if (text.length > 0) {
+        editor1.setContent(text.substring(0, text.length - 1))
+        log(1, '删除文本', 'info')
+      }
+    })
+
+    document.getElementById('sync1').addEventListener('click', () => {
+      const state1 = collab1.getCRDTState()
+      collab2['crdt'].merge(state1)
+      editor2.setContent(collab2['crdt'].getText())
+      log(1, '手动同步完成', 'info')
+      log(2, '收到同步数据', 'info')
+      updateStats(2)
+    })
+
+    // 编辑器2的控制
+    document.getElementById('connect2').addEventListener('click', () => {
+      log(2, '连接到协作服务器...', 'info')
+      document.getElementById('statusText2').textContent = '已连接（本地模拟）'
+      document.getElementById('connect2').disabled = true
+      document.getElementById('disconnect2').disabled = false
+      updateUsers(2)
+    })
+
+    document.getElementById('disconnect2').addEventListener('click', () => {
+      log(2, '断开连接', 'info')
+      document.getElementById('statusText2').textContent = '未连接'
+      document.getElementById('connect2').disabled = false
+      document.getElementById('disconnect2').disabled = true
+    })
+
+    document.getElementById('insert2').addEventListener('click', () => {
+      editor2.insertText('测试插入 ')
+      log(2, '插入文本', 'info')
+    })
+
+    document.getElementById('delete2').addEventListener('click', () => {
+      const text = editor2.getContent()
+      if (text.length > 0) {
+        editor2.setContent(text.substring(0, text.length - 1))
+        log(2, '删除文本', 'info')
+      }
+    })
+
+    document.getElementById('sync2').addEventListener('click', () => {
+      const state2 = collab2.getCRDTState()
+      collab1['crdt'].merge(state2)
+      editor1.setContent(collab1['crdt'].getText())
+      log(2, '手动同步完成', 'info')
+      log(1, '收到同步数据', 'info')
+      updateStats(1)
+    })
+
+    // 初始化
+    log(1, 'CRDT协作系统已初始化', 'info')
+    log(2, 'CRDT协作系统已初始化', 'info')
+    log(1, `站点ID: ${collab1.getCRDTState().siteId}`, 'debug')
+    log(2, `站点ID: ${collab2.getCRDTState().siteId}`, 'debug')
+
+    updateStats(1)
+    updateStats(2)
+    updateUsers(1)
+    updateUsers(2)
+
+    // 演示提示
+    console.log('💡 提示：')
+    console.log('- 在两个编辑器中同时编辑，观察自动同步')
+    console.log('- CRDT保证最终一致性，无需手动解决冲突')
+    console.log('- 支持离线编辑，联网后自动同步')
+  </script>
+</body>
+
+</html>

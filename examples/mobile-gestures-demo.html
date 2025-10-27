@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>LDesign Editor - 移动端手势演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      padding-top: env(safe-area-inset-top, 20px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .editor-container {
+      position: relative;
+      min-height: 400px;
+      background: white;
+    }
+
+    #editor {
+      min-height: 400px;
+      padding: 20px;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .gesture-hints {
+      background: #f5f5f5;
+      padding: 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .gesture-hints h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .hint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .hint-item {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hint-icon {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hint-text {
+      flex: 1;
+    }
+
+    .hint-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .hint-desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .status-bar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 10000;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-label {
+      opacity: 0.7;
+    }
+
+    .status-value {
+      font-weight: 600;
+    }
+
+    .demo-content {
+      padding: 20px;
+      background: #fafafa;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .demo-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .demo-button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .demo-button:active {
+      background: #5a67d8;
+    }
+
+    .info-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .info-content {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0;
+      }
+
+      .container {
+        border-radius: 0;
+      }
+
+      .hint-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .status-bar {
+        top: auto;
+        bottom: 70px;
+        right: 10px;
+        left: 10px;
+        justify-content: space-around;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📱 移动端手势演示</h1>
+      <p>体验专为触摸设备优化的编辑器功能</p>
+    </div>
+
+    <div class="editor-container">
+      <div id="editor"></div>
+    </div>
+
+    <div class="gesture-hints">
+      <h3>支持的手势操作</h3>
+      <div class="hint-grid">
+        <div class="hint-item">
+          <div class="hint-icon">👆</div>
+          <div class="hint-text">
+            <div class="hint-title">单击</div>
+            <div class="hint-desc">定位光标、选择文字</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">👆👆</div>
+          <div class="hint-text">
+            <div class="hint-title">双击</div>
+            <div class="hint-desc">快速缩放内容</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">🤏</div>
+          <div class="hint-text">
+            <div class="hint-title">双指缩放</div>
+            <div class="hint-desc">放大或缩小编辑区域</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">👈</div>
+          <div class="hint-text">
+            <div class="hint-title">左滑</div>
+            <div class="hint-desc">关闭侧边菜单</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">👉</div>
+          <div class="hint-text">
+            <div class="hint-title">右滑(边缘)</div>
+            <div class="hint-desc">打开侧边菜单</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">✋</div>
+          <div class="hint-text">
+            <div class="hint-title">长按</div>
+            <div class="hint-desc">显示上下文菜单</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">🔄</div>
+          <div class="hint-text">
+            <div class="hint-title">双指旋转</div>
+            <div class="hint-desc">旋转图片或元素</div>
+          </div>
+        </div>
+        <div class="hint-item">
+          <div class="hint-icon">📱</div>
+          <div class="hint-text">
+            <div class="hint-title">摇动设备</div>
+            <div class="hint-desc">撤销最近操作</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-content">
+      <div class="demo-buttons">
+        <button class="demo-button" onclick="loadSampleContent()">加载示例内容</button>
+        <button class="demo-button" onclick="resetZoom()">重置缩放</button>
+        <button class="demo-button" onclick="toggleToolbar()">切换工具栏</button>
+        <button class="demo-button" onclick="showMenu()">显示菜单</button>
+        <button class="demo-button" onclick="insertImage()">插入图片</button>
+        <button class="demo-button" onclick="toggleDarkMode()">暗黑模式</button>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-title">📊 设备信息</div>
+        <div class="info-content" id="device-info">
+          检测中...
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-title">👆 最近手势</div>
+        <div class="info-content" id="gesture-log">
+          等待手势输入...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="status-label">缩放:</span>
+      <span class="status-value" id="zoom-level">100%</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">方向:</span>
+      <span class="status-value" id="orientation">竖屏</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">触点:</span>
+      <span class="status-value" id="touch-count">0</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '../src/index.js'
+    import { MobileEditorAdapter } from '../src/mobile/MobileEditorAdapter.js'
+
+    // 初始化编辑器
+    const editor = new Editor({
+      placeholder: '开始输入或使用手势操作...',
+      autofocus: false,
+      features: {
+        bold: true,
+        italic: true,
+        underline: true,
+        link: true,
+        image: true,
+        list: true,
+        heading: true,
+        code: true,
+        table: true
+      }
+    })
+
+    // 挂载编辑器
+    const editorElement = document.getElementById('editor')
+    editor.mount(editorElement)
+
+    // 初始化移动端适配器
+    const mobileAdapter = new MobileEditorAdapter(editor, {
+      enableGestures: true,
+      enableSwipeMenu: true,
+      enableContextMenu: true,
+      enableMobileToolbar: true,
+      minZoom: 0.5,
+      maxZoom: 3,
+      initialZoom: 1
+    })
+
+    // 监听手势事件
+    editor.on('pinch', (e) => {
+      updateZoomLevel(e.scale)
+      logGesture('双指缩放', `缩放比例: ${e.scale.toFixed(2)}`)
+    })
+
+    editor.on('swipeleft', () => {
+      logGesture('左滑', '检测到左滑手势')
+    })
+
+    editor.on('swiperight', () => {
+      logGesture('右滑', '检测到右滑手势')
+    })
+
+    editor.on('longpress', (e) => {
+      logGesture('长按', `位置: (${e.x}, ${e.y})`)
+    })
+
+    editor.on('doubletap', () => {
+      logGesture('双击', '快速缩放触发')
+    })
+
+    editor.on('orientationchange', (e) => {
+      document.getElementById('orientation').textContent =
+        e.orientation === 'portrait' ? '竖屏' : '横屏'
+      logGesture('旋转', `切换到${e.orientation === 'portrait' ? '竖屏' : '横屏'}模式`)
+    })
+
+    // 监听触摸事件
+    let touchCount = 0
+    editorElement.addEventListener('touchstart', (e) => {
+      touchCount = e.touches.length
+      document.getElementById('touch-count').textContent = touchCount
+    })
+
+    editorElement.addEventListener('touchend', () => {
+      setTimeout(() => {
+        document.getElementById('touch-count').textContent = '0'
+      }, 100)
+    })
+
+    // 设备信息
+    function updateDeviceInfo() {
+      const info = [
+        `设备类型: ${detectDeviceType()}`,
+        `屏幕尺寸: ${window.innerWidth} × ${window.innerHeight}`,
+        `像素密度: ${window.devicePixelRatio}`,
+        `触摸支持: ${('ontouchstart' in window) ? '是' : '否'}`,
+        `用户代理: ${navigator.userAgent.slice(0, 50)}...`
+      ].join('<br>')
+
+      document.getElementById('device-info').innerHTML = info
+    }
+
+    function detectDeviceType() {
+      const ua = navigator.userAgent
+      if (/iPad/.test(ua)) return 'iPad'
+      if (/iPhone/.test(ua)) return 'iPhone'
+      if (/Android/.test(ua) && !/Mobile/.test(ua)) return 'Android平板'
+      if (/Android/.test(ua)) return 'Android手机'
+      if ('ontouchstart' in window) return '触摸设备'
+      return '桌面设备'
+    }
+
+    // 手势日志
+    const gestureLog = []
+    function logGesture(type, detail) {
+      const time = new Date().toLocaleTimeString()
+      gestureLog.unshift(`[${time}] ${type}: ${detail}`)
+      if (gestureLog.length > 5) gestureLog.pop()
+
+      document.getElementById('gesture-log').innerHTML =
+        gestureLog.join('<br>') || '等待手势输入...'
+    }
+
+    // 缩放级别
+    let currentZoom = 1
+    function updateZoomLevel(zoom) {
+      currentZoom = zoom
+      document.getElementById('zoom-level').textContent =
+        `${Math.round(zoom * 100)}%`
+    }
+
+    // 示例内容
+    window.loadSampleContent = function () {
+      const content = `
+<h1>移动端富文本编辑器</h1>
+<p>这是一个专为<strong>移动设备</strong>优化的富文本编辑器，支持多种<em>手势操作</em>和<u>触摸交互</u>。</p>
+
+<h2>功能特性</h2>
+<ul>
+  <li>✨ 流畅的触摸响应</li>
+  <li>🎨 丰富的格式选项</li>
+  <li>📱 自适应布局</li>
+  <li>🚀 高性能渲染</li>
+</ul>
+
+<blockquote>
+  <p>"在移动设备上编辑文档从未如此简单和愉悦。"</p>
+</blockquote>
+
+<h3>代码示例</h3>
+<pre><code>const editor = new Editor({
+  mobile: true,
+  gestures: true
+})
+editor.mount('#app')</code></pre>
+
+<p>试试各种手势操作：<strong>双指缩放</strong>查看细节，<strong>长按</strong>显示菜单，<strong>双击</strong>快速缩放，从边缘<strong>右滑</strong>打开侧边栏。</p>
+
+<p style="color: #667eea;">享受移动编辑的乐趣！ 🎉</p>
+      `
+      editor.setContent(content)
+      logGesture('系统', '已加载示例内容')
+    }
+
+    window.resetZoom = function () {
+      updateZoomLevel(1)
+      // 触发缩放重置
+      editor.emit('zoom', { scale: 1 })
+      logGesture('系统', '缩放已重置')
+    }
+
+    window.toggleToolbar = function () {
+      mobileAdapter.mobileToolbar?.toggle()
+      logGesture('系统', '切换工具栏显示')
+    }
+
+    window.showMenu = function () {
+      mobileAdapter.swipeMenu?.open()
+      logGesture('系统', '打开侧边菜单')
+    }
+
+    window.insertImage = function () {
+      const imageUrl = 'data:image/svg+xml,%3Csvg width="200" height="150" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="200" height="150" fill="%23667eea"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="white" font-size="20"%3E示例图片%3C/text%3E%3C/svg%3E'
+      editor.insertImage(imageUrl)
+      logGesture('系统', '插入了一张图片')
+    }
+
+    let isDarkMode = false
+    window.toggleDarkMode = function () {
+      isDarkMode = !isDarkMode
+      if (isDarkMode) {
+        document.body.style.background = 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)'
+        editorElement.style.background = '#2d3748'
+        editorElement.style.color = '#e2e8f0'
+      } else {
+        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        editorElement.style.background = 'white'
+        editorElement.style.color = '#333'
+      }
+      logGesture('系统', `切换到${isDarkMode ? '暗黑' : '明亮'}模式`)
+    }
+
+    // 设备摇动检测（撤销）
+    if ('DeviceMotionEvent' in window) {
+      let lastShake = 0
+      window.addEventListener('devicemotion', (e) => {
+        const acceleration = e.accelerationIncludingGravity
+        if (!acceleration) return
+
+        const magnitude = Math.sqrt(
+          acceleration.x * acceleration.x +
+          acceleration.y * acceleration.y +
+          acceleration.z * acceleration.z
+        )
+
+        if (magnitude > 25 && Date.now() - lastShake > 1000) {
+          lastShake = Date.now()
+          editor.undo()
+          logGesture('摇动', '撤销操作')
+
+          // 触觉反馈
+          if ('vibrate' in navigator) {
+            navigator.vibrate(50)
+          }
+        }
+      })
+    }
+
+    // 初始化
+    updateDeviceInfo()
+    window.addEventListener('resize', updateDeviceInfo)
+
+    // 加载初始内容
+    setTimeout(loadSampleContent, 500)
+
+    console.log('✨ 移动端编辑器已初始化')
+    console.log('📱 试试各种手势操作吧！')
+  </script>
+</body>
+
+</html>
+
+
+
+
+

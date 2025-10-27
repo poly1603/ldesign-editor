@@ -14,10 +14,18 @@ import { Toolbar } from '../ui/Toolbar'
 import { DEFAULT_TOOLBAR_ITEMS } from '../ui/defaultToolbar'
 import * as AllPlugins from '../plugins'
 import { createLogger } from '../utils/logger'
+import { EditorVirtualScroller } from './EditorVirtualScroller'
+import { IncrementalRenderer, type DOMPatch } from './IncrementalRenderer'
+import { WasmAccelerator } from '../wasm/WasmAccelerator'
+import { DebugPanel } from '../devtools/DebugPanel'
 
 const logger = createLogger('Editor')
 
 export class Editor {
+  // 版本信息
+  public static version = '1.3.0'
+  public version = '1.3.0'
+
   // 核心组件
   private eventEmitter: EventEmitter
   private schema: Schema
@@ -30,6 +38,10 @@ export class Editor {
   public plugins: PluginManager
   public contextMenuManager?: any // 右键菜单管理器
   public toolbar?: Toolbar // 工具栏
+  public virtualScroller?: EditorVirtualScroller // 虚拟滚动器
+  public incrementalRenderer?: IncrementalRenderer // 增量渲染器
+  public wasmAccelerator?: WasmAccelerator // WebAssembly加速器
+  public debugPanel?: DebugPanel // 调试面板
 
   // 选项
   public options: EditorOptions
@@ -73,9 +85,9 @@ export class Editor {
     } else {
       logger.debug('Using default plugins from getAllDefaultPlugins()')
     }
-    
+
     const pluginsToLoad = options.plugins || this.getAllDefaultPlugins()
-    
+
     logger.debug('Loading plugins, total:', pluginsToLoad.length)
     logger.debug('Plugin list:', pluginsToLoad.map(p => typeof p === 'string' ? p : p?.name || 'unnamed'))
     logger.debug('HeadingPlugin exists in AllPlugins:', !!AllPlugins.HeadingPlugin)
@@ -84,7 +96,7 @@ export class Editor {
       logger.debug('HeadingPlugin config:', AllPlugins.HeadingPlugin.config)
       logger.debug('Is HeadingPlugin in pluginsToLoad?', pluginsToLoad.includes(AllPlugins.HeadingPlugin))
     }
-    
+
     pluginsToLoad.forEach((plugin, index) => {
       if (typeof plugin === 'string') {
         logger.debug(`Loading builtin plugin [${index}]: "${plugin}"`)
@@ -99,13 +111,13 @@ export class Editor {
         this.plugins.register(plugin)
       }
     })
-    
+
     logger.debug('All plugins loaded')
     logger.debug('Registered commands:', this.commands.getCommands())
 
     // 初始化事件监听
     this.setupEventListeners()
-    
+
     // 将编辑器实例保存到全局，以便工具栏访问
     if (typeof window !== 'undefined') {
       (window as any).editor = this
@@ -118,16 +130,16 @@ export class Editor {
   private getAllDefaultPlugins(): PluginType[] {
     logger.debug('Getting default plugins...')
     logger.debug('AllPlugins keys:', Object.keys(AllPlugins))
-    
+
     // 检查 HeadingPlugin 是否存在
     logger.debug('HeadingPlugin check:', {
       exists: !!AllPlugins.HeadingPlugin,
       type: typeof AllPlugins.HeadingPlugin,
       value: AllPlugins.HeadingPlugin
     })
-    
+
     const plugins: PluginType[] = []
-    
+
     // 最重要！首先加载 HeadingPlugin
     if (AllPlugins.HeadingPlugin) {
       logger.debug('✅ Adding HeadingPlugin to default plugins')
@@ -135,7 +147,7 @@ export class Editor {
     } else {
       logger.error('❌ HeadingPlugin is undefined! This is critical!')
     }
-    
+
     // 首先加入基础插件（命令插件）
     if (AllPlugins.MediaCommandsPlugin) {
       logger.debug('Adding MediaCommandsPlugin')
@@ -145,13 +157,13 @@ export class Editor {
       logger.debug('Adding FormattingCommandsPlugin')
       plugins.push(AllPlugins.FormattingCommandsPlugin)
     }
-    
+
     // AI 功能 - 最重要，默认启用
     if (AllPlugins.AIPlugin) {
       logger.debug('Adding AIPlugin to default plugins')
       plugins.push(AllPlugins.AIPlugin)
     }
-    
+
     // 基础格式化
     if (AllPlugins.BoldPlugin) plugins.push(AllPlugins.BoldPlugin)
     if (AllPlugins.ItalicPlugin) plugins.push(AllPlugins.ItalicPlugin)
@@ -161,7 +173,7 @@ export class Editor {
     if (AllPlugins.SuperscriptPlugin) plugins.push(AllPlugins.SuperscriptPlugin)
     if (AllPlugins.SubscriptPlugin) plugins.push(AllPlugins.SubscriptPlugin)
     if (AllPlugins.ClearFormatPlugin) plugins.push(AllPlugins.ClearFormatPlugin)
-    
+
     // 标题和块级元素 - 特别检查 HeadingPlugin
     if (AllPlugins.HeadingPlugin) {
       console.log('[Editor] Adding HeadingPlugin to list')
@@ -171,18 +183,18 @@ export class Editor {
     }
     if (AllPlugins.BlockquotePlugin) plugins.push(AllPlugins.BlockquotePlugin)
     if (AllPlugins.CodeBlockPlugin) plugins.push(AllPlugins.CodeBlockPlugin)
-    
+
     // 列表
     if (AllPlugins.BulletListPlugin) plugins.push(AllPlugins.BulletListPlugin)
     if (AllPlugins.OrderedListPlugin) plugins.push(AllPlugins.OrderedListPlugin)
     if (AllPlugins.TaskListPlugin) plugins.push(AllPlugins.TaskListPlugin)
-    
+
     // 节点插件
     if (AllPlugins.LinkPlugin) plugins.push(AllPlugins.LinkPlugin)
     if (AllPlugins.ImagePlugin) plugins.push(AllPlugins.ImagePlugin)
     if (AllPlugins.TablePlugin) plugins.push(AllPlugins.TablePlugin)
     if (AllPlugins.HorizontalRulePlugin) plugins.push(AllPlugins.HorizontalRulePlugin)
-    
+
     // 文本样式
     if (AllPlugins.AlignPlugin) plugins.push(AllPlugins.AlignPlugin)
     if (AllPlugins.TextColorPlugin) plugins.push(AllPlugins.TextColorPlugin)
@@ -192,7 +204,7 @@ export class Editor {
     if (AllPlugins.IndentPlugin) plugins.push(AllPlugins.IndentPlugin)
     if (AllPlugins.LineHeightPlugin) plugins.push(AllPlugins.LineHeightPlugin)
     if (AllPlugins.TextTransformPlugin) plugins.push(AllPlugins.TextTransformPlugin)
-    
+
     // 功能插件
     if (AllPlugins.HistoryPlugin) plugins.push(AllPlugins.HistoryPlugin)
     if (AllPlugins.FullscreenPlugin) plugins.push(AllPlugins.FullscreenPlugin)
@@ -201,7 +213,7 @@ export class Editor {
     if (AllPlugins.ExportMarkdownPlugin) plugins.push(AllPlugins.ExportMarkdownPlugin)
     if (AllPlugins.MediaDialogPlugin) plugins.push(AllPlugins.MediaDialogPlugin)
     if (AllPlugins.ContextMenuPlugin) plugins.push(AllPlugins.ContextMenuPlugin)
-    
+
     // 图片编辑功能插件 - 创建实例
     if (AllPlugins.MediaContextMenuPlugin) {
       plugins.push(new AllPlugins.MediaContextMenuPlugin())
@@ -214,10 +226,10 @@ export class Editor {
         showDimensions: true
       }))
     }
-    
+
     logger.debug(`Total plugins to load: ${plugins.length}`)
     logger.debug('Plugin names:', plugins.map(p => p.name).join(', '))
-    
+
     // 添加 EmojiPlugin（确保它被加载）
     if (AllPlugins.EmojiPlugin) {
       logger.debug('✅ EmojiPlugin found, adding to plugins list')
@@ -226,7 +238,7 @@ export class Editor {
       logger.warn('⚠️ EmojiPlugin not found in AllPlugins!')
       logger.debug('Available plugins:', Object.keys(AllPlugins).filter(k => k.includes('Plugin')))
     }
-    
+
     return plugins
   }
 
@@ -253,7 +265,7 @@ export class Editor {
       this.toolbarElement = document.createElement('div')
       this.toolbarElement.classList.add('ldesign-toolbar')
       this.element.appendChild(this.toolbarElement)
-      
+
       // 创建工具栏实例
       this.toolbar = new Toolbar(this, {
         container: this.toolbarElement,
@@ -273,12 +285,73 @@ export class Editor {
 
     this.element.appendChild(this.contentElement)
 
-    // 渲染内容
-    this.render()
+    // 初始化增量渲染器
+    if (this.options.incrementalRender?.enabled !== false) {
+      this.incrementalRenderer = new IncrementalRenderer({
+        batchDelay: this.options.incrementalRender?.batchDelay,
+        maxBatchSize: this.options.incrementalRender?.maxBatchSize,
+        useRAF: this.options.incrementalRender?.useRAF !== false,
+        useWorker: this.options.incrementalRender?.useWorker,
+        useVirtualDOM: this.options.incrementalRender?.useVirtualDOM
+      })
+
+      // 观察内容元素的变化
+      this.incrementalRenderer.observeElement(this.contentElement)
+    }
+
+    // 初始化WebAssembly加速器
+    if (this.options.wasm?.enabled !== false && WasmAccelerator.isSupported()) {
+      this.wasmAccelerator = new WasmAccelerator({
+        enabled: this.options.wasm?.enabled !== false,
+        enableDiff: this.options.wasm?.enableDiff !== false,
+        enableParser: this.options.wasm?.enableParser !== false,
+        useWorker: this.options.wasm?.useWorker,
+        warmupStrategy: this.options.wasm?.warmupStrategy || 'lazy'
+      })
+
+      // 预热WASM模块（异步）
+      if (this.options.wasm?.warmupStrategy === 'eager') {
+        this.wasmAccelerator.initialize().catch(error => {
+          logger.warn('WASM initialization failed:', error)
+        })
+      }
+    }
+
+    // 初始化虚拟滚动（如果启用）
+    if (this.options.virtualScroll?.enabled) {
+      this.virtualScroller = new EditorVirtualScroller({
+        editor: this,
+        lineHeight: this.options.virtualScroll.lineHeight,
+        maxLines: this.options.virtualScroll.maxLines,
+        enableSyntaxHighlight: this.options.virtualScroll.enableSyntaxHighlight,
+        enableLineNumbers: this.options.virtualScroll.enableLineNumbers,
+        enableWordWrap: this.options.virtualScroll.enableWordWrap
+      })
+
+      // 使用虚拟滚动渲染
+      this.virtualScroller.setContent(this.document.toText())
+    } else {
+      // 普通渲染
+      this.render()
+    }
 
     // 自动聚焦
     if (this.options.autofocus) {
       this.focus()
+    }
+
+    // 初始化调试面板
+    if (this.options.debugPanel?.enabled) {
+      this.debugPanel = new DebugPanel({
+        editor: this,
+        expanded: this.options.debugPanel.expanded,
+        initialTab: this.options.debugPanel.initialTab,
+        theme: this.options.debugPanel.theme,
+        position: this.options.debugPanel.position,
+        size: this.options.debugPanel.size,
+        resizable: this.options.debugPanel.resizable,
+        showInProduction: this.options.debugPanel.showInProduction
+      })
     }
   }
 
@@ -313,7 +386,7 @@ export class Editor {
         if (sel && sel.rangeCount > 0) {
           try {
             this.savedRange = sel.getRangeAt(0).cloneRange()
-          } catch {}
+          } catch { }
         }
       }
     })
@@ -356,16 +429,85 @@ export class Editor {
 
     const html = this.document.toHTML()
 
-    // 保存当前选区
-    const selection = this.getSelection()
+    if (this.incrementalRenderer) {
+      // 使用增量渲染
+      this.renderIncremental(html)
+    } else {
+      // 保存当前选区
+      const selection = this.getSelection()
 
-    // 更新内容
-    this.contentElement.innerHTML = html
+      // 更新内容
+      this.contentElement.innerHTML = html
 
-    // 恢复选区
-    if (selection) {
-      this.setSelection(selection)
+      // 恢复选区
+      if (selection) {
+        this.setSelection(selection)
+      }
     }
+  }
+
+  /**
+   * 增量渲染内容
+   */
+  private renderIncremental(newHTML: string): void {
+    if (!this.contentElement || !this.incrementalRenderer) return
+
+    // 创建临时DOM来解析新HTML
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = newHTML
+
+    // 计算差异并生成补丁
+    const patches = this.calculatePatches(this.contentElement, tempDiv)
+
+    // 应用补丁
+    if (patches.length > 0) {
+      this.incrementalRenderer.queuePatches(patches)
+    }
+  }
+
+  /**
+   * 计算DOM补丁
+   */
+  private calculatePatches(oldRoot: Element, newRoot: Element): DOMPatch[] {
+    const patches: DOMPatch[] = []
+
+    // 简单的差异算法（实际应该使用更复杂的算法）
+    const oldChildren = Array.from(oldRoot.children)
+    const newChildren = Array.from(newRoot.children)
+
+    // 处理删除的节点
+    oldChildren.forEach((oldChild, index) => {
+      if (!newChildren[index]) {
+        patches.push({
+          type: 'remove',
+          target: oldChild
+        })
+      }
+    })
+
+    // 处理新增和更新的节点
+    newChildren.forEach((newChild, index) => {
+      const oldChild = oldChildren[index]
+
+      if (!oldChild) {
+        // 新增节点
+        patches.push({
+          type: 'insert',
+          parent: oldRoot,
+          newNode: newChild.cloneNode(true),
+          index
+        })
+      } else if (oldChild.outerHTML !== newChild.outerHTML) {
+        // 更新节点
+        patches.push({
+          type: 'update',
+          target: oldChild,
+          newNode: newChild.cloneNode(true)
+        })
+      }
+    })
+
+    return patches
   }
 
   /**
@@ -373,7 +515,7 @@ export class Editor {
    */
   private loadBuiltinPlugin(name: string): void {
     // 动态导入插件
-    switch(name) {
+    switch (name) {
       case 'image':
         import('../plugins/media/image').then(module => {
           this.plugins.register(module.ImagePlugin)
@@ -391,7 +533,17 @@ export class Editor {
         logger.warn(`未知插件: ${name}`)
     }
   }
-  
+
+  /**
+   * 获取编辑器容器元素
+   */
+  getElement(): HTMLElement {
+    if (!this.element) {
+      throw new Error('Editor not mounted')
+    }
+    return this.element
+  }
+
   /**
    * 获取编辑器状态
    */
@@ -482,21 +634,21 @@ export class Editor {
   getHTML(): string {
     return this.document.toHTML()
   }
-  
+
   /**
    * 获取选中的纯文本
    */
   getSelectedText(): string {
     if (!this.contentElement) return ''
-    
+
     const selection = window.getSelection()
     if (!selection || selection.rangeCount === 0) return ''
-    
+
     const range = selection.getRangeAt(0)
     if (!this.contentElement.contains(range.commonAncestorContainer)) {
       return ''
     }
-    
+
     // 获取选中的纯文本
     return selection.toString()
   }
@@ -533,7 +685,7 @@ export class Editor {
     const beforeLen = this.contentElement.innerHTML.length
     logger.debug('insertHTML called. Before length:', beforeLen)
     logger.debug('html length:', html?.length)
-    
+
     // 获取当前选区
     let selection = window.getSelection()
     logger.debug('Initial selection:', selection)
@@ -553,10 +705,10 @@ export class Editor {
         selection?.addRange(range)
       }
     }
-    
+
     let range = selection!.getRangeAt(0)
     logger.debug('Range obtained. Collapsed:', range.collapsed)
-    
+
     // 确保选区在编辑器内
     if (!this.contentElement.contains(range.commonAncestorContainer)) {
       logger.warn('Selection is not in editor; attempting to restore saved selection')
@@ -575,7 +727,7 @@ export class Editor {
         range = newRange
       }
     }
-    
+
     // 再次确保焦点在编辑器
     this.contentElement.focus()
 
@@ -641,7 +793,7 @@ export class Editor {
       const videoCount = (snapshot.match(/<video\b/gi) || []).length
       const audioCount = (snapshot.match(/<audio\b/gi) || []).length
       logger.debug('Media counts -> img:', imgCount, 'video:', videoCount, 'audio:', audioCount)
-    } catch {}
+    } catch { }
 
     // 将插入位置滚动到可见区域
     try {
@@ -670,7 +822,7 @@ export class Editor {
     // 触发更新事件
     this.handleInput()
   }
-  
+
   /**
    * 清空内容
    */

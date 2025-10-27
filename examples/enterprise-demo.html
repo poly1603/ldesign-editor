@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDesign Editor - 企业级功能演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .header {
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e0e0e0;
+      background: #f8f9fa;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: #e8e8e8;
+    }
+
+    .tab.active {
+      background: white;
+      border-bottom-color: #667eea;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 30px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h3 {
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 20px;
+    }
+
+    .card {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #667eea;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .user-role {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .permission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .permission-card {
+      padding: 12px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .permission-card.granted {
+      border-color: #4caf50;
+      background: #f1f8f4;
+    }
+
+    .permission-card.denied {
+      border-color: #f44336;
+      background: #fef5f5;
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .audit-table th {
+      background: #f5f5f5;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .audit-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .audit-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge.failure {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏢 企业级功能演示</h1>
+      <p>权限控制 · SSO集成 · 审计日志</p>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="permissions">🔐 权限管理</div>
+      <div class="tab" data-tab="sso">🔑 SSO登录</div>
+      <div class="tab" data-tab="audit">📋 审计日志</div>
+    </div>
+
+    <!-- 权限管理标签 -->
+    <div class="tab-content active" id="permissions">
+      <div class="section">
+        <h3>当前用户</h3>
+        <div id="currentUser">
+          <p style="color: #999;">未登录</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>权限检查</h3>
+        <div class="permission-grid" id="permissionGrid"></div>
+      </div>
+
+      <div class="section">
+        <h3>角色管理</h3>
+        <div class="card">
+          <select id="roleSelect" style="padding: 8px; width: 200px; margin-right: 10px;">
+            <option value="admin">管理员</option>
+            <option value="editor">编辑者</option>
+            <option value="viewer">查看者</option>
+            <option value="commenter">评论者</option>
+          </select>
+          <button id="assignRole">分配角色</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>编辑器测试</h3>
+        <div class="button-group">
+          <button id="testRead">测试读取</button>
+          <button id="testWrite">测试编辑</button>
+          <button id="testDelete">测试删除</button>
+          <button id="testShare">测试分享</button>
+        </div>
+        <div id="testResult"
+          style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 4px; display: none;">
+        </div>
+      </div>
+    </div>
+
+    <!-- SSO标签 -->
+    <div class="tab-content" id="sso">
+      <div class="section">
+        <h3>SSO提供商</h3>
+        <div class="card">
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 10px;">选择认证方式</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+              <div class="card" style="cursor: pointer; text-align: center;" data-provider="oauth2">
+                <div style="font-size: 48px; margin-bottom: 10px;">🔐</div>
+                <strong>OAuth 2.0</strong>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">标准OAuth认证</p>
+              </div>
+              <div class="card" style="cursor: pointer; text-align: center;" data-provider="saml">
+                <div style="font-size: 48px; margin-bottom: 10px;">🎫</div>
+                <strong>SAML</strong>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">企业级SAML 2.0</p>
+              </div>
+              <div class="card" style="cursor: pointer; text-align: center;" data-provider="ldap">
+                <div style="font-size: 48px; margin-bottom: 10px;">📁</div>
+                <strong>LDAP/AD</strong>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">目录服务认证</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button id="ssoLogin">🔑 SSO登录</button>
+            <button id="ssoLogout" disabled>🚪 登出</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>认证状态</h3>
+        <div class="card">
+          <div><strong>状态：</strong> <span id="authStatus">未认证</span></div>
+          <div style="margin-top: 10px;"><strong>Token：</strong> <span id="tokenInfo">无</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 审计日志标签 -->
+    <div class="tab-content" id="audit">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalLogs">0</div>
+          <div class="stat-label">总日志数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="uniqueUsers">0</div>
+          <div class="stat-label">用户数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="uniqueActions">0</div>
+          <div class="stat-label">操作类型</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="pendingLogs">0</div>
+          <div class="stat-label">待同步</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>操作记录</h3>
+        <div class="button-group">
+          <button id="generateLogs">🎲 生成测试日志</button>
+          <button id="exportJSON">📥 导出JSON</button>
+          <button id="exportCSV">📥 导出CSV</button>
+          <button id="clearLogs">🗑️ 清空日志</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div style="max-height: 400px; overflow-y: auto;">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>用户</th>
+                <th>操作</th>
+                <th>资源</th>
+                <th>结果</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: #999; padding: 30px;">
+                  暂无审计日志
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor, PermissionManager, SSOManager, AuditLogger } from '../dist/es/index.js'
+
+    // 初始化权限管理器
+    const permissionManager = new PermissionManager({
+      strictMode: true,
+      inheritRoles: true
+    })
+
+    // 初始化SSO管理器
+    let ssoManager
+    let selectedProvider = 'oauth2'
+
+    // 初始化审计日志
+    const auditLogger = new AuditLogger({
+      enabled: true,
+      storage: 'indexeddb',
+      maxLogs: 10000,
+      persistToDisk: true,
+      includeContent: true
+    })
+
+    await auditLogger.initialize()
+
+    // 初始化编辑器
+    const editor = new Editor({
+      content: '<h2>企业级编辑器</h2><p>这个编辑器集成了完整的企业级功能，包括权限控制、SSO登录和审计日志。</p>',
+      placeholder: '开始输入...'
+    })
+
+    editor.mount('#editor')
+
+    // 模拟用户登录
+    function simulateLogin(roleId) {
+      const user = {
+        id: `user-${Math.random().toString(36).substr(2, 9)}`,
+        name: `测试用户 (${roleId})`,
+        email: `user@example.com`,
+        roles: [roleId]
+      }
+
+      permissionManager.setCurrentUser(user)
+      permissionManager.assignRole(user.id, roleId)
+
+      // 记录审计日志
+      auditLogger.log({
+        userId: user.id,
+        action: 'user.login',
+        result: 'success',
+        metadata: {
+          role: roleId,
+          timestamp: Date.now()
+        }
+      })
+
+      updateCurrentUser(user)
+      updatePermissions()
+      updateAuditStats()
+    }
+
+    // 更新当前用户显示
+    function updateCurrentUser(user) {
+      const container = document.getElementById('currentUser')
+      container.innerHTML = `
+        <div class="user-card">
+          <div class="user-avatar">${user.name.charAt(0)}</div>
+          <div class="user-info">
+            <div class="user-name">${user.name}</div>
+            <div class="user-role">角色: ${user.roles.join(', ')}</div>
+          </div>
+          <button onclick="window.simulateLogin('viewer')">切换为查看者</button>
+          <button onclick="window.simulateLogin('editor')">切换为编辑者</button>
+          <button onclick="window.simulateLogin('admin')">切换为管理员</button>
+        </div>
+      `
+    }
+
+    // 更新权限显示
+    function updatePermissions() {
+      const permissions = [
+        { id: 'document.read', name: '读取文档' },
+        { id: 'document.write', name: '编辑文档' },
+        { id: 'document.create', name: '创建文档' },
+        { id: 'document.delete', name: '删除文档' },
+        { id: 'document.share', name: '分享文档' },
+        { id: 'comment.create', name: '创建评论' },
+        { id: 'admin.users', name: '管理用户' },
+        { id: 'admin.settings', name: '管理设置' }
+      ]
+
+      const grid = document.getElementById('permissionGrid')
+      grid.innerHTML = permissions.map(p => {
+        const hasPermission = permissionManager.hasPermission(p.id)
+        return `
+          <div class="permission-card ${hasPermission ? 'granted' : 'denied'}">
+            <span>${p.name}</span>
+            <span>${hasPermission ? '✅' : '❌'}</span>
+          </div>
+        `
+      }).join('')
+    }
+
+    // 更新审计统计
+    function updateAuditStats() {
+      const stats = auditLogger.getStats()
+      document.getElementById('totalLogs').textContent = stats.totalLogs
+      document.getElementById('uniqueUsers').textContent = stats.uniqueUsers
+      document.getElementById('uniqueActions').textContent = stats.uniqueActions
+      document.getElementById('pendingLogs').textContent = stats.pendingLogs
+    }
+
+    // 更新审计表格
+    async function updateAuditTable() {
+      const logs = await auditLogger.query({ limit: 20, sortOrder: 'desc' })
+      const tbody = document.getElementById('auditTableBody')
+
+      if (logs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: #999; padding: 30px;">
+              暂无审计日志
+            </td>
+          </tr>
+        `
+        return
+      }
+
+      tbody.innerHTML = logs.map(log => `
+        <tr>
+          <td>${new Date(log.timestamp).toLocaleString()}</td>
+          <td>${log.userId}</td>
+          <td>${log.action}</td>
+          <td>${log.resource || '-'}</td>
+          <td>
+            <span class="badge ${log.result || 'success'}">${log.result || 'success'}</span>
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    // 标签切换
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab
+
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'))
+
+        tab.classList.add('active')
+        document.getElementById(tabName).classList.add('active')
+      })
+    })
+
+    // 权限测试
+    document.getElementById('testRead').addEventListener('click', () => {
+      const result = document.getElementById('testResult')
+      try {
+        permissionManager.assertPermission('document.read')
+        result.style.display = 'block'
+        result.style.background = '#d4edda'
+        result.style.color = '#155724'
+        result.innerHTML = '✅ 读取权限检查通过'
+
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.read',
+          resource: 'document',
+          result: 'success'
+        })
+      } catch (error) {
+        result.style.display = 'block'
+        result.style.background = '#f8d7da'
+        result.style.color = '#721c24'
+        result.innerHTML = '❌ 权限不足: ' + error.message
+
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.read',
+          resource: 'document',
+          result: 'failure'
+        })
+      }
+
+      updateAuditStats()
+      updateAuditTable()
+    })
+
+    document.getElementById('testWrite').addEventListener('click', () => {
+      const result = document.getElementById('testResult')
+      try {
+        permissionManager.assertPermission('document.write')
+        result.style.display = 'block'
+        result.style.background = '#d4edda'
+        result.innerHTML = '✅ 编辑权限检查通过'
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.write',
+          result: 'success'
+        })
+      } catch (error) {
+        result.style.display = 'block'
+        result.style.background = '#f8d7da'
+        result.innerHTML = '❌ 权限不足: ' + error.message
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.write',
+          result: 'failure'
+        })
+      }
+      updateAuditStats()
+      updateAuditTable()
+    })
+
+    document.getElementById('testDelete').addEventListener('click', () => {
+      const result = document.getElementById('testResult')
+      try {
+        permissionManager.assertPermission('document.delete')
+        result.style.display = 'block'
+        result.style.background = '#d4edda'
+        result.innerHTML = '✅ 删除权限检查通过'
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.delete',
+          result: 'success'
+        })
+      } catch (error) {
+        result.style.display = 'block'
+        result.style.background = '#f8d7da'
+        result.innerHTML = '❌ 权限不足: ' + error.message
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.delete',
+          result: 'failure'
+        })
+      }
+      updateAuditStats()
+      updateAuditTable()
+    })
+
+    document.getElementById('testShare').addEventListener('click', () => {
+      const result = document.getElementById('testResult')
+      try {
+        permissionManager.assertPermission('document.share')
+        result.style.display = 'block'
+        result.style.background = '#d4edda'
+        result.innerHTML = '✅ 分享权限检查通过'
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.share',
+          result: 'success'
+        })
+      } catch (error) {
+        result.style.display = 'block'
+        result.style.background = '#f8d7da'
+        result.innerHTML = '❌ 权限不足: ' + error.message
+        auditLogger.log({
+          userId: permissionManager.getCurrentUser()?.id || 'anonymous',
+          action: 'document.share',
+          result: 'failure'
+        })
+      }
+      updateAuditStats()
+      updateAuditTable()
+    })
+
+    // 分配角色
+    document.getElementById('assignRole').addEventListener('click', () => {
+      const role = document.getElementById('roleSelect').value
+      const user = permissionManager.getCurrentUser()
+      if (user) {
+        permissionManager.assignRole(user.id, role)
+        updateCurrentUser({ ...user, roles: [role] })
+        updatePermissions()
+
+        auditLogger.log({
+          userId: user.id,
+          action: 'role.assign',
+          resource: 'role',
+          resourceId: role,
+          result: 'success'
+        })
+
+        updateAuditStats()
+        updateAuditTable()
+      }
+    })
+
+    // 审计日志操作
+    document.getElementById('generateLogs').addEventListener('click', () => {
+      const actions = ['document.read', 'document.write', 'document.delete', 'comment.create', 'document.share']
+      const users = ['user-1', 'user-2', 'user-3']
+
+      for (let i = 0; i < 20; i++) {
+        auditLogger.log({
+          userId: users[Math.floor(Math.random() * users.length)],
+          action: actions[Math.floor(Math.random() * actions.length)],
+          resource: 'document',
+          resourceId: `doc-${Math.floor(Math.random() * 10)}`,
+          result: Math.random() > 0.1 ? 'success' : 'failure'
+        })
+      }
+
+      updateAuditStats()
+      updateAuditTable()
+    })
+
+    document.getElementById('exportJSON').addEventListener('click', async () => {
+      const blob = await auditLogger.export('json')
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `audit-logs-${Date.now()}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    })
+
+    document.getElementById('exportCSV').addEventListener('click', async () => {
+      const blob = await auditLogger.export('csv')
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `audit-logs-${Date.now()}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    })
+
+    document.getElementById('clearLogs').addEventListener('click', async () => {
+      if (confirm('确定要清空所有审计日志吗？')) {
+        await auditLogger.clear()
+        updateAuditStats()
+        updateAuditTable()
+      }
+    })
+
+    // 导出到全局
+    window.simulateLogin = simulateLogin
+    window.permissionManager = permissionManager
+    window.auditLogger = auditLogger
+
+    // 初始化：默认以查看者身份登录
+    simulateLogin('viewer')
+
+    console.log('💡 提示：')
+    console.log('- 切换不同角色观察权限变化')
+    console.log('- 所有操作都会被审计日志记录')
+    console.log('- 可以导出审计日志为JSON或CSV格式')
+  </script>
+</body>
+
+</html>

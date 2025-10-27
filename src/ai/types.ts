@@ -5,7 +5,7 @@
 /**
  * AI 提供商类型
  */
-export type AIProvider = 'deepseek' | 'openai' | 'claude' | 'azure' | 'custom'
+export type AIProvider = 'deepseek' | 'openai' | 'claude' | 'azure' | 'baidu' | 'qwen' | 'spark' | 'glm' | 'custom'
 
 /**
  * AI 模型配置
@@ -81,22 +81,22 @@ export interface AIResponse {
 export interface AIProviderInterface {
   name: AIProvider
   config: AIModelConfig
-  
+
   /**
    * 初始化提供商
    */
   initialize(config: AIModelConfig): Promise<void>
-  
+
   /**
    * 发送请求
    */
   request(request: AIRequest): Promise<AIResponse>
-  
+
   /**
    * 验证配置
    */
   validateConfig(): boolean
-  
+
   /**
    * 清理资源
    */
@@ -135,6 +135,42 @@ export const defaultAIConfig: AIConfig = {
       apiEndpoint: 'https://api.anthropic.com/v1',
       temperature: 0.7,
       maxTokens: 4000,
+      stream: false
+    },
+    baidu: {
+      provider: 'baidu',
+      model: 'ernie-bot',
+      apiKey: '', // 格式: API_KEY:SECRET_KEY
+      apiEndpoint: 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat',
+      temperature: 0.7,
+      maxTokens: 2000,
+      stream: false
+    },
+    qwen: {
+      provider: 'qwen',
+      model: 'qwen-turbo',
+      apiKey: '',
+      apiEndpoint: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
+      temperature: 0.7,
+      maxTokens: 2000,
+      stream: false
+    },
+    spark: {
+      provider: 'spark',
+      model: 'spark-3.5',
+      apiKey: '', // 格式: APP_ID:API_KEY:API_SECRET
+      apiEndpoint: 'wss://spark-api.xf-yun.com/v3.5/chat',
+      temperature: 0.7,
+      maxTokens: 2000,
+      stream: false
+    },
+    glm: {
+      provider: 'glm',
+      model: 'glm-4',
+      apiKey: '',
+      apiEndpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+      temperature: 0.7,
+      maxTokens: 2000,
       stream: false
     }
   },

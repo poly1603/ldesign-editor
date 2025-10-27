@@ -50,6 +50,13 @@ export class Document {
   }
 
   /**
+   * 转换为纯文本
+   */
+  toText(): string {
+    return this.nodeToText(this.root)
+  }
+
+  /**
    * 从 JSON 创建文档
    */
   static fromJSON(json: Node, schema?: Schema): Document {
@@ -399,6 +406,50 @@ export class Document {
     const div = document.createElement('div')
     div.textContent = text
     return div.innerHTML
+  }
+
+  /**
+   * 节点转纯文本
+   */
+  private nodeToText(node: Node): string {
+    if (node.type === 'text') {
+      return node.text || ''
+    }
+
+    // 处理特殊节点
+    switch (node.type) {
+      case 'horizontalRule':
+        return '---\n'
+      case 'image':
+        return `[图片: ${node.attrs?.alt || node.attrs?.src || ''}]\n`
+      case 'video':
+        return `[视频: ${node.attrs?.src || ''}]\n`
+      case 'audio':
+        return `[音频: ${node.attrs?.src || ''}]\n`
+      case 'table':
+        return '[表格]\n'
+    }
+
+    // 获取子内容
+    let content = ''
+    if (node.content) {
+      content = node.content.map(child => this.nodeToText(child)).join('')
+    }
+
+    // 添加块级元素的换行
+    switch (node.type) {
+      case 'paragraph':
+      case 'heading':
+      case 'blockquote':
+      case 'codeBlock':
+      case 'listItem':
+        return content + '\n'
+      case 'bulletList':
+      case 'orderedList':
+        return content + '\n'
+      default:
+        return content
+    }
   }
 
   /**

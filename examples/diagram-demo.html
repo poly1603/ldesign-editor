@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDesign Editor - 高级图表演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 600px;
+    }
+
+    .sidebar {
+      padding: 30px;
+      background: #f8f9fa;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .sidebar h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .diagram-type {
+      padding: 15px;
+      margin-bottom: 12px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .diagram-type:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .diagram-type.active {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .diagram-type .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .diagram-type .title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .diagram-type .desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .main {
+      padding: 30px;
+    }
+
+    .editor-container {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 500px;
+    }
+
+    .info-section {
+      background: #e6f7ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .info-section h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: #1890ff;
+    }
+
+    .info-section ul {
+      list-style: none;
+    }
+
+    .info-section li {
+      padding: 6px 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      padding: 15px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .feature-card .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card .title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .feature-card .desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-buttons button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .action-buttons button:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <span>📊</span>
+        高级图表编辑器
+      </h1>
+      <p>支持思维导图、流程图、UML图、时序图、甘特图</p>
+    </div>
+
+    <div class="content">
+      <div class="sidebar">
+        <h3>📋 图表类型</h3>
+
+        <div class="diagram-type active" data-type="mindmap">
+          <span class="icon">🧠</span>
+          <div class="title">思维导图</div>
+          <div class="desc">可视化思维结构</div>
+        </div>
+
+        <div class="diagram-type" data-type="flowchart">
+          <span class="icon">🔀</span>
+          <div class="title">流程图</div>
+          <div class="desc">流程与决策逻辑</div>
+        </div>
+
+        <div class="diagram-type" data-type="uml">
+          <span class="icon">📐</span>
+          <div class="title">UML类图</div>
+          <div class="desc">面向对象设计</div>
+        </div>
+
+        <div class="diagram-type" data-type="sequence">
+          <span class="icon">📊</span>
+          <div class="title">时序图</div>
+          <div class="desc">交互时序关系</div>
+        </div>
+
+        <div class="diagram-type" data-type="gantt">
+          <span class="icon">📅</span>
+          <div class="title">甘特图</div>
+          <div class="desc">项目进度管理</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="info-section">
+          <h3>✨ 功能特性</h3>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="icon">🎨</div>
+              <div class="title">所见即所得</div>
+              <div class="desc">实时预览编辑结果</div>
+            </div>
+            <div class="feature-card">
+              <div class="icon">⚡</div>
+              <div class="title">快速创建</div>
+              <div class="desc">点击即可插入图表</div>
+            </div>
+            <div class="feature-card">
+              <div class="icon">✏️</div>
+              <div class="title">双击编辑</div>
+              <div class="desc">双击图表即可编辑</div>
+            </div>
+            <div class="feature-card">
+              <div class="icon">💾</div>
+              <div class="title">自动保存</div>
+              <div class="desc">编辑自动同步</div>
+            </div>
+            <div class="feature-card">
+              <div class="icon">📤</div>
+              <div class="title">一键导出</div>
+              <div class="desc">导出多种格式</div>
+            </div>
+            <div class="feature-card">
+              <div class="icon">🎯</div>
+              <div class="title">易于使用</div>
+              <div class="desc">简洁直观的界面</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="insertDiagram">➕ 插入图表</button>
+          <button id="exportDiagram">💾 导出图表</button>
+          <button id="clearEditor">🗑️ 清空内容</button>
+        </div>
+
+        <div class="editor-container">
+          <div id="editor"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '../dist/es/index.js'
+    import { DiagramPlugin } from '../dist/es/index.js'
+
+    let currentDiagramType = 'mindmap'
+
+    // 初始化编辑器
+    const editor = new Editor({
+      content: '<h2>欢迎使用高级图表编辑器！</h2><p>点击左侧图表类型，然后点击"插入图表"按钮，或使用工具栏中的图表按钮来添加各种图表。</p>',
+      placeholder: '开始创建图表...',
+      plugins: [],
+      onChange: (content) => {
+        console.log('Content changed')
+      }
+    })
+
+    editor.mount('#editor')
+
+    // 注册图表插件
+    const diagramPlugin = new DiagramPlugin()
+    await diagramPlugin.init({
+      editor,
+      commands: editor.commands,
+      keymap: editor.keymap
+    })
+
+    window.editor = editor
+    window.diagramPlugin = diagramPlugin
+
+    // 选择图表类型
+    document.querySelectorAll('.diagram-type').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.diagram-type').forEach(c => c.classList.remove('active'))
+        card.classList.add('active')
+        currentDiagramType = card.dataset.type
+        console.log('Selected diagram type:', currentDiagramType)
+      })
+    })
+
+    // 插入图表
+    document.getElementById('insertDiagram').addEventListener('click', async () => {
+      console.log(`Inserting ${currentDiagramType} diagram`)
+      await diagramPlugin.insertDiagram(currentDiagramType)
+    })
+
+    // 导出图表
+    document.getElementById('exportDiagram').addEventListener('click', async () => {
+      await diagramPlugin.exportDiagram()
+    })
+
+    // 清空编辑器
+    document.getElementById('clearEditor').addEventListener('click', () => {
+      if (confirm('确定要清空所有内容吗？')) {
+        editor.setContent('')
+      }
+    })
+
+    // 快捷键提示
+    console.log('💡 提示：')
+    console.log('- 双击图表可以编辑')
+    console.log('- 使用工具栏中的图表按钮快速插入')
+    console.log('- 所有图表数据都保存在文档中')
+  </script>
+</body>
+
+</html>

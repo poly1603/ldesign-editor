@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LDesign Editor - 调试面板演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      padding: 30px;
+      border-bottom: 1px solid #e8e8e8;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .control-group button,
+    .control-group select {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .control-group button:hover {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+
+    .control-group button.primary {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .control-group button.primary:hover {
+      background: #5a67d8;
+    }
+
+    .editor-container {
+      height: 400px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .ldesign-editor {
+      height: 100%;
+    }
+
+    .info-section {
+      background: #e6f7ff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .info-section h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #1890ff;
+    }
+
+    .info-section ul {
+      list-style: none;
+      font-size: 14px;
+    }
+
+    .info-section li {
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .test-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .test-action {
+      padding: 12px;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .test-action:hover {
+      background: #e8e8e8;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-action .icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .test-action .title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .test-action .desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .shortcut-info {
+      background: #fff3cd;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #856404;
+      margin-top: 20px;
+    }
+
+    .shortcut-info code {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>
+        <span>🔧</span>
+        调试面板演示
+      </h1>
+      <p>体验强大的编辑器调试和性能分析工具</p>
+    </div>
+
+    <div class="content">
+      <div class="info-section">
+        <h3>📊 调试面板功能</h3>
+        <ul>
+          <li>📈 <strong>性能监控</strong> - 实时FPS、内存使用、渲染时间</li>
+          <li>💾 <strong>内存分析</strong> - 内存泄漏检测、对象追踪</li>
+          <li>🌐 <strong>网络追踪</strong> - 请求监控、响应时间分析</li>
+          <li>🔌 <strong>插件调试</strong> - 插件状态、加载时间、错误追踪</li>
+          <li>💻 <strong>控制台</strong> - 日志查看、错误捕获、搜索过滤</li>
+          <li>🌳 <strong>DOM检查</strong> - DOM结构可视化、元素高亮</li>
+          <li>📜 <strong>历史记录</strong> - 操作历史、时间轴视图</li>
+          <li>⚙️ <strong>配置管理</strong> - 实时配置调整、导入导出</li>
+        </ul>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>调试面板控制</label>
+          <button id="toggleDebugPanel" class="primary">显示调试面板</button>
+        </div>
+
+        <div class="control-group">
+          <label>面板位置</label>
+          <select id="panelPosition">
+            <option value="bottom">底部</option>
+            <option value="right">右侧</option>
+            <option value="floating">浮动</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>初始标签页</label>
+          <select id="initialTab">
+            <option value="performance">性能</option>
+            <option value="memory">内存</option>
+            <option value="network">网络</option>
+            <option value="plugins">插件</option>
+            <option value="console">控制台</option>
+            <option value="dom">DOM</option>
+            <option value="history">历史</option>
+            <option value="config">配置</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>主题</label>
+          <select id="theme">
+            <option value="auto">自动</option>
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="editor-container">
+        <div id="editor"></div>
+      </div>
+
+      <h3 style="margin-bottom: 15px;">🧪 测试操作</h3>
+      <div class="test-actions">
+        <div class="test-action" onclick="testPerformance()">
+          <div class="icon">⚡</div>
+          <div class="title">性能压力测试</div>
+          <div class="desc">插入大量内容测试性能</div>
+        </div>
+
+        <div class="test-action" onclick="testMemoryLeak()">
+          <div class="icon">💾</div>
+          <div class="title">内存泄漏测试</div>
+          <div class="desc">创建潜在的内存泄漏</div>
+        </div>
+
+        <div class="test-action" onclick="testNetworkRequests()">
+          <div class="icon">🌐</div>
+          <div class="title">网络请求测试</div>
+          <div class="desc">发送多个API请求</div>
+        </div>
+
+        <div class="test-action" onclick="testConsoleMessages()">
+          <div class="icon">💻</div>
+          <div class="title">控制台消息</div>
+          <div class="desc">生成各种日志消息</div>
+        </div>
+
+        <div class="test-action" onclick="testErrors()">
+          <div class="icon">❌</div>
+          <div class="title">错误生成</div>
+          <div class="desc">触发各种错误</div>
+        </div>
+
+        <div class="test-action" onclick="testDOMChanges()">
+          <div class="icon">🌳</div>
+          <div class="title">DOM变更</div>
+          <div class="desc">大量DOM操作</div>
+        </div>
+
+        <div class="test-action" onclick="testHistory()">
+          <div class="icon">📜</div>
+          <div class="title">历史记录</div>
+          <div class="desc">生成编辑历史</div>
+        </div>
+
+        <div class="test-action" onclick="testPluginLoad()">
+          <div class="icon">🔌</div>
+          <div class="title">插件加载</div>
+          <div class="desc">动态加载插件</div>
+        </div>
+      </div>
+
+      <div class="shortcut-info">
+        💡 <strong>快捷键：</strong>
+        <code>Ctrl/Cmd + Shift + D</code> 切换调试面板 |
+        <code>Ctrl/Cmd + Shift + P</code> 切换到性能标签 |
+        <code>ESC</code> 关闭面板
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Editor } from '../dist/es/index.js'
+
+    // 示例内容
+    const initialContent = `
+      <h2>欢迎使用 LDesign Editor 调试面板！</h2>
+      <p>这是一个功能强大的调试工具，帮助您：</p>
+      <ul>
+        <li>监控编辑器性能</li>
+        <li>分析内存使用</li>
+        <li>追踪网络请求</li>
+        <li>调试插件问题</li>
+        <li>查看操作历史</li>
+      </ul>
+      <p>点击上方的测试按钮来触发各种调试场景，观察调试面板的实时反馈。</p>
+    `
+
+    // 初始化编辑器
+    const editor = new Editor({
+      content: initialContent,
+      placeholder: '开始输入...',
+      debugPanel: {
+        enabled: false,
+        expanded: true,
+        initialTab: 'performance',
+        position: 'bottom',
+        theme: 'auto',
+        size: '350px',
+        resizable: true,
+        showInProduction: true
+      },
+      virtualScroll: {
+        enabled: true
+      },
+      wasm: {
+        enabled: true
+      },
+      onChange: (content) => {
+        console.log('Content changed:', content.length + ' characters')
+      }
+    })
+
+    editor.mount('#editor')
+    window.editor = editor
+
+    // 控制调试面板
+    const toggleBtn = document.getElementById('toggleDebugPanel')
+    let debugPanelEnabled = false
+
+    toggleBtn.addEventListener('click', () => {
+      if (!debugPanelEnabled) {
+        // 创建调试面板
+        editor.debugPanel = new editor.constructor.DebugPanel({
+          editor: editor,
+          expanded: true,
+          initialTab: document.getElementById('initialTab').value,
+          position: document.getElementById('panelPosition').value,
+          theme: document.getElementById('theme').value,
+          size: '350px',
+          resizable: true,
+          showInProduction: true
+        })
+        debugPanelEnabled = true
+        toggleBtn.textContent = '隐藏调试面板'
+      } else {
+        // 关闭调试面板
+        editor.debugPanel?.close()
+        debugPanelEnabled = false
+        toggleBtn.textContent = '显示调试面板'
+      }
+    })
+
+    // 位置变更
+    document.getElementById('panelPosition').addEventListener('change', (e) => {
+      if (editor.debugPanel) {
+        // 重新创建面板以应用新位置
+        editor.debugPanel.close()
+        editor.debugPanel = new editor.constructor.DebugPanel({
+          editor: editor,
+          expanded: true,
+          initialTab: document.getElementById('initialTab').value,
+          position: e.target.value,
+          theme: document.getElementById('theme').value,
+          size: '350px',
+          resizable: true,
+          showInProduction: true
+        })
+      }
+    })
+
+    // 测试函数
+    window.testPerformance = () => {
+      console.time('Performance Test')
+      const startTime = performance.now()
+
+      // 插入大量内容
+      for (let i = 0; i < 100; i++) {
+        editor.insertText(`这是第 ${i + 1} 行测试内容，用于性能测试。`)
+        if (i < 99) editor.insertText('\n')
+      }
+
+      const endTime = performance.now()
+      console.timeEnd('Performance Test')
+      console.log(`插入100行内容耗时: ${(endTime - startTime).toFixed(2)}ms`)
+    }
+
+    window.testMemoryLeak = () => {
+      console.log('开始内存泄漏测试...')
+
+      // 创建大数组但不释放
+      const leakyArrays = []
+      for (let i = 0; i < 10; i++) {
+        const bigArray = new Array(1000000).fill(`Memory leak test ${i}`)
+        leakyArrays.push(bigArray)
+      }
+
+      // 创建循环引用
+      const obj1 = { name: 'Object 1' }
+      const obj2 = { name: 'Object 2' }
+      obj1.ref = obj2
+      obj2.ref = obj1
+
+      console.log('已创建潜在的内存泄漏')
+    }
+
+    window.testNetworkRequests = async () => {
+      console.log('开始网络请求测试...')
+
+      const urls = [
+        'https://api.github.com/users/github',
+        'https://jsonplaceholder.typicode.com/posts/1',
+        'https://jsonplaceholder.typicode.com/users',
+        'https://httpbin.org/delay/1',
+        'https://httpbin.org/status/404'
+      ]
+
+      for (const url of urls) {
+        try {
+          const response = await fetch(url)
+          console.log(`请求完成: ${url} - 状态: ${response.status}`)
+        } catch (error) {
+          console.error(`请求失败: ${url}`, error)
+        }
+      }
+    }
+
+    window.testConsoleMessages = () => {
+      console.log('这是一条普通日志消息')
+      console.info('这是一条信息消息，包含一些有用的信息')
+      console.warn('这是一条警告消息，提醒您注意某些问题')
+      console.error('这是一条错误消息，表示出现了严重问题')
+      console.debug('这是一条调试消息，用于开发调试')
+
+      // 复杂对象
+      console.log('复杂对象:', {
+        name: 'Test Object',
+        array: [1, 2, 3, 4, 5],
+        nested: {
+          deep: {
+            value: 'Deep nested value'
+          }
+        },
+        date: new Date(),
+        function: () => 'Function result'
+      })
+
+      // 多个参数
+      console.log('多个参数:', 'String', 123, true, null, undefined, { key: 'value' })
+
+      // 重复消息
+      for (let i = 0; i < 5; i++) {
+        console.log('重复的消息')
+      }
+    }
+
+    window.testErrors = () => {
+      // 语法错误
+      try {
+        eval('invalid javascript syntax {{')
+      } catch (error) {
+        console.error('语法错误:', error)
+      }
+
+      // 类型错误
+      try {
+        const nullValue = null
+        nullValue.someMethod()
+      } catch (error) {
+        console.error('类型错误:', error)
+      }
+
+      // 引用错误
+      try {
+        undefinedVariable.doSomething()
+      } catch (error) {
+        console.error('引用错误:', error)
+      }
+
+      // Promise 错误
+      Promise.reject('Promise rejection error').catch(() => { })
+
+      // 抛出错误
+      setTimeout(() => {
+        throw new Error('异步错误')
+      }, 100)
+    }
+
+    window.testDOMChanges = () => {
+      console.log('开始DOM变更测试...')
+
+      const content = editor.getElement()
+
+      // 创建多个元素
+      for (let i = 0; i < 20; i++) {
+        const div = document.createElement('div')
+        div.className = `test-element-${i}`
+        div.textContent = `测试元素 ${i}`
+        div.style.padding = '5px'
+        div.style.margin = '2px'
+        div.style.background = `hsl(${i * 18}, 70%, 90%)`
+        content.appendChild(div)
+      }
+
+      // 修改属性
+      setTimeout(() => {
+        const elements = content.querySelectorAll('[class^="test-element"]')
+        elements.forEach((el, index) => {
+          el.style.transform = `translateX(${Math.sin(index) * 20}px)`
+        })
+      }, 500)
+
+      // 删除一些元素
+      setTimeout(() => {
+        const elements = content.querySelectorAll('[class^="test-element"]')
+        for (let i = 0; i < elements.length; i += 2) {
+          elements[i].remove()
+        }
+      }, 1000)
+    }
+
+    window.testHistory = () => {
+      console.log('生成编辑历史...')
+
+      const actions = [
+        () => editor.insertText('添加一些文本\n'),
+        () => editor.insertText('再添加一行\n'),
+        () => editor.execCommand('bold'),
+        () => editor.execCommand('italic'),
+        () => editor.insertText('格式化的文本\n'),
+        () => editor.execCommand('undo'),
+        () => editor.execCommand('redo'),
+        () => editor.insertText('最后一行文本')
+      ]
+
+      let index = 0
+      const interval = setInterval(() => {
+        if (index < actions.length) {
+          actions[index]()
+          index++
+        } else {
+          clearInterval(interval)
+          console.log('历史记录生成完成')
+        }
+      }, 500)
+    }
+
+    window.testPluginLoad = () => {
+      console.log('测试插件加载...')
+
+      // 模拟插件加载
+      const fakePlugin = {
+        name: 'test-plugin',
+        version: '1.0.0',
+        description: '测试插件',
+        author: 'Test Author',
+        loadTime: Math.random() * 100 + 50
+      }
+
+      editor.emit('plugin-loaded', fakePlugin.name)
+      console.log('插件已加载:', fakePlugin)
+
+      // 模拟插件错误
+      setTimeout(() => {
+        editor.emit('error', new Error(`插件 ${fakePlugin.name} 执行出错`))
+      }, 1000)
+    }
+  </script>
+</body>
+
+</html>
+

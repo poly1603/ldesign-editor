@@ -408,6 +408,89 @@ export interface EditorOptions {
   onFocus?: () => void
   /** 失焦回调 */
   onBlur?: () => void
+  /** 虚拟滚动配置 */
+  virtualScroll?: {
+    /** 是否启用虚拟滚动 */
+    enabled: boolean
+    /** 行高（像素） */
+    lineHeight?: number
+    /** 最大行数限制 */
+    maxLines?: number
+    /** 启用语法高亮 */
+    enableSyntaxHighlight?: boolean
+    /** 启用行号 */
+    enableLineNumbers?: boolean
+    /** 启用自动换行 */
+    enableWordWrap?: boolean
+  }
+  /** 增量渲染配置 */
+  incrementalRender?: {
+    /** 是否启用增量渲染 */
+    enabled?: boolean
+    /** 批处理延迟（ms） */
+    batchDelay?: number
+    /** 最大批处理大小 */
+    maxBatchSize?: number
+    /** 是否使用RAF调度 */
+    useRAF?: boolean
+    /** 是否启用Web Worker */
+    useWorker?: boolean
+    /** 是否启用虚拟DOM */
+    useVirtualDOM?: boolean
+  }
+  /** WebAssembly加速配置 */
+  wasm?: {
+    /** 是否启用WASM加速 */
+    enabled?: boolean
+    /** 启用diff加速 */
+    enableDiff?: boolean
+    /** 启用解析器加速 */
+    enableParser?: boolean
+    /** 使用Web Worker */
+    useWorker?: boolean
+    /** 预热策略 */
+    warmupStrategy?: 'eager' | 'lazy' | 'none'
+  }
+
+  /** 调试面板配置 */
+  debugPanel?: {
+    /** 是否启用调试面板 */
+    enabled?: boolean
+    /** 是否默认展开 */
+    expanded?: boolean
+    /** 初始标签页 */
+    initialTab?: 'performance' | 'memory' | 'network' | 'plugins' | 'console' | 'dom' | 'history' | 'config'
+    /** 主题 */
+    theme?: 'light' | 'dark' | 'auto'
+    /** 位置 */
+    position?: 'bottom' | 'right' | 'floating'
+    /** 高度/宽度 */
+    size?: string
+    /** 是否可调整大小 */
+    resizable?: boolean
+    /** 是否在生产环境显示 */
+    showInProduction?: boolean
+  }
+
+  /** PWA配置 */
+  pwa?: {
+    /** 是否启用PWA */
+    enabled?: boolean
+    /** Service Worker作用域 */
+    scope?: string
+    /** 更新检查间隔（毫秒） */
+    updateInterval?: number
+    /** 缓存策略 */
+    cacheStrategy?: 'cache-first' | 'network-first' | 'cache-only' | 'network-only' | 'stale-while-revalidate'
+    /** 是否支持离线 */
+    offlineSupport?: boolean
+    /** 是否启用后台同步 */
+    backgroundSync?: boolean
+    /** 是否显示安装提示 */
+    installPrompt?: boolean
+    /** 更新时是否自动重载 */
+    updateOnReload?: boolean
+  }
 }
 
 // ============================================================================

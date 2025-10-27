@@ -3,18 +3,22 @@
  * 统一管理 AI 功能，支持多种 AI 提供商
  */
 
-import type { 
-  AIConfig, 
-  AIProvider, 
-  AIProviderInterface, 
-  AIRequest, 
+import type {
+  AIConfig,
+  AIProvider,
+  AIProviderInterface,
+  AIRequest,
   AIResponse,
-  AIModelConfig 
+  AIModelConfig
 } from './types'
 import { defaultAIConfig } from './types'
 import { DeepSeekProvider } from './providers/DeepSeekProvider'
 import { OpenAIProvider } from './providers/OpenAIProvider'
 import { ClaudeProvider } from './providers/ClaudeProvider'
+import { BaiduProvider } from './providers/BaiduProvider'
+import { QwenProvider } from './providers/QwenProvider'
+import { SparkProvider } from './providers/SparkProvider'
+import { GLMProvider } from './providers/GLMProvider'
 
 export class AIService {
   private config: AIConfig
@@ -25,10 +29,10 @@ export class AIService {
   constructor(config?: Partial<AIConfig>) {
     // 加载保存的配置或使用默认配置
     this.config = this.loadConfig(config)
-    
+
     // 初始化提供商
     this.initializeProviders()
-    
+
     // 设置当前提供商
     this.setProvider(this.config.defaultProvider)
   }
@@ -39,7 +43,7 @@ export class AIService {
   private loadConfig(customConfig?: Partial<AIConfig>): AIConfig {
     // 从 localStorage 加载保存的配置
     let savedConfig: Partial<AIConfig> = {}
-    
+
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
         const saved = localStorage.getItem(this.configStorageKey)
@@ -50,7 +54,7 @@ export class AIService {
         console.error('Failed to load AI config from localStorage:', error)
       }
     }
-    
+
     // 合并配置：默认 -> 保存的 -> 自定义的
     return {
       ...defaultAIConfig,
@@ -95,7 +99,7 @@ export class AIService {
     if (this.config.providers.deepseek?.apiKey) {
       this.providers.set('deepseek', new DeepSeekProvider(this.config.providers.deepseek))
     }
-    
+
     // 初始化 OpenAI
     if (this.config.providers.openai?.apiKey) {
       this.providers.set('openai', new OpenAIProvider(
@@ -103,13 +107,33 @@ export class AIService {
         this.config.providers.openai
       ))
     }
-    
+
     // 初始化 Claude
     if (this.config.providers.claude?.apiKey) {
       this.providers.set('claude', new ClaudeProvider(
         this.config.providers.claude.apiKey,
         this.config.providers.claude
       ))
+    }
+
+    // 初始化百度文心一言
+    if (this.config.providers.baidu?.apiKey) {
+      this.providers.set('baidu', new BaiduProvider(this.config.providers.baidu))
+    }
+
+    // 初始化阿里通义千问
+    if (this.config.providers.qwen?.apiKey) {
+      this.providers.set('qwen', new QwenProvider(this.config.providers.qwen))
+    }
+
+    // 初始化讯飞星火
+    if (this.config.providers.spark?.apiKey) {
+      this.providers.set('spark', new SparkProvider(this.config.providers.spark))
+    }
+
+    // 初始化智谱清言
+    if (this.config.providers.glm?.apiKey) {
+      this.providers.set('glm', new GLMProvider(this.config.providers.glm))
     }
   }
 
@@ -121,7 +145,7 @@ export class AIService {
     if (!providerInstance) {
       throw new Error(`Provider ${provider} is not available`)
     }
-    
+
     this.currentProvider = providerInstance
     this.config.defaultProvider = provider
     this.saveConfig()
@@ -147,14 +171,14 @@ export class AIService {
         ...config.shortcuts
       }
     }
-    
+
     // 重新初始化提供商
     this.providers.clear()
     this.initializeProviders()
-    
+
     // 重新设置当前提供商
     this.setProvider(this.config.defaultProvider)
-    
+
     // 保存配置
     this.saveConfig()
   }
@@ -165,10 +189,10 @@ export class AIService {
   updateApiKey(provider: AIProvider, apiKey: string): void {
     if (this.config.providers[provider]) {
       this.config.providers[provider]!.apiKey = apiKey
-      
+
       // 重新初始化该提供商
       const config = this.config.providers[provider]!
-      
+
       switch (provider) {
         case 'deepseek':
           this.providers.set('deepseek', new DeepSeekProvider(config))
@@ -179,38 +203,50 @@ export class AIService {
         case 'claude':
           this.providers.set('claude', new ClaudeProvider(apiKey, config))
           break
+        case 'baidu':
+          this.providers.set('baidu', new BaiduProvider(config))
+          break
+        case 'qwen':
+          this.providers.set('qwen', new QwenProvider(config))
+          break
+        case 'spark':
+          this.providers.set('spark', new SparkProvider(config))
+          break
+        case 'glm':
+          this.providers.set('glm', new GLMProvider(config))
+          break
       }
-      
+
       this.saveConfig()
     }
   }
-  
+
   /**
    * 注册自定义提供商
    */
   registerProvider(name: string, provider: AIProviderInterface): void {
     this.providers.set(name as AIProvider, provider)
   }
-  
+
   /**
    * 获取可用的提供商列表
    */
   getAvailableProviders(): AIProvider[] {
     return Array.from(this.providers.keys())
   }
-  
+
   /**
    * 获取当前提供商
    */
   getCurrentProvider(): AIProvider | null {
     if (!this.currentProvider) return null
-    
+
     for (const [name, provider] of this.providers.entries()) {
       if (provider === this.currentProvider) {
         return name
       }
     }
-    
+
     return null
   }
 
@@ -246,14 +282,14 @@ export class AIService {
         error: 'AI features are disabled'
       }
     }
-    
+
     if (!this.currentProvider) {
       return {
         success: false,
         error: 'No AI provider is configured'
       }
     }
-    
+
     try {
       return await this.currentProvider.request(request)
     } catch (error) {
@@ -275,7 +311,7 @@ export class AIService {
         error: 'Error correction feature is disabled'
       }
     }
-    
+
     return this.request({
       type: 'correct',
       text,
@@ -293,7 +329,7 @@ export class AIService {
         error: 'Auto-complete feature is disabled'
       }
     }
-    
+
     return this.request({
       type: 'complete',
       text,
@@ -311,7 +347,7 @@ export class AIService {
         error: 'Text continuation feature is disabled'
       }
     }
-    
+
     return this.request({
       type: 'continue',
       text,
@@ -329,7 +365,7 @@ export class AIService {
         error: 'Text rewrite feature is disabled'
       }
     }
-    
+
     return this.request({
       type: 'rewrite',
       text,
@@ -347,7 +383,7 @@ export class AIService {
         error: 'Smart suggestions feature is disabled'
       }
     }
-    
+
     return this.request({
       type: 'suggest',
       text,

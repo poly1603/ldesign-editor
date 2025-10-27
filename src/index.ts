@@ -12,6 +12,12 @@ export { CommandManager, KeymapManager } from './core/Command'
 export { Plugin, PluginManager, createPlugin } from './core/Plugin'
 export { EventEmitter } from './core/EventEmitter'
 export { OptimizedEventEmitter } from './core/OptimizedEventEmitter'
+export { VirtualScroller } from './core/VirtualScroller'
+export { EditorVirtualScroller } from './core/EditorVirtualScroller'
+export { IncrementalRenderer } from './core/IncrementalRenderer'
+export type { VirtualScrollerOptions, VirtualScrollerItem } from './core/VirtualScroller'
+export type { EditorLine, EditorVirtualScrollerOptions } from './core/EditorVirtualScroller'
+export type { DOMPatch, RenderOptions } from './core/IncrementalRenderer'
 
 // 编辑器构建器
 export {
@@ -70,12 +76,12 @@ export { createIcon, getIconHTML } from './ui/icons'
 export { createColorPicker, showColorPicker } from './ui/ColorPicker'
 export { createDropdown, showDropdown } from './ui/Dropdown'
 export { showEmojiPicker } from './ui/EmojiPicker'
-export { 
-  UnifiedDialog, 
-  showUnifiedDialog, 
-  showConfirmDialog, 
-  showAlertDialog, 
-  showPromptDialog 
+export {
+  UnifiedDialog,
+  showUnifiedDialog,
+  showConfirmDialog,
+  showAlertDialog,
+  showPromptDialog
 } from './ui/UnifiedDialog'
 export { showTableDialog } from './ui/TableDialog'
 export { createFindReplaceDialog, showFindReplaceDialog } from './ui/FindReplaceDialog'
@@ -93,8 +99,8 @@ export { ConfigPreview, showConfigPreview } from './ui/ConfigPreview'
 export { PluginMarketPanel, showPluginMarket } from './ui/PluginMarketPanel'
 
 // UI组件工厂
-export { 
-  ComponentFactory, 
+export {
+  ComponentFactory,
   getComponentFactory,
   createButton,
   createIconButton,
@@ -102,10 +108,10 @@ export {
   createSelect,
   createCheckbox
 } from './ui/base/ComponentFactory'
-export type { 
-  ButtonOptions, 
-  InputOptions, 
-  SelectOptions, 
+export type {
+  ButtonOptions,
+  InputOptions,
+  SelectOptions,
   DialogOptions,
   ButtonType
 } from './ui/base/ComponentFactory'
@@ -114,10 +120,10 @@ export type {
 export type * from './types'
 
 // 配置管理
-export { 
-  ConfigManager, 
-  getConfigManager, 
-  resetConfigManager 
+export {
+  ConfigManager,
+  getConfigManager,
+  resetConfigManager
 } from './config/ConfigManager'
 export type { EditorConfig } from './config/ConfigManager'
 
@@ -157,17 +163,17 @@ export type {
 } from './config/ConfigValidator'
 
 // 图标管理
-export { 
-  IconManager, 
-  getIconManager, 
-  resetIconManager 
+export {
+  IconManager,
+  getIconManager,
+  resetIconManager
 } from './icons/IconManager'
-export type { 
-  IconSet, 
-  IconDefinition, 
-  IconSetType, 
-  IconStyle, 
-  IconRenderOptions, 
+export type {
+  IconSet,
+  IconDefinition,
+  IconSetType,
+  IconStyle,
+  IconRenderOptions,
   IconManagerConfig,
   EditorIconMap,
   IconCategory
@@ -177,24 +183,24 @@ export { FeatherIconSet } from './icons/sets/feather'
 export { MaterialIconSet } from './icons/sets/material'
 
 // 主题管理
-export { 
-  ThemeManager, 
+export {
+  ThemeManager,
   getThemeManager,
   setTheme,
   getCurrentTheme,
   getAvailableThemes
 } from './theme'
-export type { 
-  Theme, 
-  ThemeColors, 
-  ThemeFonts, 
-  ThemeSpacing, 
-  ThemeBorders 
+export type {
+  Theme,
+  ThemeColors,
+  ThemeFonts,
+  ThemeSpacing,
+  ThemeBorders
 } from './theme'
 
 // 多语言管理
-export { 
-  I18nManager, 
+export {
+  I18nManager,
   getI18n,
   t
 } from './i18n'
@@ -228,14 +234,18 @@ export { AIService, getAIService, resetAIService } from './ai/AIService'
 export { DeepSeekProvider } from './ai/providers/DeepSeekProvider'
 export { OpenAIProvider } from './ai/providers/OpenAIProvider'
 export { ClaudeProvider } from './ai/providers/ClaudeProvider'
-export type { 
-  AIConfig, 
-  AIProvider, 
-  AIModelConfig, 
-  AIRequest, 
-  AIResponse, 
+export { BaiduProvider } from './ai/providers/BaiduProvider'
+export { QwenProvider } from './ai/providers/QwenProvider'
+export { SparkProvider } from './ai/providers/SparkProvider'
+export { GLMProvider } from './ai/providers/GLMProvider'
+export type {
+  AIConfig,
+  AIProvider,
+  AIModelConfig,
+  AIRequest,
+  AIResponse,
   AIRequestType,
-  AIProviderInterface 
+  AIProviderInterface
 } from './ai/types'
 export { defaultAIConfig } from './ai/types'
 
@@ -267,6 +277,54 @@ export {
 
 // 简化工具
 export { $, on, ui, str, cmd, css, classNames } from './utils/simplify'
+
+// 移动端支持
+export { MobileEditorAdapter } from './mobile/MobileEditorAdapter'
+export { GestureRecognizer } from './mobile/gestures/GestureRecognizer'
+export { SwipeMenu } from './mobile/components/SwipeMenu'
+export { ContextMenu } from './mobile/components/ContextMenu'
+export { MobileToolbar } from './mobile/components/MobileToolbar'
+export type { MobileEditorOptions } from './mobile/MobileEditorAdapter'
+export type { GestureEvent, GestureRecognizerOptions } from './mobile/gestures/GestureRecognizer'
+export type { SwipeMenuItem, SwipeMenuOptions } from './mobile/components/SwipeMenu'
+export type { ContextMenuItem, ContextMenuOptions, ShowOptions as ContextMenuShowOptions } from './mobile/components/ContextMenu'
+export type { ToolbarItem, MobileToolbarOptions } from './mobile/components/MobileToolbar'
+
+// WebAssembly加速
+export { WasmAccelerator } from './wasm/WasmAccelerator'
+export { WasmDiff } from './wasm/WasmDiff'
+export { WasmParser } from './wasm/WasmParser'
+export type { AcceleratorOptions, AcceleratorStats } from './wasm/WasmAccelerator'
+export type { DiffResult, DiffOperation, WasmDiffOptions } from './wasm/WasmDiff'
+export type { ParsedNode, NodeType, ParseResult, WasmParserOptions } from './wasm/WasmParser'
+
+// 调试面板
+export { DebugPanel } from './devtools/DebugPanel'
+export type { DebugPanelOptions, TabName } from './devtools/DebugPanel'
+
+// 图表插件
+export { DiagramPlugin } from './plugins/diagrams'
+export type {
+  DiagramType,
+  DiagramData,
+  MindMapData,
+  FlowchartData,
+  UMLData,
+  SequenceData,
+  GanttData
+} from './plugins/diagrams'
+
+// PWA支持
+export { PWAManager, OfflineStorage } from './pwa'
+export type { PWAConfig, PWAStatus, OfflineData } from './pwa'
+
+// 离线协作
+export { CollaborationManager, CRDT } from './collaboration'
+export type { CollaborationConfig, CollaborationUser, CRDTOperation, CRDTState } from './collaboration'
+
+// 企业级功能
+export { PermissionManager, SSOManager, AuditLogger } from './enterprise'
+export type { User, Role, Permission, SSOConfig, AuditLog, AuditConfig } from './enterprise'
 
 // 快捷函数
 export { quick, editor, batch, debug, optimize } from './utils/shortcuts'

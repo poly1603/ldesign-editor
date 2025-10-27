@@ -1,0 +1,15 @@
+# LDesign Editor Workspace Configuration
+
+packages:
+  # 核心包
+  - 'packages/core'
+  
+  # 框架封装
+  - 'packages/vue'
+  - 'packages/react'
+  - 'packages/lit'
+  
+  # 演示项目
+  - 'packages/*/demo'
+
+
