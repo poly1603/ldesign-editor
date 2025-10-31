@@ -19,7 +19,11 @@
       "@ldesign/editor-core": ["./packages/core/src"],
       "@ldesign/editor-vue": ["./packages/vue/src"],
       "@ldesign/editor-react": ["./packages/react/src"],
-      "@ldesign/editor-lit": ["./packages/lit/src"]
+      "@ldesign/editor-angular": ["./packages/angular/src"],
+      "@ldesign/editor-solid": ["./packages/solid/src"],
+      "@ldesign/editor-svelte": ["./packages/svelte/src"],
+      "@ldesign/editor-qwik": ["./packages/qwik/src"],
+      "@ldesign/editor-preact": ["./packages/preact/src"]
     }
   },
   "include": [],
@@ -33,6 +37,10 @@
     { "path": "./packages/core" },
     { "path": "./packages/vue" },
     { "path": "./packages/react" },
-    { "path": "./packages/lit" }
+    { "path": "./packages/angular" },
+    { "path": "./packages/solid" },
+    { "path": "./packages/svelte" },
+    { "path": "./packages/qwik" },
+    { "path": "./packages/preact" }
   ]
 }

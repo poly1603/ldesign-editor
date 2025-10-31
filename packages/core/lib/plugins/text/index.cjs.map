@@ -1,0 +1,1 @@
+{"version":3,"file":"index.cjs","sources":["../../../src/plugins/text/index.ts"],"sourcesContent":[null],"names":["HeadingPlugin","BlockquotePlugin","BulletListPlugin","OrderedListPlugin","TaskListPlugin","LinkPlugin"],"mappings":";;;;;;;;;;;;;;;;AAAA;;AAEG;AAaH;AACO,MAAM,WAAW,GAAG;IACzBA,qBAAa;IACbC,2BAAgB;IAChBC,qBAAgB;IAChBC,sBAAiB;IACjBC,mBAAc;IACdC,eAAU;;;;;;;;;;;;;;"}

@@ -1,81 +1,368 @@
 /**
- * @ldesign/editor-core
- * 框架无关的富文本编辑器核心库
- * 
- * @packageDocumentation
- * 
- * 注意：实际的源代码需要从 ../../src/ 目录复制到这个包的 src/ 目录中
- * 这是一个占位符文件，展示了应该导出的API结构
+ * @ldesign/editor
+ * 功能强大、扩展性强的富文本编辑器
  */
 
-// 临时：从根目录的src导出（实际发布时需要复制代码到这个包内）
-// 这样做是为了快速演示架构，实际使用时需要重新组织代码
+// 应用表格补丁 - 自动替换旧的表格插入功能
+import { patchTableInsertCommand } from './plugins/table-patch'
+// 核心
+// 样式
+import './styles/editor.css'
 
-/**
- * 核心编辑器类
- * 
- * @example
- * ```typescript
- * import { Editor } from '@ldesign/editor-core'
- * 
- * const editor = new Editor({
- *   content: '<p>Hello World</p>',
- *   virtualScroll: { enabled: true },
- *   wasm: { enabled: true }
- * })
- * 
- * editor.mount('#app')
- * ```
- */
-export class Editor {
-  version = '2.0.0'
+import './styles/ai.css'
 
-  constructor(options: any = {}) {
-    console.log('Editor initialized with options:', options)
-  }
+// AI 功能
+export { AIService, getAIService, resetAIService } from './ai/AIService'
+export { BaiduProvider } from './ai/providers/BaiduProvider'
+export { ClaudeProvider } from './ai/providers/ClaudeProvider'
+export { DeepSeekProvider } from './ai/providers/DeepSeekProvider'
+export { GLMProvider } from './ai/providers/GLMProvider'
+export { OpenAIProvider } from './ai/providers/OpenAIProvider'
+export { QwenProvider } from './ai/providers/QwenProvider'
+export { SparkProvider } from './ai/providers/SparkProvider'
+export type {
+  AIConfig,
+  AIModelConfig,
+  AIProvider,
+  AIProviderInterface,
+  AIRequest,
+  AIRequestType,
+  AIResponse,
+} from './ai/types'
+export { defaultAIConfig } from './ai/types'
+// 离线协作
+export { CollaborationManager, CRDT } from './collaboration'
+export type { CollaborationConfig, CollaborationUser, CRDTOperation, CRDTState } from './collaboration'
+// 配置管理
+export {
+  ConfigManager,
+  getConfigManager,
+  resetConfigManager,
+} from './config/ConfigManager'
+export type { EditorConfig } from './config/ConfigManager'
 
-  mount(element: string | HTMLElement) {
-    console.log('Editor mounted to:', element)
-  }
+// 配置工具
+export {
+  autoFixConfig,
+  ConfigValidator,
+  getConfigValidator,
+  validateConfig,
+} from './config/ConfigValidator'
 
-  getContent(): string {
-    return ''
-  }
+export type {
+  ValidationError,
+  ValidationResult,
+  ValidationSuggestion,
+  ValidationWarning,
+} from './config/ConfigValidator'
+// 配置示例
+export {
+  editorConfigExample,
+  fullFeaturedConfig,
+  lightweightConfig,
+  performanceConfigExample,
+  pluginConfigExample,
+  toolbarConfigExample,
+} from './config/editor.config.example'
 
-  setContent(content: string) {
-    console.log('Content set:', content)
-  }
+// 预设配置
+export {
+  aiEnhancedPreset,
+  blogPreset,
+  cmsPreset,
+  codeDocPreset,
+  collaborationPreset,
+  commentPreset,
+  emailPreset,
+  getPreset,
+  getPresetNames,
+  markdownPreset,
+  minimalPreset,
+  mobilePreset,
+  notePreset,
+  presetDescriptions,
+  presets,
+  richTextPreset,
+} from './config/presets'
+export type { PresetName } from './config/presets'
 
-  destroy() {
-    console.log('Editor destroyed')
-  }
-}
+// 插件基类
+export { BasePlugin } from './core/base/BasePlugin'
+export type { BasePluginConfig } from './core/base/BasePlugin'
 
-// 类型定义
-export interface EditorOptions {
-  content?: string
-  placeholder?: string
-  virtualScroll?: { enabled: boolean; maxLines?: number }
-  wasm?: { enabled: boolean }
-  ai?: { provider?: string; apiKey?: string }
-  pwa?: { enabled: boolean }
-  [key: string]: any
-}
+export { CommandManager, KeymapManager } from './core/Command'
+export { Document } from './core/Document'
 
-// 版本信息
-export const VERSION = '2.0.0'
+export { Editor } from './core/Editor'
 
 // 默认导出
-export default Editor
+export { Editor as default } from './core/Editor'
+// 编辑器构建器
+export {
+  createEditor,
+  createFormatOnlyEditor,
+  createFullFeaturedEditor,
+  createLightweightEditor,
+  EditorBuilder,
+} from './core/EditorBuilder'
+export { EditorVirtualScroller } from './core/EditorVirtualScroller'
+export type { EditorLine, EditorVirtualScrollerOptions } from './core/EditorVirtualScroller'
+// 错误处理
+export {
+  captureError,
+  ErrorBoundary,
+  getErrorBoundary,
+  withErrorBoundary,
+} from './core/ErrorBoundary'
+export type { ErrorBoundaryConfig, ErrorInfo } from './core/ErrorBoundary'
+export { EventEmitter } from './core/EventEmitter'
+// 功能开关
+export {
+  FeatureCategory,
+  FeatureFlags,
+  getFeatureFlags,
+  resetFeatureFlags,
+} from './core/FeatureFlags'
+export type { Feature } from './core/FeatureFlags'
+export { IncrementalRenderer } from './core/IncrementalRenderer'
+export type { DOMPatch, RenderOptions } from './core/IncrementalRenderer'
+// 懒加载
+export {
+  getLazyLoader,
+  LazyLoader,
+  resetLazyLoader,
+} from './core/LazyLoader'
+export type { LoaderFunction, LoadOptions } from './core/LazyLoader'
+export { OptimizedEventEmitter } from './core/OptimizedEventEmitter'
+export { createPlugin, Plugin, PluginManager } from './core/Plugin'
+// 插件系统
+export {
+  getPluginRegistry,
+  PluginCategory,
+  PluginRegistry,
+  resetPluginRegistry,
+} from './core/PluginRegistry'
+export type {
+  PluginConfig,
+  PluginLoader,
+  PluginMetadata,
+} from './core/PluginRegistry'
+export { defaultSchema, Schema } from './core/Schema'
+export { Selection, SelectionManager } from './core/Selection'
+export { VirtualScroller } from './core/VirtualScroller'
+export type { VirtualScrollerItem, VirtualScrollerOptions } from './core/VirtualScroller'
+// 调试面板
+export { DebugPanel } from './devtools/DebugPanel'
 
-// ============================================================================
-// 说明
-// ============================================================================
-// 
-// 实际使用时，请将 ../../src/ 目录的完整代码复制到 packages/core/src/
-// 然后从本地文件导出，而不是引用外部目录
-// 
-// 当前这是一个简化的占位符实现，用于演示Monorepo架构
-// 
-// ============================================================================
+export type { DebugPanelOptions, TabName } from './devtools/DebugPanel'
+// 企业级功能
+export { AuditLogger, PermissionManager, SSOManager } from './enterprise'
 
+export type { AuditConfig, AuditLog, Permission, Role, SSOConfig, User } from './enterprise'
+
+// 多语言管理
+export {
+  getI18n,
+  I18nManager,
+  t,
+} from './i18n'
+export type { I18nConfig, LocaleMessages } from './i18n'
+
+// 图标管理
+export {
+  getIconManager,
+  IconManager,
+  resetIconManager,
+} from './icons/IconManager'
+export { FeatherIconSet } from './icons/sets/feather'
+
+export { LucideIconSet } from './icons/sets/lucide'
+export { MaterialIconSet } from './icons/sets/material'
+
+export type {
+  EditorIconMap,
+  IconCategory,
+  IconDefinition,
+  IconManagerConfig,
+  IconRenderOptions,
+  IconSet,
+  IconSetType,
+  IconStyle,
+} from './icons/types'
+// 插件市场
+export {
+  getPluginMarket,
+  PluginMarket,
+} from './marketplace/PluginMarket'
+export type { MarketplacePlugin } from './marketplace/PluginMarket'
+export { ContextMenu } from './mobile/components/ContextMenu'
+export type { ContextMenuItem, ContextMenuOptions, ShowOptions as ContextMenuShowOptions } from './mobile/components/ContextMenu'
+
+export { MobileToolbar } from './mobile/components/MobileToolbar'
+export type { MobileToolbarOptions, ToolbarItem } from './mobile/components/MobileToolbar'
+
+export { SwipeMenu } from './mobile/components/SwipeMenu'
+export type { SwipeMenuItem, SwipeMenuOptions } from './mobile/components/SwipeMenu'
+
+export { GestureRecognizer } from './mobile/gestures/GestureRecognizer'
+export type { GestureEvent, GestureRecognizerOptions } from './mobile/gestures/GestureRecognizer'
+
+// 移动端支持
+export { MobileEditorAdapter } from './mobile/MobileEditorAdapter'
+
+export type { MobileEditorOptions } from './mobile/MobileEditorAdapter'
+// 插件
+export * from './plugins'
+// 图表插件
+export { DiagramPlugin } from './plugins/diagrams'
+export type {
+  DiagramData,
+  DiagramType,
+  FlowchartData,
+  GanttData,
+  MindMapData,
+  SequenceData,
+  UMLData,
+} from './plugins/diagrams'
+export { patchTableInsertCommand } from './plugins/table-patch'
+// PWA支持
+export { OfflineStorage, PWAManager } from './pwa'
+export type { OfflineData, PWAConfig, PWAStatus } from './pwa'
+// 主题管理
+export {
+  getAvailableThemes,
+  getCurrentTheme,
+  getThemeManager,
+  setTheme,
+  ThemeManager,
+} from './theme'
+export type {
+  Theme,
+  ThemeBorders,
+  ThemeColors,
+  ThemeFonts,
+  ThemeSpacing,
+} from './theme'
+// 类型
+export type * from './types'
+
+export { showAIConfigDialog } from './ui/AIConfigDialog'
+export { type AIDialogType, AIMockUtils, showAIDialog } from './ui/AIDialog'
+
+export { showAISuggestionsOverlay } from './ui/AISuggestionsOverlay'
+
+// UI组件工厂
+export {
+  ComponentFactory,
+  createButton,
+  createCheckbox,
+  createIconButton,
+  createInput,
+  createSelect,
+  getComponentFactory,
+} from './ui/base/ComponentFactory'
+
+export type {
+  ButtonOptions,
+  ButtonType,
+  DialogOptions,
+  InputOptions,
+  SelectOptions,
+} from './ui/base/ComponentFactory'
+export { createColorPicker, showColorPicker } from './ui/ColorPicker'
+export { ConfigComparison, showConfigComparison } from './ui/ConfigComparison'
+export { ConfigPreview, showConfigPreview } from './ui/ConfigPreview'
+export { ConfigWizard, showConfigWizard } from './ui/ConfigWizard'
+export { createDropdown, showDropdown } from './ui/Dropdown'
+export { showEmojiPicker } from './ui/EmojiPicker'
+export { FeatureManagerPanel, showFeatureManager } from './ui/FeatureManagerPanel'
+export { createFindReplaceDialog, showFindReplaceDialog } from './ui/FindReplaceDialog'
+export { createIcon, getIconHTML } from './ui/icons'
+
+export { PluginMarketPanel, showPluginMarket } from './ui/PluginMarketPanel'
+export { SettingsPanel, showSettingsPanel } from './ui/SettingsPanel'
+export { showTableDialog } from './ui/TableDialog'
+export { showEnhancedTableGridSelector, showTableGridSelector } from './ui/TableGridSelector'
+// UI
+export { Toolbar } from './ui/Toolbar'
+export { ToolbarManager } from './ui/ToolbarManager'
+
+export type {
+  ToolbarGroupConfig,
+  ToolbarManagerConfig,
+} from './ui/ToolbarManager'
+export {
+  showAlertDialog,
+  showConfirmDialog,
+  showPromptDialog,
+  showUnifiedDialog,
+  UnifiedDialog,
+} from './ui/UnifiedDialog'
+
+export { createUploadProgress, showUploadProgress, UploadProgress } from './ui/UploadProgress'
+export type { UploadProgressOptions } from './ui/UploadProgress'
+
+// 自动优化
+export {
+  AutoOptimizer,
+  getAutoOptimizer,
+  startAutoOptimization,
+  stopAutoOptimization,
+} from './utils/AutoOptimizer'
+export type {
+  AutoOptimizerConfig,
+  OptimizationSuggestion,
+} from './utils/AutoOptimizer'
+
+// 工具函数
+export {
+  Batcher,
+  clamp,
+  debounce,
+  deepClone,
+  deepMerge,
+  delay,
+  formatDuration,
+  formatFileSize,
+  generateId,
+  isEmpty,
+  LRUCache,
+  retry,
+  throttle,
+} from './utils/helpers'
+// 性能监控
+export {
+  endTimer,
+  getPerformanceMonitor,
+  measure,
+  PerformanceMonitor,
+  startTimer,
+} from './utils/PerformanceMonitor'
+
+export type {
+  PerformanceEntry,
+  PerformanceMetrics,
+} from './utils/PerformanceMonitor'
+// 快捷函数
+export { batch, debug, editor, optimize, quick } from './utils/shortcuts'
+
+// 简化工具
+export { $, classNames, cmd, css, on, str, ui } from './utils/simplify'
+
+// WebAssembly加速
+export { WasmAccelerator } from './wasm/WasmAccelerator'
+export type { AcceleratorOptions, AcceleratorStats } from './wasm/WasmAccelerator'
+
+export { WasmDiff } from './wasm/WasmDiff'
+export type { DiffOperation, DiffResult, WasmDiffOptions } from './wasm/WasmDiff'
+
+export { WasmParser } from './wasm/WasmParser'
+export type { NodeType, ParsedNode, ParseResult, WasmParserOptions } from './wasm/WasmParser'
+
+// 自动应用补丁
+if (typeof window !== 'undefined') {
+  // 延迟执行，确保编辑器已初始化
+  setTimeout(() => {
+    patchTableInsertCommand()
+  }, 500)
+}

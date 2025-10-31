@@ -1,36 +1,18 @@
 {
   "name": "@ldesign/editor-core",
-  "version": "2.0.0",
-  "description": "LDesign Editor 核心库 - 框架无关的编辑器核心功能",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./style.css": "./dist/style.css"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "scripts": {
-    "dev": "ldesign-builder build --watch --config .ldesign/builder.config.ts",
-    "build": "ldesign-builder build --config .ldesign/builder.config.ts",
-    "build:clean": "ldesign-builder clean && ldesign-builder build --config .ldesign/builder.config.ts",
-    "type-check": "tsc --noEmit"
-  },
+  "version": "3.0.0",
+  "description": "LDesign Editor 核心库 - 框架无关的富文本编辑器，支持AI增强、协作编辑、企业级功能",
   "keywords": [
     "editor",
     "rich-text",
     "wysiwyg",
     "core",
     "framework-agnostic",
-    "typescript"
+    "typescript",
+    "ai-enhanced",
+    "collaborative",
+    "plugins",
+    "performance"
   ],
   "author": "LDesign Team",
   "license": "MIT",
@@ -39,11 +21,215 @@
     "url": "https://github.com/ldesign/ldesign.git",
     "directory": "libraries/editor/packages/core"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@ldesign/builder": "workspace:*",
-    "typescript": "^5.7.0"
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./es/index.d.ts",
+      "import": "./es/index.js",
+      "require": "./lib/index.cjs"
+    },
+    "./ai/*": {
+      "types": "./es/ai/*.d.ts",
+      "import": "./es/ai/*.js",
+      "require": "./lib/ai/*.cjs"
+    },
+    "./cli": {
+      "types": "./es/cli/index.d.ts",
+      "import": "./es/cli/index.js",
+      "require": "./lib/cli/index.cjs"
+    },
+    "./cli/*": {
+      "types": "./es/cli/*.d.ts",
+      "import": "./es/cli/*.js",
+      "require": "./lib/cli/*.cjs"
+    },
+    "./collaboration": {
+      "types": "./es/collaboration/index.d.ts",
+      "import": "./es/collaboration/index.js",
+      "require": "./lib/collaboration/index.cjs"
+    },
+    "./collaboration/*": {
+      "types": "./es/collaboration/*.d.ts",
+      "import": "./es/collaboration/*.js",
+      "require": "./lib/collaboration/*.cjs"
+    },
+    "./components/*": {
+      "types": "./es/components/*.d.ts",
+      "import": "./es/components/*.js",
+      "require": "./lib/components/*.cjs"
+    },
+    "./config/*": {
+      "types": "./es/config/*.d.ts",
+      "import": "./es/config/*.js",
+      "require": "./lib/config/*.cjs"
+    },
+    "./core/*": {
+      "types": "./es/core/*.d.ts",
+      "import": "./es/core/*.js",
+      "require": "./lib/core/*.cjs"
+    },
+    "./devtools/*": {
+      "types": "./es/devtools/*.d.ts",
+      "import": "./es/devtools/*.js",
+      "require": "./lib/devtools/*.cjs"
+    },
+    "./enterprise": {
+      "types": "./es/enterprise/index.d.ts",
+      "import": "./es/enterprise/index.js",
+      "require": "./lib/enterprise/index.cjs"
+    },
+    "./enterprise/*": {
+      "types": "./es/enterprise/*.d.ts",
+      "import": "./es/enterprise/*.js",
+      "require": "./lib/enterprise/*.cjs"
+    },
+    "./i18n": {
+      "types": "./es/i18n/index.d.ts",
+      "import": "./es/i18n/index.js",
+      "require": "./lib/i18n/index.cjs"
+    },
+    "./i18n/*": {
+      "types": "./es/i18n/*.d.ts",
+      "import": "./es/i18n/*.js",
+      "require": "./lib/i18n/*.cjs"
+    },
+    "./icons/*": {
+      "types": "./es/icons/*.d.ts",
+      "import": "./es/icons/*.js",
+      "require": "./lib/icons/*.cjs"
+    },
+    "./marketplace/*": {
+      "types": "./es/marketplace/*.d.ts",
+      "import": "./es/marketplace/*.js",
+      "require": "./lib/marketplace/*.cjs"
+    },
+    "./mobile": {
+      "types": "./es/mobile/index.d.ts",
+      "import": "./es/mobile/index.js",
+      "require": "./lib/mobile/index.cjs"
+    },
+    "./mobile/*": {
+      "types": "./es/mobile/*.d.ts",
+      "import": "./es/mobile/*.js",
+      "require": "./lib/mobile/*.cjs"
+    },
+    "./plugins": {
+      "types": "./es/plugins/index.d.ts",
+      "import": "./es/plugins/index.js",
+      "require": "./lib/plugins/index.cjs"
+    },
+    "./plugins/*": {
+      "types": "./es/plugins/*.d.ts",
+      "import": "./es/plugins/*.js",
+      "require": "./lib/plugins/*.cjs"
+    },
+    "./pwa": {
+      "types": "./es/pwa/index.d.ts",
+      "import": "./es/pwa/index.js",
+      "require": "./lib/pwa/index.cjs"
+    },
+    "./pwa/*": {
+      "types": "./es/pwa/*.d.ts",
+      "import": "./es/pwa/*.js",
+      "require": "./lib/pwa/*.cjs"
+    },
+    "./template/*": {
+      "types": "./es/template/*.d.ts",
+      "import": "./es/template/*.js",
+      "require": "./lib/template/*.cjs"
+    },
+    "./theme": {
+      "types": "./es/theme/index.d.ts",
+      "import": "./es/theme/index.js",
+      "require": "./lib/theme/index.cjs"
+    },
+    "./theme/*": {
+      "types": "./es/theme/*.d.ts",
+      "import": "./es/theme/*.js",
+      "require": "./lib/theme/*.cjs"
+    },
+    "./toolbar/*": {
+      "types": "./es/toolbar/*.d.ts",
+      "import": "./es/toolbar/*.js",
+      "require": "./lib/toolbar/*.cjs"
+    },
+    "./types": {
+      "types": "./es/types/index.d.ts",
+      "import": "./es/types/index.js",
+      "require": "./lib/types/index.cjs"
+    },
+    "./types/*": {
+      "types": "./es/types/*.d.ts",
+      "import": "./es/types/*.js",
+      "require": "./lib/types/*.cjs"
+    },
+    "./ui/*": {
+      "types": "./es/ui/*.d.ts",
+      "import": "./es/ui/*.js",
+      "require": "./lib/ui/*.cjs"
+    },
+    "./utils": {
+      "types": "./es/utils/index.d.ts",
+      "import": "./es/utils/index.js",
+      "require": "./lib/utils/index.cjs"
+    },
+    "./utils/*": {
+      "types": "./es/utils/*.d.ts",
+      "import": "./es/utils/*.js",
+      "require": "./lib/utils/*.cjs"
+    },
+    "./wasm/*": {
+      "types": "./es/wasm/*.d.ts",
+      "import": "./es/wasm/*.js",
+      "require": "./lib/wasm/*.cjs"
+    },
+    "./es/core/Editor.css": "./es/core/Editor.css",
+    "./es/index.css": "./es/index.css",
+    "./es/plugins/media/image-resize/index.css": "./es/plugins/media/image-resize/index.css",
+    "./es/plugins/media/media-context-menu/index.css": "./es/plugins/media/media-context-menu/index.css",
+    "./lib/core/Editor.css": "./lib/core/Editor.css",
+    "./lib/index.css": "./lib/index.css",
+    "./lib/plugins/media/image-resize/index.css": "./lib/plugins/media/image-resize/index.css",
+    "./lib/plugins/media/media-context-menu/index.css": "./lib/plugins/media/media-context-menu/index.css"
   },
-  "peerDependencies": {}
+  "main": "./lib/index.cjs",
+  "module": "./es/index.js",
+  "types": "./es/index.d.ts",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "es",
+    "lib"
+  ],
+  "scripts": {
+    "dev": "ldesign-builder build --watch --config .ldesign/builder.config.ts",
+    "build": "ldesign-builder build --config .ldesign/builder.config.ts",
+    "build:clean": "ldesign-builder clean && ldesign-builder build --config .ldesign/builder.config.ts",
+    "test": "vitest",
+    "test:unit": "vitest run",
+    "test:visual": "playwright test",
+    "test:perf": "vitest bench",
+    "lint": "eslint src --max-warnings 500",
+    "lint:fix": "eslint src --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {
+    "@antfu/eslint-config": "^6.0.0",
+    "@ldesign/builder": "workspace:*",
+    "@playwright/test": "^1.50.2",
+    "@types/node": "^22.10.5",
+    "eslint": "^9.18.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
-

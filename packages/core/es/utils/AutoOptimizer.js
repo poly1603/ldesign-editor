@@ -1,0 +1,285 @@
+/*!
+ * ***********************************
+ * @ldesign/editor-core v3.0.0     *
+ * Built with rollup               *
+ * Build time: 2024-10-30 16:01:17 *
+ * Build mode: production          *
+ * Minified: No                    *
+ * ***********************************
+ */
+import { EventEmitter } from './event.js';
+import { getFeatureFlags } from '../core/FeatureFlags.js';
+import { getLazyLoader } from '../core/LazyLoader.js';
+import { getPerformanceMonitor } from './PerformanceMonitor.js';
+
+/**
+ * 自动优化器
+ * 根据性能监控自动调整配置以优化性能
+ */
+/**
+ * 自动优化器类
+ */
+class AutoOptimizer extends EventEmitter {
+    constructor(config = {}) {
+        super();
+        this.monitor = getPerformanceMonitor();
+        this.features = getFeatureFlags();
+        this.loader = getLazyLoader();
+        this.checkTimer = null;
+        this.suggestions = [];
+        this.config = {
+            enabled: true,
+            checkInterval: 30000, // 30秒
+            autoFix: false,
+            thresholds: {
+                minFPS: 50,
+                maxMemory: 100,
+                maxLoadTime: 2000,
+            },
+            ...config,
+        };
+    }
+    /**
+     * 启动自动优化
+     */
+    start() {
+        if (!this.config.enabled)
+            return;
+        this.checkTimer = setInterval(() => {
+            this.check();
+        }, this.config.checkInterval);
+        // 立即执行一次检查
+        this.check();
+    }
+    /**
+     * 停止自动优化
+     */
+    stop() {
+        if (this.checkTimer) {
+            clearInterval(this.checkTimer);
+            this.checkTimer = null;
+        }
+    }
+    /**
+     * 检查并生成建议
+     */
+    check() {
+        this.suggestions = [];
+        const metrics = this.monitor.getMetrics();
+        const featureStats = this.features.getStats();
+        const loaderStats = this.loader.getStats();
+        // 检查FPS
+        this.checkFPS(metrics);
+        // 检查内存
+        this.checkMemory(metrics);
+        // 检查加载时间
+        this.checkLoadTime(metrics);
+        // 检查功能使用
+        this.checkFeatureUsage(featureStats, loaderStats);
+        // 触发事件
+        if (this.suggestions.length > 0) {
+            this.emit('suggestions', this.suggestions);
+            // 自动修复
+            if (this.config.autoFix)
+                this.autoFix();
+        }
+    }
+    /**
+     * 检查FPS
+     */
+    checkFPS(metrics) {
+        if (metrics.fps < this.config.thresholds.minFPS) {
+            this.suggestions.push({
+                type: 'rendering',
+                severity: metrics.fps < 40 ? 'critical' : 'warning',
+                message: `FPS过低 (${metrics.fps})，影响用户体验`,
+                action: '禁用不常用的功能，启用虚拟滚动',
+                autoFixable: true,
+                fix: () => {
+                    // 禁用非核心功能
+                    this.features.disable('video');
+                    this.features.disable('audio');
+                    this.features.disable('collaboration');
+                },
+            });
+        }
+    }
+    /**
+     * 检查内存
+     */
+    checkMemory(metrics) {
+        if (metrics.memoryUsage > this.config.thresholds.maxMemory) {
+            this.suggestions.push({
+                type: 'memory',
+                severity: metrics.memoryUsage > 150 ? 'critical' : 'warning',
+                message: `内存使用过高 (${metrics.memoryUsage}MB)`,
+                action: '清理缓存，禁用不必要的功能',
+                autoFixable: true,
+                fix: () => {
+                    // 清理缓存
+                    require('../icons/IconManager').getIconManager();
+                    // 禁用高内存功能
+                    this.features.disable('collaboration');
+                    this.features.disable('version-control');
+                },
+            });
+        }
+    }
+    /**
+     * 检查加载时间
+     */
+    checkLoadTime(metrics) {
+        if (metrics.loadTime > this.config.thresholds.maxLoadTime) {
+            this.suggestions.push({
+                type: 'loading',
+                severity: metrics.loadTime > 3000 ? 'critical' : 'warning',
+                message: `加载时间过长 (${metrics.loadTime}ms)`,
+                action: '启用懒加载，减少初始加载的功能',
+                autoFixable: true,
+                fix: () => {
+                    // 将更多功能设置为懒加载
+                    const allFeatures = this.features.getAllFeatures();
+                    allFeatures.forEach((f) => {
+                        if (!['basic-editing', 'selection', 'history', 'bold', 'italic'].includes(f.id))
+                            f.lazy = true;
+                    });
+                },
+            });
+        }
+    }
+    /**
+     * 检查功能使用
+     */
+    checkFeatureUsage(featureStats, loaderStats) {
+        // 检查已启用但未使用的功能
+        const enabledButNotLoaded = featureStats.enabled - featureStats.loaded;
+        if (enabledButNotLoaded > 5) {
+            this.suggestions.push({
+                type: 'feature',
+                severity: 'info',
+                message: `有${enabledButNotLoaded}个已启用的功能未被使用`,
+                action: '考虑禁用这些功能以节省资源',
+                autoFixable: false,
+            });
+        }
+        // 检查加载队列
+        if (loaderStats.queued > 3) {
+            this.suggestions.push({
+                type: 'loading',
+                severity: 'warning',
+                message: `加载队列过长 (${loaderStats.queued}个)`,
+                action: '增加并发加载数量或减少启用的功能',
+                autoFixable: false,
+            });
+        }
+    }
+    /**
+     * 自动修复
+     */
+    autoFix() {
+        const fixable = this.suggestions.filter(s => s.autoFixable);
+        fixable.forEach((suggestion) => {
+            if (suggestion.fix) {
+                try {
+                    suggestion.fix();
+                    this.emit('auto-fixed', suggestion);
+                }
+                catch (error) {
+                    console.error('Auto-fix failed:', error);
+                }
+            }
+        });
+    }
+    /**
+     * 获取建议
+     */
+    getSuggestions() {
+        return [...this.suggestions];
+    }
+    /**
+     * 应用建议
+     */
+    applySuggestion(index) {
+        const suggestion = this.suggestions[index];
+        if (suggestion && suggestion.fix) {
+            suggestion.fix();
+            this.emit('suggestion-applied', suggestion);
+        }
+    }
+    /**
+     * 生成优化报告
+     */
+    generateReport() {
+        let report = '自动优化报告\n';
+        report += '============\n\n';
+        const metrics = this.monitor.getMetrics();
+        report += '当前性能:\n';
+        report += `  FPS: ${metrics.fps}\n`;
+        report += `  内存: ${metrics.memoryUsage}MB\n`;
+        report += `  加载时间: ${metrics.loadTime}ms\n\n`;
+        if (this.suggestions.length === 0) {
+            report += '✅ 性能良好，无需优化\n';
+        }
+        else {
+            report += `优化建议 (${this.suggestions.length}条):\n`;
+            const critical = this.suggestions.filter(s => s.severity === 'critical');
+            const warnings = this.suggestions.filter(s => s.severity === 'warning');
+            const info = this.suggestions.filter(s => s.severity === 'info');
+            if (critical.length > 0) {
+                report += `\n🔴 严重 (${critical.length}):\n`;
+                critical.forEach((s) => {
+                    report += `  • ${s.message}\n`;
+                    report += `    → ${s.action}\n`;
+                });
+            }
+            if (warnings.length > 0) {
+                report += `\n🟡 警告 (${warnings.length}):\n`;
+                warnings.forEach((s) => {
+                    report += `  • ${s.message}\n`;
+                    report += `    → ${s.action}\n`;
+                });
+            }
+            if (info.length > 0) {
+                report += `\n🟢 提示 (${info.length}):\n`;
+                info.forEach((s) => {
+                    report += `  • ${s.message}\n`;
+                });
+            }
+        }
+        return report;
+    }
+    /**
+     * 销毁
+     */
+    destroy() {
+        this.stop();
+        this.removeAllListeners();
+    }
+}
+// 全局实例
+let optimizerInstance = null;
+/**
+ * 获取自动优化器
+ */
+function getAutoOptimizer(config) {
+    if (!optimizerInstance)
+        optimizerInstance = new AutoOptimizer(config);
+    return optimizerInstance;
+}
+/**
+ * 启动自动优化
+ */
+function startAutoOptimization(config) {
+    getAutoOptimizer(config).start();
+}
+/**
+ * 停止自动优化
+ */
+function stopAutoOptimization() {
+    if (optimizerInstance)
+        optimizerInstance.stop();
+}
+
+export { AutoOptimizer, getAutoOptimizer, startAutoOptimization, stopAutoOptimization };
+/*! End of @ldesign/editor-core | Powered by @ldesign/builder */
+//# sourceMappingURL=AutoOptimizer.js.map
