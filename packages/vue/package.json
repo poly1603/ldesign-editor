@@ -2,28 +2,6 @@
   "name": "@ldesign/editor-vue",
   "version": "2.0.0",
   "description": "LDesign Editor Vue 3 组件封装",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./style.css": "./dist/style.css"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "scripts": {
-    "dev": "ldesign-builder build --watch --config .ldesign/builder.config.ts",
-    "build": "ldesign-builder build --config .ldesign/builder.config.ts",
-    "build:clean": "ldesign-builder clean && ldesign-builder build --config .ldesign/builder.config.ts",
-    "type-check": "tsc --noEmit"
-  },
   "keywords": [
     "editor",
     "vue",
@@ -34,16 +12,59 @@
   ],
   "author": "LDesign Team",
   "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./es/index.d.ts",
+      "import": "./es/index.js",
+      "require": "./lib/index.cjs",
+      "default": "./es/index.js"
+    },
+    "./components/*": {
+      "types": "./es/components/*.d.ts",
+      "import": "./es/components/*.js",
+      "require": "./lib/components/*.cjs",
+      "default": "./es/components/*.js"
+    },
+    "./composables/*": {
+      "types": "./es/composables/*.d.ts",
+      "import": "./es/composables/*.js",
+      "require": "./lib/composables/*.cjs",
+      "default": "./es/composables/*.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.cjs",
+  "module": "./es/index.js",
+  "types": "./es/index.d.ts",
+  "unpkg": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.min.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "es",
+    "lib",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "ldesign-builder build --watch --config .ldesign/builder.config.ts",
+    "build": "ldesign-builder build --config .ldesign/builder.config.ts",
+    "build:clean": "ldesign-builder clean && ldesign-builder build --config .ldesign/builder.config.ts",
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "@ldesign/editor-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "@ldesign/builder": "workspace:*",
     "typescript": "^5.7.0",
     "vue": "^3.5.0"
   },
-  "peerDependencies": {
-    "vue": "^3.3.0"
-  }
+  "typings": "./es/index.d.ts",
+  "browser": "./dist/index.js"
 }
-

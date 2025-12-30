@@ -1,9 +1,19 @@
 /**
- * @ldesign/editor
+ * @ldesign/editor-core
  * 功能强大、扩展性强的富文本编辑器
+ *
+ * @example
+ * ```typescript
+ * import { Editor } from '@ldesign/editor-core'
+ * import { standardPlugins } from '@ldesign/editor-core/presets'
+ * import '@ldesign/editor-core/styles/editor.css'
+ *
+ * const editor = new Editor({
+ *   element: '#editor',
+ *   plugins: standardPlugins,
+ * })
+ * ```
  */
-import './styles/editor.css';
-import './styles/ai.css';
 export { AIService, getAIService, resetAIService } from './ai/AIService';
 export { BaiduProvider } from './ai/providers/BaiduProvider';
 export { ClaudeProvider } from './ai/providers/ClaudeProvider';
@@ -21,8 +31,8 @@ export type { EditorConfig } from './config/ConfigManager';
 export { autoFixConfig, ConfigValidator, getConfigValidator, validateConfig, } from './config/ConfigValidator';
 export type { ValidationError, ValidationResult, ValidationSuggestion, ValidationWarning, } from './config/ConfigValidator';
 export { editorConfigExample, fullFeaturedConfig, lightweightConfig, performanceConfigExample, pluginConfigExample, toolbarConfigExample, } from './config/editor.config.example';
-export { aiEnhancedPreset, blogPreset, cmsPreset, codeDocPreset, collaborationPreset, commentPreset, emailPreset, getPreset, getPresetNames, markdownPreset, minimalPreset, mobilePreset, notePreset, presetDescriptions, presets, richTextPreset, } from './config/presets';
-export type { PresetName } from './config/presets';
+export { aiEnhancedPreset, blogPreset, cmsPreset, codeDocPreset, collaborationPreset, commentPreset, emailPreset, getPreset, getPresetNames, markdownPreset, minimalPreset as minimalConfigPreset, mobilePreset, notePreset, presetDescriptions, presets as configPresets, richTextPreset, } from './config/presets';
+export type { PresetName as ConfigPresetName } from './config/presets';
 export { BasePlugin } from './core/base/BasePlugin';
 export type { BasePluginConfig } from './core/base/BasePlugin';
 export { CommandManager, KeymapManager } from './core/Command';
@@ -75,7 +85,8 @@ export type { MobileEditorOptions } from './mobile/MobileEditorAdapter';
 export * from './plugins';
 export { DiagramPlugin } from './plugins/diagrams';
 export type { DiagramData, DiagramType, FlowchartData, GanttData, MindMapData, SequenceData, UMLData, } from './plugins/diagrams';
-export { patchTableInsertCommand } from './plugins/table-patch';
+export { patchTableInsertCommand } from './plugins/table/table-patch';
+export { basicPlugins, blogPlugins, createPreset, documentPlugins, fullPlugins, minimalPlugins, standardPlugins, } from './presets';
 export { OfflineStorage, PWAManager } from './pwa';
 export type { OfflineData, PWAConfig, PWAStatus } from './pwa';
 export { getAvailableThemes, getCurrentTheme, getThemeManager, setTheme, ThemeManager, } from './theme';
@@ -118,3 +129,4 @@ export { WasmDiff } from './wasm/WasmDiff';
 export type { DiffOperation, DiffResult, WasmDiffOptions } from './wasm/WasmDiff';
 export { WasmParser } from './wasm/WasmParser';
 export type { NodeType, ParsedNode, ParseResult, WasmParserOptions } from './wasm/WasmParser';
+//# sourceMappingURL=index.d.ts.map

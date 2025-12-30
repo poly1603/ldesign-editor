@@ -1,8 +1,24 @@
 /**
  * Editor - 编辑器核心类
  * 管理编辑器的所有功能
+ *
+ * @example
+ * ```typescript
+ * // 最简用法 - 无任何插件
+ * const editor = new Editor({ element: '#editor' })
+ *
+ * // 链式注册插件
+ * editor
+ *   .use(BoldPlugin)
+ *   .use(ItalicPlugin)
+ *   .use(HeadingPlugin)
+ *
+ * // 使用预设
+ * import { standardPlugins } from '@ldesign/editor-core/presets'
+ * const editor = new Editor({ element: '#editor', plugins: standardPlugins })
+ * ```
  */
-import type { EditorOptions, EditorState, SchemaSpec, Transaction } from '../types';
+import type { EditorOptions, EditorState, Plugin as PluginType, SchemaSpec, Transaction } from '../types';
 import { DebugPanel } from '../devtools/DebugPanel';
 import { Toolbar } from '../ui/Toolbar';
 import { WasmAccelerator } from '../wasm/WasmAccelerator';
@@ -36,9 +52,31 @@ export declare class Editor {
     private savedRange;
     constructor(options?: EditorOptions);
     /**
-     * 获取所有默认插件
+     * 链式注册插件
+     * @param plugin - 插件实例或插件名称
+     * @returns 编辑器实例（支持链式调用）
+     *
+     * @example
+     * ```typescript
+     * editor
+     *   .use(BoldPlugin)
+     *   .use(ItalicPlugin)
+     *   .use(new CustomPlugin({ option: 'value' }))
+     * ```
      */
-    private getAllDefaultPlugins;
+    use(plugin: PluginType | string): this;
+    /**
+     * 批量注册插件
+     * @param plugins - 插件数组
+     * @returns 编辑器实例（支持链式调用）
+     *
+     * @example
+     * ```typescript
+     * import { standardPlugins } from '@ldesign/editor-core/presets'
+     * editor.usePlugins(standardPlugins)
+     * ```
+     */
+    usePlugins(plugins: (PluginType | string)[]): this;
     /**
      * 挂载编辑器
      */
@@ -160,3 +198,4 @@ export declare class Editor {
      */
     isDestroyed(): boolean;
 }
+//# sourceMappingURL=Editor.d.ts.map

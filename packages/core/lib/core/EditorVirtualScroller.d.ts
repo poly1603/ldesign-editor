@@ -89,3 +89,4 @@ export declare class EditorVirtualScroller {
         memoryUsage: number;
     };
 }
+//# sourceMappingURL=EditorVirtualScroller.d.ts.map

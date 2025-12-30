@@ -2,12 +2,11 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
-import { patchTableInsertCommand } from './plugins/table-patch.js';
 export { AIService, getAIService, resetAIService } from './ai/AIService.js';
 export { BaiduProvider } from './ai/providers/BaiduProvider.js';
 export { ClaudeProvider } from './ai/providers/ClaudeProvider.js';
@@ -22,7 +21,7 @@ export { CRDT } from './collaboration/crdt/CRDT.js';
 export { ConfigManager, getConfigManager, resetConfigManager } from './config/ConfigManager.js';
 export { ConfigValidator, autoFixConfig, getConfigValidator, validateConfig } from './config/ConfigValidator.js';
 export { editorConfigExample, fullFeaturedConfig, lightweightConfig, performanceConfigExample, pluginConfigExample, toolbarConfigExample } from './config/editor.config.example.js';
-export { aiEnhancedPreset, blogPreset, cmsPreset, codeDocPreset, collaborationPreset, commentPreset, emailPreset, getPreset, getPresetNames, markdownPreset, minimalPreset, mobilePreset, notePreset, presetDescriptions, presets, richTextPreset } from './config/presets/index.js';
+export { aiEnhancedPreset, blogPreset, cmsPreset, codeDocPreset, collaborationPreset, commentPreset, presets as configPresets, emailPreset, getPreset, getPresetNames, markdownPreset, minimalPreset as minimalConfigPreset, mobilePreset, notePreset, presetDescriptions, richTextPreset } from './config/presets/index.js';
 export { BasePlugin } from './core/base/BasePlugin.js';
 export { CommandManager, KeymapManager } from './core/Command.js';
 export { Document } from './core/Document.js';
@@ -62,6 +61,8 @@ import './plugins/diagrams/DiagramToolbar.js';
 import './plugins/diagrams/editors/FlowchartEditor.js';
 import './plugins/diagrams/editors/MindMapEditor.js';
 import './plugins/diagrams/editors/UMLEditor.js';
+export { patchTableInsertCommand } from './plugins/table/table-patch.js';
+export { basicPlugins, blogPlugins, createPreset, documentPlugins, fullPlugins, minimalPlugins, standardPlugins } from './presets/index.js';
 import './pwa/BackgroundSyncManager.js';
 import './pwa/CacheManager.js';
 import './pwa/InstallPromptManager.js';
@@ -99,10 +100,12 @@ export { WasmAccelerator } from './wasm/WasmAccelerator.js';
 export { WasmDiff } from './wasm/WasmDiff.js';
 export { WasmParser } from './wasm/WasmParser.js';
 export { default as AIPlugin } from './plugins/ai/AIPluginV2.js';
-export { default as TemplatePlugin, getTemplateManager } from './plugins/template.js';
+export { default as TemplatePlugin, getTemplateManager } from './plugins/template/index.js';
 export { default as FormattingCommandsPlugin } from './plugins/formatting/formatting-commands.js';
 export { ImagePlugin } from './plugins/media/image.js';
 export { ImageResizePlugin } from './plugins/media/image-resize/index.js';
+export { ImageToolbarPlugin } from './plugins/media/image-toolbar.js';
+export { ImageStyleDialogPlugin } from './plugins/media/image-style-dialog.js';
 export { default as MediaCommandsPlugin } from './plugins/media/media-commands.js';
 export { MediaContextMenuPlugin } from './plugins/media/media-context-menu/MediaContextMenuPlugin.js';
 export { MediaDialogPlugin } from './plugins/media/media-dialog.js';
@@ -112,8 +115,10 @@ export { FindReplacePlugin } from './plugins/utils/find-replace.js';
 export { default as FullscreenPlugin } from './plugins/utils/fullscreen.js';
 export { default as HistoryPlugin } from './plugins/utils/history.js';
 export { default as WordCountPlugin } from './plugins/utils/word-count.js';
-export { CodeBlockPlugin } from './plugins/codeblock.js';
-export { EmojiPlugin } from './plugins/emoji.js';
+export { PluginPresets, registerBuiltinPlugins } from './plugins/registry.js';
+export { CodeBlockPlugin } from './plugins/codeblock/index.js';
+export { HorizontalRulePlugin } from './plugins/horizontal-rule/index.js';
+export { EmojiPlugin } from './plugins/emoji/index.js';
 export { AlignPlugin } from './plugins/formatting/align.js';
 export { BackgroundColorPlugin, PRESET_COLORS, TextColorPlugin } from './plugins/formatting/color.js';
 export { FONT_FAMILIES, FONT_SIZES, FontFamilyPlugin, FontSizePlugin } from './plugins/formatting/font.js';
@@ -124,28 +129,16 @@ export { SubscriptPlugin, SuperscriptPlugin } from './plugins/formatting/script.
 export { CapitalizePlugin, LowerCasePlugin, TextTransformPlugin, UpperCasePlugin } from './plugins/formatting/text-transform.js';
 export { formattingPlugins } from './plugins/formatting/index.js';
 export { mediaPlugins } from './plugins/media/index.js';
-export { TablePlugin, tablePlugins } from './plugins/table.js';
-export { EnhancedTablePlugin } from './plugins/table-enhanced.js';
+export { TablePlugin } from './plugins/table/table.js';
+export { EnhancedTablePlugin } from './plugins/table/table-enhanced.js';
+export { TableToolbarPlugin } from './plugins/table/table-toolbar.js';
+export { tablePlugins } from './plugins/table/index.js';
 export { BlockquotePlugin } from './plugins/text/blockquote.js';
 export { HeadingPlugin } from './plugins/text/heading.js';
 export { LinkPlugin } from './plugins/text/link.js';
+export { LinkPreviewPlugin } from './plugins/text/link-preview.js';
 export { BulletListPlugin, OrderedListPlugin, TaskListPlugin } from './plugins/text/list.js';
 export { textPlugins } from './plugins/text/index.js';
 export { utilPlugins } from './plugins/utils/index.js';
-
-/**
- * @ldesign/editor
- * 功能强大、扩展性强的富文本编辑器
- */
-// 应用表格补丁 - 自动替换旧的表格插入功能
-// 自动应用补丁
-if (typeof window !== 'undefined') {
-    // 延迟执行，确保编辑器已初始化
-    setTimeout(() => {
-        patchTableInsertCommand();
-    }, 500);
-}
-
-export { patchTableInsertCommand };
 /*! End of @ldesign/editor-core | Powered by @ldesign/builder */
 //# sourceMappingURL=index.js.map

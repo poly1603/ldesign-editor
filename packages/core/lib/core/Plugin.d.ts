@@ -124,3 +124,4 @@ export declare class PluginManager {
  * ```
  */
 export declare function createPlugin(config: PluginConfig): PluginType;
+//# sourceMappingURL=Plugin.d.ts.map

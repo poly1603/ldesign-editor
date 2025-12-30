@@ -127,3 +127,4 @@ export declare class PerformanceTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=PerformanceTab.d.ts.map

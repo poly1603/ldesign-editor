@@ -28,3 +28,4 @@ export declare const CodePlugin: Plugin;
  * 清除格式插件
  */
 export declare const ClearFormatPlugin: Plugin;
+//# sourceMappingURL=formatting.d.ts.map

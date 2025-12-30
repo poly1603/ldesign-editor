@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -19,10 +19,6 @@ var lineHeight = require('./line-height.cjs');
 var script = require('./script.cjs');
 var textTransform = require('./text-transform.cjs');
 
-/**
- * 格式化相关插件导出
- */
-// Export all formatting plugins as array
 const formattingPlugins = [];
 
 exports.AlignPlugin = align.AlignPlugin;

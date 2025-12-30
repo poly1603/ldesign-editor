@@ -45,7 +45,7 @@ export interface AIConfig {
 /**
  * AI 请求类型
  */
-export type AIRequestType = 'correct' | 'complete' | 'continue' | 'rewrite' | 'suggest';
+export type AIRequestType = 'correct' | 'complete' | 'continue' | 'rewrite' | 'suggest' | 'custom';
 /**
  * AI 请求参数
  */
@@ -105,3 +105,4 @@ export interface AIProviderInterface {
  * 默认 AI 配置
  */
 export declare const defaultAIConfig: AIConfig;
+//# sourceMappingURL=types.d.ts.map

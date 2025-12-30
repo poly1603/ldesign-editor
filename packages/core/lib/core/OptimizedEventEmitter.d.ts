@@ -54,6 +54,11 @@ export declare class OptimizedEventEmitter {
     private batchDelay;
     private handlerCache;
     /**
+     * 设置最大监听器数量
+     * @param n - 最大数量
+     */
+    setMaxListeners(n: number): this;
+    /**
      * 获取当前监听器总数
      * @returns 监听器数量
      */
@@ -125,9 +130,9 @@ export declare class OptimizedEventEmitter {
      */
     listeners(event: string): EventHandler[];
     /**
-     * 获取监听器数量
+     * 获取指定事件的监听器数量
      */
-    listenerCount(event?: string): number;
+    getEventListenerCount(event: string): number;
     /**
      * 获取所有事件名称
      */
@@ -154,3 +159,4 @@ export declare class OptimizedEventEmitter {
     optimize(): void;
 }
 export {};
+//# sourceMappingURL=OptimizedEventEmitter.d.ts.map

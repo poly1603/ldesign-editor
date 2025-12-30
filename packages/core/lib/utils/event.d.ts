@@ -127,3 +127,4 @@ export declare class EventEmitter<T extends Record<string, any[]> = Record<strin
     clear(event?: keyof T): void;
     listenerCount(event: keyof T): number;
 }
+//# sourceMappingURL=event.d.ts.map

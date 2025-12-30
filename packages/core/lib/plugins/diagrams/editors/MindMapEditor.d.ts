@@ -106,3 +106,4 @@ export declare class MindMapEditor implements DiagramEditor {
      */
     destroy(): void;
 }
+//# sourceMappingURL=MindMapEditor.d.ts.map

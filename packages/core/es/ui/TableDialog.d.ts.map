@@ -1,0 +1,1 @@
+{"version":3,"file":"TableDialog.d.ts","sourceRoot":"","sources":["../../src/ui/TableDialog.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAIH,MAAM,WAAW,kBAAkB;IACjC,SAAS,EAAE,CAAC,IAAI,EAAE,MAAM,EAAE,IAAI,EAAE,MAAM,KAAK,IAAI,CAAA;IAC/C,QAAQ,CAAC,EAAE,MAAM,IAAI,CAAA;CACtB;AA4GD;;GAEG;AACH,wBAAgB,eAAe,CAAC,OAAO,EAAE,kBAAkB,GAAG,IAAI,CAkFjE"}

@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************

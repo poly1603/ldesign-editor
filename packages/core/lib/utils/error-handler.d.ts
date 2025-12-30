@@ -60,3 +60,4 @@ export declare function validateURL(url: string): void;
  * 创建用户友好的错误消息
  */
 export declare function getUserFriendlyMessage(error: Error): string;
+//# sourceMappingURL=error-handler.d.ts.map

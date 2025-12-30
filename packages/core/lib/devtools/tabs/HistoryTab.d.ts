@@ -111,3 +111,4 @@ export declare class HistoryTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=HistoryTab.d.ts.map

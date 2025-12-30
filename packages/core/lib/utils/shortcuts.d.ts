@@ -184,3 +184,4 @@ export declare const optimize: {
      */
     enableAll(): void;
 };
+//# sourceMappingURL=shortcuts.d.ts.map

@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -12,24 +12,15 @@
 var blockquote = require('./blockquote.cjs');
 var heading = require('./heading.cjs');
 var link = require('./link.cjs');
+var linkPreview = require('./link-preview.cjs');
 var list = require('./list.cjs');
 
-/**
- * Text-related plugins export
- */
-// Export all text plugins as array
-const textPlugins = [
-    heading.HeadingPlugin,
-    blockquote.BlockquotePlugin,
-    list.BulletListPlugin,
-    list.OrderedListPlugin,
-    list.TaskListPlugin,
-    link.LinkPlugin,
-];
+const textPlugins = [heading.HeadingPlugin, blockquote.BlockquotePlugin, list.BulletListPlugin, list.OrderedListPlugin, list.TaskListPlugin, link.LinkPlugin, linkPreview.LinkPreviewPlugin];
 
 exports.BlockquotePlugin = blockquote.BlockquotePlugin;
 exports.HeadingPlugin = heading.HeadingPlugin;
 exports.LinkPlugin = link.LinkPlugin;
+exports.LinkPreviewPlugin = linkPreview.LinkPreviewPlugin;
 exports.BulletListPlugin = list.BulletListPlugin;
 exports.OrderedListPlugin = list.OrderedListPlugin;
 exports.TaskListPlugin = list.TaskListPlugin;

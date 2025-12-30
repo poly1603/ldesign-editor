@@ -107,3 +107,4 @@ export declare class TableFormulaEngine {
  * 创建表格公式引擎实例
  */
 export declare function createFormulaEngine(): TableFormulaEngine;
+//# sourceMappingURL=table-formulas.d.ts.map

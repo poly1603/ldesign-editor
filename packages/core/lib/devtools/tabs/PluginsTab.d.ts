@@ -75,3 +75,4 @@ export declare class PluginsTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=PluginsTab.d.ts.map

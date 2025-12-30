@@ -8,3 +8,4 @@
 import type { Plugin } from '../../types';
 declare const HistoryPlugin: Plugin;
 export default HistoryPlugin;
+//# sourceMappingURL=history.d.ts.map

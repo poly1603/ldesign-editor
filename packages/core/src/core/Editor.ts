@@ -1,13 +1,28 @@
 /**
  * Editor - 编辑器核心类
  * 管理编辑器的所有功能
+ *
+ * @example
+ * ```typescript
+ * // 最简用法 - 无任何插件
+ * const editor = new Editor({ element: '#editor' })
+ *
+ * // 链式注册插件
+ * editor
+ *   .use(BoldPlugin)
+ *   .use(ItalicPlugin)
+ *   .use(HeadingPlugin)
+ *
+ * // 使用预设
+ * import { standardPlugins } from '@ldesign/editor-core/presets'
+ * const editor = new Editor({ element: '#editor', plugins: standardPlugins })
+ * ```
  */
 
 import type { EditorOptions, EditorState, Plugin as PluginType, SchemaSpec, Transaction } from '../types'
 import type { DOMPatch } from './IncrementalRenderer'
 import type { Schema } from './Schema'
 import { DebugPanel } from '../devtools/DebugPanel'
-import * as AllPlugins from '../plugins'
 import { DEFAULT_TOOLBAR_ITEMS } from '../ui/defaultToolbar'
 import { Toolbar } from '../ui/Toolbar'
 import { createLogger } from '../utils/logger'
@@ -79,202 +94,65 @@ export class Editor {
     if (options.element)
       this.mount(options.element)
 
-    // 注册插件 - 如果没有指定插件，默认加载所有插件
-    logger.debug('options.plugins provided?', !!options.plugins)
-    if (options.plugins)
-      logger.debug('Using provided plugins:', options.plugins.length)
-    else
-      logger.debug('Using default plugins from getAllDefaultPlugins()')
+    // 注册插件 - 只加载用户明确指定的插件，默认为空
+    const pluginsToLoad = options.plugins || []
 
-    const pluginsToLoad = options.plugins || this.getAllDefaultPlugins()
-
-    logger.debug('Loading plugins, total:', pluginsToLoad.length)
-    logger.debug('Plugin list:', pluginsToLoad.map(p => typeof p === 'string' ? p : p?.name || 'unnamed'))
-    logger.debug('HeadingPlugin exists in AllPlugins:', !!AllPlugins.HeadingPlugin)
-    if (AllPlugins.HeadingPlugin) {
-      logger.debug('HeadingPlugin name:', AllPlugins.HeadingPlugin.name)
-      logger.debug('HeadingPlugin config:', AllPlugins.HeadingPlugin.config)
-      logger.debug('Is HeadingPlugin in pluginsToLoad?', pluginsToLoad.includes(AllPlugins.HeadingPlugin))
-    }
-
-    pluginsToLoad.forEach((plugin, index) => {
-      if (typeof plugin === 'string') {
-        logger.debug(`Loading builtin plugin [${index}]: "${plugin}"`)
-        // 从内置插件加载
-        this.loadBuiltinPlugin(plugin)
-      }
-      else {
-        logger.debug(`Loading plugin [${index}]: "${plugin.name || 'unnamed'}"`)
-        if (plugin.name === 'heading') {
-          logger.debug('HeadingPlugin found in plugins list!')
-          logger.debug('HeadingPlugin config:', plugin.config)
+    if (pluginsToLoad.length > 0) {
+      logger.debug('Loading plugins, total:', pluginsToLoad.length)
+      pluginsToLoad.forEach((plugin, index) => {
+        if (typeof plugin === 'string') {
+          logger.debug(`Loading builtin plugin [${index}]: "${plugin}"`)
+          this.loadBuiltinPlugin(plugin)
         }
-        this.plugins.register(plugin)
-      }
-    })
-
-    logger.debug('All plugins loaded')
-    logger.debug('Registered commands:', this.commands.getCommands())
+        else {
+          logger.debug(`Loading plugin [${index}]: "${plugin.name || 'unnamed'}"`)
+          this.plugins.register(plugin)
+        }
+      })
+      logger.debug('All plugins loaded')
+    }
 
     // 初始化事件监听
     this.setupEventListeners()
-
-    // 将编辑器实例保存到全局，以便工具栏访问
-    if (typeof window !== 'undefined')
-      (window as any).editor = this
   }
 
   /**
-   * 获取所有默认插件
+   * 链式注册插件
+   * @param plugin - 插件实例或插件名称
+   * @returns 编辑器实例（支持链式调用）
+   *
+   * @example
+   * ```typescript
+   * editor
+   *   .use(BoldPlugin)
+   *   .use(ItalicPlugin)
+   *   .use(new CustomPlugin({ option: 'value' }))
+   * ```
    */
-  private getAllDefaultPlugins(): PluginType[] {
-    logger.debug('Getting default plugins...')
-    logger.debug('AllPlugins keys:', Object.keys(AllPlugins))
-
-    // 检查 HeadingPlugin 是否存在
-    logger.debug('HeadingPlugin check:', {
-      exists: !!AllPlugins.HeadingPlugin,
-      type: typeof AllPlugins.HeadingPlugin,
-      value: AllPlugins.HeadingPlugin,
-    })
-
-    const plugins: PluginType[] = []
-
-    // 最重要！首先加载 HeadingPlugin
-    if (AllPlugins.HeadingPlugin) {
-      logger.debug('✅ Adding HeadingPlugin to default plugins')
-      plugins.push(AllPlugins.HeadingPlugin)
+  use(plugin: PluginType | string): this {
+    if (typeof plugin === 'string') {
+      this.loadBuiltinPlugin(plugin)
     }
     else {
-      logger.error('❌ HeadingPlugin is undefined! This is critical!')
+      this.plugins.register(plugin)
     }
+    return this
+  }
 
-    // 首先加入基础插件（命令插件）
-    if (AllPlugins.MediaCommandsPlugin) {
-      logger.debug('Adding MediaCommandsPlugin')
-      plugins.push(AllPlugins.MediaCommandsPlugin)
-    }
-    if (AllPlugins.FormattingCommandsPlugin) {
-      logger.debug('Adding FormattingCommandsPlugin')
-      plugins.push(AllPlugins.FormattingCommandsPlugin)
-    }
-
-    // AI 功能 - 最重要，默认启用
-    if (AllPlugins.AIPlugin) {
-      logger.debug('Adding AIPlugin to default plugins')
-      plugins.push(AllPlugins.AIPlugin)
-    }
-
-    // 基础格式化
-    if (AllPlugins.BoldPlugin)
-      plugins.push(AllPlugins.BoldPlugin)
-    if (AllPlugins.ItalicPlugin)
-      plugins.push(AllPlugins.ItalicPlugin)
-    if (AllPlugins.UnderlinePlugin)
-      plugins.push(AllPlugins.UnderlinePlugin)
-    if (AllPlugins.StrikePlugin)
-      plugins.push(AllPlugins.StrikePlugin)
-    if (AllPlugins.InlineCodePlugin)
-      plugins.push(AllPlugins.InlineCodePlugin)
-    if (AllPlugins.SuperscriptPlugin)
-      plugins.push(AllPlugins.SuperscriptPlugin)
-    if (AllPlugins.SubscriptPlugin)
-      plugins.push(AllPlugins.SubscriptPlugin)
-    if (AllPlugins.ClearFormatPlugin)
-      plugins.push(AllPlugins.ClearFormatPlugin)
-
-    // 标题和块级元素 - 特别检查 HeadingPlugin
-    if (AllPlugins.HeadingPlugin) {
-      console.log('[Editor] Adding HeadingPlugin to list')
-      plugins.push(AllPlugins.HeadingPlugin)
-    }
-    else {
-      console.error('[Editor] HeadingPlugin is undefined!')
-    }
-    if (AllPlugins.BlockquotePlugin)
-      plugins.push(AllPlugins.BlockquotePlugin)
-    if (AllPlugins.CodeBlockPlugin)
-      plugins.push(AllPlugins.CodeBlockPlugin)
-
-    // 列表
-    if (AllPlugins.BulletListPlugin)
-      plugins.push(AllPlugins.BulletListPlugin)
-    if (AllPlugins.OrderedListPlugin)
-      plugins.push(AllPlugins.OrderedListPlugin)
-    if (AllPlugins.TaskListPlugin)
-      plugins.push(AllPlugins.TaskListPlugin)
-
-    // 节点插件
-    if (AllPlugins.LinkPlugin)
-      plugins.push(AllPlugins.LinkPlugin)
-    if (AllPlugins.ImagePlugin)
-      plugins.push(AllPlugins.ImagePlugin)
-    if (AllPlugins.TablePlugin)
-      plugins.push(AllPlugins.TablePlugin)
-    if (AllPlugins.HorizontalRulePlugin)
-      plugins.push(AllPlugins.HorizontalRulePlugin)
-
-    // 文本样式
-    if (AllPlugins.AlignPlugin)
-      plugins.push(AllPlugins.AlignPlugin)
-    if (AllPlugins.TextColorPlugin)
-      plugins.push(AllPlugins.TextColorPlugin)
-    if (AllPlugins.BackgroundColorPlugin)
-      plugins.push(AllPlugins.BackgroundColorPlugin)
-    if (AllPlugins.FontSizePlugin)
-      plugins.push(AllPlugins.FontSizePlugin)
-    if (AllPlugins.FontFamilyPlugin)
-      plugins.push(AllPlugins.FontFamilyPlugin)
-    if (AllPlugins.IndentPlugin)
-      plugins.push(AllPlugins.IndentPlugin)
-    if (AllPlugins.LineHeightPlugin)
-      plugins.push(AllPlugins.LineHeightPlugin)
-    if (AllPlugins.TextTransformPlugin)
-      plugins.push(AllPlugins.TextTransformPlugin)
-
-    // 功能插件
-    if (AllPlugins.HistoryPlugin)
-      plugins.push(AllPlugins.HistoryPlugin)
-    if (AllPlugins.FullscreenPlugin)
-      plugins.push(AllPlugins.FullscreenPlugin)
-    if (AllPlugins.FindReplacePlugin)
-      plugins.push(AllPlugins.FindReplacePlugin)
-    if (AllPlugins.WordCountPlugin)
-      plugins.push(AllPlugins.WordCountPlugin)
-    if (AllPlugins.ExportMarkdownPlugin)
-      plugins.push(AllPlugins.ExportMarkdownPlugin)
-    if (AllPlugins.MediaDialogPlugin)
-      plugins.push(AllPlugins.MediaDialogPlugin)
-    if (AllPlugins.ContextMenuPlugin)
-      plugins.push(AllPlugins.ContextMenuPlugin)
-
-    // 图片编辑功能插件 - 创建实例
-    if (AllPlugins.MediaContextMenuPlugin)
-      plugins.push(new AllPlugins.MediaContextMenuPlugin())
-
-    if (AllPlugins.ImageResizePlugin) {
-      plugins.push(new AllPlugins.ImageResizePlugin({
-        minWidth: 50,
-        minHeight: 50,
-        preserveAspectRatio: true,
-        showDimensions: true,
-      }))
-    }
-
-    logger.debug(`Total plugins to load: ${plugins.length}`)
-    logger.debug('Plugin names:', plugins.map(p => p.name).join(', '))
-
-    // 添加 EmojiPlugin（确保它被加载）
-    if (AllPlugins.EmojiPlugin) {
-      logger.debug('✅ EmojiPlugin found, adding to plugins list')
-      plugins.push(AllPlugins.EmojiPlugin)
-    }
-    else {
-      logger.warn('⚠️ EmojiPlugin not found in AllPlugins!')
-      logger.debug('Available plugins:', Object.keys(AllPlugins).filter(k => k.includes('Plugin')))
-    }
-
-    return plugins
+  /**
+   * 批量注册插件
+   * @param plugins - 插件数组
+   * @returns 编辑器实例（支持链式调用）
+   *
+   * @example
+   * ```typescript
+   * import { standardPlugins } from '@ldesign/editor-core/presets'
+   * editor.usePlugins(standardPlugins)
+   * ```
+   */
+  usePlugins(plugins: (PluginType | string)[]): this {
+    plugins.forEach(plugin => this.use(plugin))
+    return this
   }
 
   /**
@@ -404,7 +282,7 @@ export class Editor {
     })
 
     // 输入事件
-    this.contentElement.addEventListener('input', (e) => {
+    this.contentElement.addEventListener('input', (_e) => {
       this.handleInput()
     })
 

@@ -186,3 +186,4 @@ export declare function getOuterSize(element: HTMLElement, includeMargin?: boole
 };
 export declare function createButton(text: string, className?: string): HTMLButtonElement;
 export declare function createIcon(iconName: string, className?: string): HTMLElement;
+//# sourceMappingURL=dom.d.ts.map

@@ -22,3 +22,4 @@ export declare function createTableContextMenu(options: TableContextMenuOptions)
  * 显示表格右键菜单
  */
 export declare function showTableContextMenu(options: TableContextMenuOptions): void;
+//# sourceMappingURL=TableContextMenu.d.ts.map

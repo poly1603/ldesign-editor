@@ -4,3 +4,4 @@ export { ContextMenu } from './ContextMenu';
 export { MediaContextMenuPlugin } from './MediaContextMenuPlugin';
 export { MediaPropertiesDialog } from './MediaPropertiesDialog';
 export default MediaContextMenuPlugin;
+//# sourceMappingURL=index.d.ts.map

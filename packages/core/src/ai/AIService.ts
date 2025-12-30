@@ -127,14 +127,18 @@ export class AIService {
   /**
    * 设置当前提供商
    */
-  setProvider(provider: AIProvider): void {
+  setProvider(provider: AIProvider): boolean {
     const providerInstance = this.providers.get(provider)
-    if (!providerInstance)
-      throw new Error(`Provider ${provider} is not available`)
+    if (!providerInstance) {
+      console.warn(`[AIService] Provider ${provider} is not available. AI features will be disabled.`)
+      this.currentProvider = null
+      return false
+    }
 
     this.currentProvider = providerInstance
     this.config.defaultProvider = provider
     this.saveConfig()
+    return true
   }
 
   /**

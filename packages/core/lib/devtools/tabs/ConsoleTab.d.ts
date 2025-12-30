@@ -99,3 +99,4 @@ export declare class ConsoleTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=ConsoleTab.d.ts.map

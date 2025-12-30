@@ -3,7 +3,7 @@
  * 管理Service Worker、离线缓存、后台同步等PWA功能
  */
 
-import type { PWAConfig, PWAEvents, PWAStatus } from './types'
+import type { PWAConfig, PWAStatus } from './types'
 import { EventEmitter } from '../core/EventEmitter'
 import { createLogger } from '../utils/logger'
 import { BackgroundSyncManager } from './BackgroundSyncManager'

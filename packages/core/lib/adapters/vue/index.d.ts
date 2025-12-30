@@ -41,7 +41,7 @@ export declare const RichEditor: import("vue").DefineComponent<import("vue").Ext
     };
 }>, () => import("vue").VNode<import("vue").RendererNode, import("vue").RendererElement, {
     [key: string]: any;
-}>, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update:modelValue" | "update" | "focus" | "blur")[], "update:modelValue" | "update" | "focus" | "blur", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
+}>, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update" | "blur" | "focus" | "update:modelValue")[], "update" | "blur" | "focus" | "update:modelValue", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: StringConstructor;
         default: string;
@@ -67,16 +67,16 @@ export declare const RichEditor: import("vue").DefineComponent<import("vue").Ext
         default: boolean;
     };
 }>> & Readonly<{
-    "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
     onUpdate?: ((...args: any[]) => any) | undefined;
     onFocus?: ((...args: any[]) => any) | undefined;
     onBlur?: ((...args: any[]) => any) | undefined;
+    "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
 }>, {
     plugins: (string | Plugin)[];
-    modelValue: string;
+    placeholder: string;
     editable: boolean;
     autofocus: boolean;
-    placeholder: string;
+    modelValue: string;
     showToolbar: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, true, {}, any>;
 /**
@@ -96,3 +96,4 @@ export declare function useEditor(options?: EditorOptions): {
     setJSON: (json: any) => void | undefined;
 };
 export default RichEditor;
+//# sourceMappingURL=index.d.ts.map

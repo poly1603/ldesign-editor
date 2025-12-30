@@ -6,3 +6,4 @@
  * 创建表情选择器
  */
 export declare function showEmojiPicker(button: HTMLElement, onSelect?: (emoji: string) => void): void;
+//# sourceMappingURL=EmojiPicker.d.ts.map

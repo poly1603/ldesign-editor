@@ -11,3 +11,4 @@ export interface CodeBlockDialogOptions {
  * 显示代码块插入对话框
  */
 export declare function showCodeBlockDialog(options?: CodeBlockDialogOptions): void;
+//# sourceMappingURL=CodeBlockDialog.d.ts.map

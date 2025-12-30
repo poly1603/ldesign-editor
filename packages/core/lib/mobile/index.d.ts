@@ -128,3 +128,4 @@ export declare const MobilePlugin: import("../types").Plugin;
  * @returns 移动端管理器
  */
 export declare function getMobileManager(editor: EditorInstance): MobileManager | null;
+//# sourceMappingURL=index.d.ts.map

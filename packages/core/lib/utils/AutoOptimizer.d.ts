@@ -99,3 +99,4 @@ export declare function startAutoOptimization(config?: Partial<AutoOptimizerConf
  * 停止自动优化
  */
 export declare function stopAutoOptimization(): void;
+//# sourceMappingURL=AutoOptimizer.d.ts.map

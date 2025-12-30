@@ -58,8 +58,8 @@ export class SparkProvider implements AIProviderInterface {
     }
 
     // 讯飞需要APPID、APIKey和APISecret（用:分隔）
-    const [appId, apiKey, apiSecret] = this.config.apiKey.split(':')
-    if (!appId || !apiKey || !apiSecret) {
+    const parts = this.config.apiKey.split(':')
+    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
       logger.error('讯飞API密钥格式错误，应为 "APP_ID:API_KEY:API_SECRET"')
       return false
     }
@@ -187,13 +187,11 @@ export class SparkProvider implements AIProviderInterface {
   }
 
   private getWebSocketUrl(): string {
-    const [appId, apiKey, apiSecret] = this.config.apiKey.split(':')
-
+    // 讯飞需要APPID、APIKey和APISecret进行鉴权
     // 生成鉴权URL（实际实现需要按照讯飞的鉴权规则）
-    const date = new Date().toUTCString()
-    const signatureOrigin = `host: spark-api.xf-yun.com\ndate: ${date}\nGET /v3.5/chat HTTP/1.1`
-
-    // 这里应该使用真实的HMAC-SHA256签名
+    // const [_appId, _apiKey, apiSecret] = this.config.apiKey.split(':')
+    // const date = new Date().toUTCString()
+    // const signatureOrigin = `host: spark-api.xf-yun.com\ndate: ${date}\nGET /v3.5/chat HTTP/1.1`
     // const signature = crypto.createHmac('sha256', apiSecret).update(signatureOrigin).digest('base64')
 
     // 简化处理，实际使用时需要完整的鉴权实现

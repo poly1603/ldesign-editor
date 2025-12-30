@@ -124,3 +124,4 @@ export declare const MarkdownEnhancedPlugin: import("../../types").Plugin;
  * @returns 预览管理器
  */
 export declare function getMarkdownPreviewManager(editor: EditorInstance): MarkdownPreviewManager | null;
+//# sourceMappingURL=index.d.ts.map

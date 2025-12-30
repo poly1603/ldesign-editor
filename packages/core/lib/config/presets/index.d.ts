@@ -100,3 +100,4 @@ export declare const presetDescriptions: Record<PresetName, {
     description: string;
     icon: string;
 }>;
+//# sourceMappingURL=index.d.ts.map

@@ -153,3 +153,4 @@ export declare const REGEX: {
     /** RGB 颜色正则 */
     readonly RGB_COLOR: RegExp;
 };
+//# sourceMappingURL=constants.d.ts.map

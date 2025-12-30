@@ -129,3 +129,4 @@ export declare class NetworkTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=NetworkTab.d.ts.map

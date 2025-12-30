@@ -76,3 +76,4 @@ export declare class SSOManager extends EventEmitter<AuthEvents> {
      */
     destroy(): void;
 }
+//# sourceMappingURL=SSOManager.d.ts.map

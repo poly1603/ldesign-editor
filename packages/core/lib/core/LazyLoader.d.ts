@@ -112,3 +112,4 @@ export declare function getLazyLoader(): LazyLoader;
  * 重置全局懒加载管理器
  */
 export declare function resetLazyLoader(): void;
+//# sourceMappingURL=LazyLoader.d.ts.map

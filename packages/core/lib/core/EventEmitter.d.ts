@@ -9,3 +9,4 @@
 export { EventEmitter } from '../utils/event';
 export type { EventHandler, EventMap } from '../utils/event';
 export type { EventEmitter as BaseEventEmitter } from '../utils/event';
+//# sourceMappingURL=EventEmitter.d.ts.map

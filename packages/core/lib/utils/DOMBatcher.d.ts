@@ -164,3 +164,4 @@ export declare function batchRead<T>(operations: (() => T)[]): T[];
  */
 export declare function batchWrite(operations: (() => void)[]): void;
 export {};
+//# sourceMappingURL=DOMBatcher.d.ts.map

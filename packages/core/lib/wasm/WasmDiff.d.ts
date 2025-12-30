@@ -106,3 +106,4 @@ export declare class WasmDiff {
         misses: number;
     };
 }
+//# sourceMappingURL=WasmDiff.d.ts.map

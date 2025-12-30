@@ -151,3 +151,4 @@ export declare const TOOLBAR_PRESETS: {
  * 默认工具栏项配置
  */
 export declare const DEFAULT_ITEMS: Record<string, ToolbarItem>;
+//# sourceMappingURL=ToolbarConfig.d.ts.map

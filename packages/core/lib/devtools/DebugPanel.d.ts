@@ -141,3 +141,4 @@ export declare class DebugPanel extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=DebugPanel.d.ts.map

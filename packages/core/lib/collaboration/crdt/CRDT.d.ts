@@ -84,3 +84,4 @@ export declare class CRDT {
      */
     getClock(): number;
 }
+//# sourceMappingURL=CRDT.d.ts.map

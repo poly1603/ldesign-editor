@@ -2,140 +2,167 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
 import { createLogger } from '../../utils/logger.js';
 
-/**
- * 智谱清言（GLM）提供商
- */
-const logger = createLogger('GLMProvider');
+const logger = createLogger("GLMProvider");
 class GLMProvider {
-    constructor(config) {
-        this.name = 'glm';
-        this.config = {
-            ...config,
-            provider: 'glm',
-            model: config.model || 'glm-4',
-            apiEndpoint: config.apiEndpoint || 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        };
+  constructor(config) {
+    this.name = "glm";
+    this.config = {
+      ...config,
+      provider: "glm",
+      model: config.model || "glm-4",
+      apiEndpoint: config.apiEndpoint || "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    };
+  }
+  async initialize(config) {
+    this.config = {
+      ...this.config,
+      ...config
+    };
+  }
+  async request(request) {
+    try {
+      const messages = this.buildMessages(request);
+      const response = await fetch(this.config.apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${this.config.apiKey}`,
+          "Accept": this.config.stream ? "text/event-stream" : "application/json"
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages,
+          temperature: this.config.temperature || 0.7,
+          top_p: 0.9,
+          max_tokens: this.config.maxTokens || 2e3,
+          stream: this.config.stream || false,
+          stop: null
+        })
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`\u667A\u8C31\u6E05\u8A00\u8BF7\u6C42\u5931\u8D25: ${response.status} - ${error}`);
+      }
+      const data = await response.json();
+      if (data.error)
+        throw new Error(`\u667A\u8C31\u6E05\u8A00\u9519\u8BEF: ${data.error.code} - ${data.error.message}`);
+      const content = data.choices?.[0]?.message?.content || "";
+      return {
+        success: true,
+        text: content,
+        usage: data.usage ? {
+          promptTokens: data.usage.prompt_tokens,
+          completionTokens: data.usage.completion_tokens,
+          totalTokens: data.usage.total_tokens
+        } : void 0
+      };
+    } catch (error) {
+      logger.error("\u667A\u8C31\u6E05\u8A00\u8BF7\u6C42\u5931\u8D25:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "\u672A\u77E5\u9519\u8BEF"
+      };
     }
-    async initialize(config) {
-        this.config = { ...this.config, ...config };
+  }
+  validateConfig() {
+    if (!this.config.apiKey) {
+      logger.error("\u7F3A\u5C11\u667A\u8C31API\u5BC6\u94A5");
+      return false;
     }
-    async request(request) {
-        try {
-            const messages = this.buildMessages(request);
-            const response = await fetch(this.config.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.config.apiKey}`,
-                    'Accept': this.config.stream ? 'text/event-stream' : 'application/json',
-                },
-                body: JSON.stringify({
-                    model: this.config.model,
-                    messages,
-                    temperature: this.config.temperature || 0.7,
-                    top_p: 0.9,
-                    max_tokens: this.config.maxTokens || 2000,
-                    stream: this.config.stream || false,
-                    stop: null,
-                }),
-            });
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(`智谱清言请求失败: ${response.status} - ${error}`);
-            }
-            const data = await response.json();
-            if (data.error)
-                throw new Error(`智谱清言错误: ${data.error.code} - ${data.error.message}`);
-            // 提取响应内容
-            const content = data.choices?.[0]?.message?.content || '';
-            return {
-                success: true,
-                text: content,
-                usage: data.usage
-                    ? {
-                        promptTokens: data.usage.prompt_tokens,
-                        completionTokens: data.usage.completion_tokens,
-                        totalTokens: data.usage.total_tokens,
-                    }
-                    : undefined,
-            };
-        }
-        catch (error) {
-            logger.error('智谱清言请求失败:', error);
-            return {
-                success: false,
-                error: error instanceof Error ? error.message : '未知错误',
-            };
-        }
+    return true;
+  }
+  cleanup() {
+  }
+  buildMessages(request) {
+    const messages = [];
+    const systemPrompt = this.getSystemPrompt(request.type);
+    if (systemPrompt) {
+      messages.push({
+        role: "system",
+        content: systemPrompt
+      });
     }
-    validateConfig() {
-        if (!this.config.apiKey) {
-            logger.error('缺少智谱API密钥');
-            return false;
-        }
-        return true;
-    }
-    cleanup() {
-        // 清理资源
-    }
-    buildMessages(request) {
-        const messages = [];
-        // 添加系统消息
-        const systemPrompt = this.getSystemPrompt(request.type);
-        if (systemPrompt) {
-            messages.push({
-                role: 'system',
-                content: systemPrompt,
-            });
-        }
-        // 添加用户消息
-        messages.push({
-            role: 'user',
-            content: request.text,
-        });
-        return messages;
-    }
-    getSystemPrompt(type) {
-        const prompts = {
-            correct: '你是一个专业的文本校对专家。请仔细检查并纠正文本中的所有错误，包括：\n1. 拼写错误\n2. 语法错误\n3. 标点符号错误\n4. 不通顺的表达\n\n请直接给出修正后的文本，不需要解释。',
-            complete: '你是一个智能写作助手。请根据给定的上下文，自然地完成后续内容。要求：\n1. 保持语言风格一致\n2. 内容连贯自然\n3. 符合逻辑',
-            continue: '你是一个创意写作助手。请基于已有内容继续写作。要求：\n1. 保持故事的连贯性\n2. 维持相同的写作风格\n3. 情节发展要合理',
-            rewrite: '你是一个资深的文案编辑。请将给定的内容重写，要求：\n1. 表达更加清晰准确\n2. 语言更加专业得体\n3. 结构更加合理\n4. 保持原意不变',
-            suggest: '你是一个专业的内容顾问。请仔细分析给定的内容，并从以下方面提供具体的改进建议：\n1. 内容结构\n2. 表达方式\n3. 逻辑性\n4. 可读性\n5. 专业性\n\n请以条目形式给出建议。',
-        };
-        return prompts[type] || '你是一个智能助手，请根据用户需求处理文本内容。';
-    }
-    /**
-     * 支持的模型列表
-     */
-    static getSupportedModels() {
-        return [
-            { id: 'glm-4', name: 'GLM-4', description: '最新一代模型，能力全面提升' },
-            { id: 'glm-4-air', name: 'GLM-4-Air', description: '性能与价格平衡的模型' },
-            { id: 'glm-4-airx', name: 'GLM-4-AirX', description: '高性价比模型' },
-            { id: 'glm-4-flash', name: 'GLM-4-Flash', description: '超快速响应，适合简单任务' },
-            { id: 'glm-3-turbo', name: 'GLM-3-Turbo', description: '上一代主力模型，稳定可靠' },
-        ];
-    }
-    /**
-     * 获取模型定价信息
-     */
-    static getPricing() {
-        return {
-            'glm-4': { input: 0.1, output: 0.1, unit: '元/千tokens' },
-            'glm-4-air': { input: 0.01, output: 0.01, unit: '元/千tokens' },
-            'glm-4-airx': { input: 0.01, output: 0.01, unit: '元/千tokens' },
-            'glm-4-flash': { input: 0.0001, output: 0.0001, unit: '元/千tokens' },
-            'glm-3-turbo': { input: 0.005, output: 0.005, unit: '元/千tokens' },
-        };
-    }
+    messages.push({
+      role: "user",
+      content: request.text
+    });
+    return messages;
+  }
+  getSystemPrompt(type) {
+    const prompts = {
+      correct: "\u4F60\u662F\u4E00\u4E2A\u4E13\u4E1A\u7684\u6587\u672C\u6821\u5BF9\u4E13\u5BB6\u3002\u8BF7\u4ED4\u7EC6\u68C0\u67E5\u5E76\u7EA0\u6B63\u6587\u672C\u4E2D\u7684\u6240\u6709\u9519\u8BEF\uFF0C\u5305\u62EC\uFF1A\n1. \u62FC\u5199\u9519\u8BEF\n2. \u8BED\u6CD5\u9519\u8BEF\n3. \u6807\u70B9\u7B26\u53F7\u9519\u8BEF\n4. \u4E0D\u901A\u987A\u7684\u8868\u8FBE\n\n\u8BF7\u76F4\u63A5\u7ED9\u51FA\u4FEE\u6B63\u540E\u7684\u6587\u672C\uFF0C\u4E0D\u9700\u8981\u89E3\u91CA\u3002",
+      complete: "\u4F60\u662F\u4E00\u4E2A\u667A\u80FD\u5199\u4F5C\u52A9\u624B\u3002\u8BF7\u6839\u636E\u7ED9\u5B9A\u7684\u4E0A\u4E0B\u6587\uFF0C\u81EA\u7136\u5730\u5B8C\u6210\u540E\u7EED\u5185\u5BB9\u3002\u8981\u6C42\uFF1A\n1. \u4FDD\u6301\u8BED\u8A00\u98CE\u683C\u4E00\u81F4\n2. \u5185\u5BB9\u8FDE\u8D2F\u81EA\u7136\n3. \u7B26\u5408\u903B\u8F91",
+      continue: "\u4F60\u662F\u4E00\u4E2A\u521B\u610F\u5199\u4F5C\u52A9\u624B\u3002\u8BF7\u57FA\u4E8E\u5DF2\u6709\u5185\u5BB9\u7EE7\u7EED\u5199\u4F5C\u3002\u8981\u6C42\uFF1A\n1. \u4FDD\u6301\u6545\u4E8B\u7684\u8FDE\u8D2F\u6027\n2. \u7EF4\u6301\u76F8\u540C\u7684\u5199\u4F5C\u98CE\u683C\n3. \u60C5\u8282\u53D1\u5C55\u8981\u5408\u7406",
+      rewrite: "\u4F60\u662F\u4E00\u4E2A\u8D44\u6DF1\u7684\u6587\u6848\u7F16\u8F91\u3002\u8BF7\u5C06\u7ED9\u5B9A\u7684\u5185\u5BB9\u91CD\u5199\uFF0C\u8981\u6C42\uFF1A\n1. \u8868\u8FBE\u66F4\u52A0\u6E05\u6670\u51C6\u786E\n2. \u8BED\u8A00\u66F4\u52A0\u4E13\u4E1A\u5F97\u4F53\n3. \u7ED3\u6784\u66F4\u52A0\u5408\u7406\n4. \u4FDD\u6301\u539F\u610F\u4E0D\u53D8",
+      suggest: "\u4F60\u662F\u4E00\u4E2A\u4E13\u4E1A\u7684\u5185\u5BB9\u987E\u95EE\u3002\u8BF7\u4ED4\u7EC6\u5206\u6790\u7ED9\u5B9A\u7684\u5185\u5BB9\uFF0C\u5E76\u4ECE\u4EE5\u4E0B\u65B9\u9762\u63D0\u4F9B\u5177\u4F53\u7684\u6539\u8FDB\u5EFA\u8BAE\uFF1A\n1. \u5185\u5BB9\u7ED3\u6784\n2. \u8868\u8FBE\u65B9\u5F0F\n3. \u903B\u8F91\u6027\n4. \u53EF\u8BFB\u6027\n5. \u4E13\u4E1A\u6027\n\n\u8BF7\u4EE5\u6761\u76EE\u5F62\u5F0F\u7ED9\u51FA\u5EFA\u8BAE\u3002"
+    };
+    return prompts[type] || "\u4F60\u662F\u4E00\u4E2A\u667A\u80FD\u52A9\u624B\uFF0C\u8BF7\u6839\u636E\u7528\u6237\u9700\u6C42\u5904\u7406\u6587\u672C\u5185\u5BB9\u3002";
+  }
+  /**
+   * 支持的模型列表
+   */
+  static getSupportedModels() {
+    return [{
+      id: "glm-4",
+      name: "GLM-4",
+      description: "\u6700\u65B0\u4E00\u4EE3\u6A21\u578B\uFF0C\u80FD\u529B\u5168\u9762\u63D0\u5347"
+    }, {
+      id: "glm-4-air",
+      name: "GLM-4-Air",
+      description: "\u6027\u80FD\u4E0E\u4EF7\u683C\u5E73\u8861\u7684\u6A21\u578B"
+    }, {
+      id: "glm-4-airx",
+      name: "GLM-4-AirX",
+      description: "\u9AD8\u6027\u4EF7\u6BD4\u6A21\u578B"
+    }, {
+      id: "glm-4-flash",
+      name: "GLM-4-Flash",
+      description: "\u8D85\u5FEB\u901F\u54CD\u5E94\uFF0C\u9002\u5408\u7B80\u5355\u4EFB\u52A1"
+    }, {
+      id: "glm-3-turbo",
+      name: "GLM-3-Turbo",
+      description: "\u4E0A\u4E00\u4EE3\u4E3B\u529B\u6A21\u578B\uFF0C\u7A33\u5B9A\u53EF\u9760"
+    }];
+  }
+  /**
+   * 获取模型定价信息
+   */
+  static getPricing() {
+    return {
+      "glm-4": {
+        input: 0.1,
+        output: 0.1,
+        unit: "\u5143/\u5343tokens"
+      },
+      "glm-4-air": {
+        input: 0.01,
+        output: 0.01,
+        unit: "\u5143/\u5343tokens"
+      },
+      "glm-4-airx": {
+        input: 0.01,
+        output: 0.01,
+        unit: "\u5143/\u5343tokens"
+      },
+      "glm-4-flash": {
+        input: 1e-4,
+        output: 1e-4,
+        unit: "\u5143/\u5343tokens"
+      },
+      "glm-3-turbo": {
+        input: 5e-3,
+        output: 5e-3,
+        unit: "\u5143/\u5343tokens"
+      }
+    };
+  }
 }
 
 export { GLMProvider };

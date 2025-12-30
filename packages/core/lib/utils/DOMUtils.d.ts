@@ -72,3 +72,4 @@ export declare function throttle<T extends (...args: any[]) => any>(func: T, wai
  * 等待DOM元素出现
  */
 export declare function waitForElement(selector: string, timeout?: number): Promise<HTMLElement>;
+//# sourceMappingURL=DOMUtils.d.ts.map

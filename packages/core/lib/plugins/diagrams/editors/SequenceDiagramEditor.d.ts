@@ -16,3 +16,4 @@ export declare class SequenceDiagramEditor implements DiagramEditor {
     private bindEvents;
     destroy(): void;
 }
+//# sourceMappingURL=SequenceDiagramEditor.d.ts.map

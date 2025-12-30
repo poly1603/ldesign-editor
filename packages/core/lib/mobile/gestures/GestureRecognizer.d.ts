@@ -109,3 +109,4 @@ export declare class GestureRecognizer extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=GestureRecognizer.d.ts.map

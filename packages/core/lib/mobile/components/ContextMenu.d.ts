@@ -85,3 +85,4 @@ export declare class ContextMenu extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=ContextMenu.d.ts.map

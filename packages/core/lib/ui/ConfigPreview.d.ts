@@ -45,3 +45,4 @@ export declare class ConfigPreview {
  * 显示配置预览
  */
 export declare function showConfigPreview(preset: PresetName): ConfigPreview;
+//# sourceMappingURL=ConfigPreview.d.ts.map

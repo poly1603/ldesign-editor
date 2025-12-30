@@ -157,7 +157,8 @@ export class IncrementalRenderer {
     if (this.patchQueue.length === 0)
       return
 
-    const timer = this.performanceMonitor.startTimer('incrementalRender.batch')
+    const timerName = 'incrementalRender.batch'
+    this.performanceMonitor.start(timerName)
     this.isRendering = true
 
     try {
@@ -182,7 +183,7 @@ export class IncrementalRenderer {
     }
     finally {
       this.isRendering = false
-      this.performanceMonitor.endTimer(timer)
+      this.performanceMonitor.end(timerName)
     }
   }
 

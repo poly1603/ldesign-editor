@@ -190,15 +190,24 @@ function App() {
 ```
 libraries/editor/
 ├── packages/
-│   ├── core/          # 核心库（框架无关）
-│   │   ├── src/      # 源代码
-│   │   ├── demo/     # Vite演示
-│   │   └── dist/     # 构建产物
-│   ├── vue/           # Vue封装
-│   ├── react/         # React封装
-│   └── lit/           # Lit封装
-├── docs/              # 技术文档
-├── examples/          # 原有示例（保留）
+│   ├── core/              # 核心库（框架无关）
+│   │   ├── src/
+│   │   │   ├── core/      # 编辑器核心类
+│   │   │   ├── plugins/   # 插件系统
+│   │   │   ├── presets/   # 插件预设
+│   │   │   ├── ui/        # UI组件
+│   │   │   ├── toolbar/   # 工具栏
+│   │   │   ├── ai/        # AI功能
+│   │   │   ├── collaboration/ # 协作功能
+│   │   │   └── ...        # 更多模块
+│   │   ├── demo/          # Vite演示
+│   │   └── dist/          # 构建产物
+│   ├── vue/               # Vue 3 封装
+│   ├── react/             # React 封装
+│   └── lit/               # Lit Web Component
+├── playground/            # 开发测试项目
+├── docs/                  # 技术文档
+│   └── archive/           # 历史文档归档
 └── pnpm-workspace.yaml
 ```
 
@@ -226,20 +235,11 @@ cd packages/lit/demo && pnpm dev
 
 ## 📚 文档
 
-### 快速指南
-- 🚀 [快速开始](./QUICK_START.md)
-- 🔄 [迁移指南](./MIGRATION_GUIDE.md)
-- 🏗️ [Monorepo架构](./MONOREPO_STRUCTURE.md)
-
-### 功能文档
-- 🛠️ [CLI工具文档](./docs/cli.md)
-- 📱 [PWA使用文档](./docs/pwa.md)
-- 👥 [协作功能文档](./docs/collaboration.md)
-
-### 项目总结
-- 📊 [优化进度报告](./OPTIMIZATION_PROGRESS.md)
-- 🎊 [完成总结](./🎊_优化完成总结.md)
-- 🎉 [任务完成](./🎉_ALL_TASKS_COMPLETE.md)
+- 🚀 [快速开始](./QUICK_START.md) - 入门指南
+- 🏗️ [架构说明](./ARCHITECTURE.md) - 系统设计
+- 🔄 [迁移指南](./MIGRATION_GUIDE.md) - 版本升级
+- 📦 [Monorepo结构](./MONOREPO_STRUCTURE.md) - 项目组织
+- 📝 [变更日志](./CHANGELOG.md) - 版本记录
 
 ---
 

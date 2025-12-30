@@ -116,3 +116,4 @@ export declare class MemoryTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=MemoryTab.d.ts.map

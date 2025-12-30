@@ -86,3 +86,4 @@ export declare class PluginMarket extends EventEmitter {
  * 获取插件市场实例
  */
 export declare function getPluginMarket(): PluginMarket;
+//# sourceMappingURL=PluginMarket.d.ts.map

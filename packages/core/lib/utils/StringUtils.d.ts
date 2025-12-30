@@ -62,3 +62,4 @@ export declare function countChineseChars(str: string): number;
  * 计算字数（中文算一个，英文单词算一个）
  */
 export declare function countWords(str: string): number;
+//# sourceMappingURL=StringUtils.d.ts.map

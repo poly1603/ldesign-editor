@@ -28,3 +28,4 @@ export declare const TOOLBAR_GROUPS: {
  * 获取带分隔符的工具栏项
  */
 export declare function getToolbarItemsWithSeparators(): ToolbarItem[];
+//# sourceMappingURL=defaultToolbar.d.ts.map

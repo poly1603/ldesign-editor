@@ -2,32 +2,28 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
 'use strict';
 
-/**
- * 图标系统类型定义
- */
-/**
- * 图标分类
- */
-exports.IconCategory = void 0;
-(function (IconCategory) {
-    IconCategory["EDITOR"] = "editor";
-    IconCategory["FORMAT"] = "format";
-    IconCategory["ACTION"] = "action";
-    IconCategory["FILE"] = "file";
-    IconCategory["NAVIGATION"] = "navigation";
-    IconCategory["MEDIA"] = "media";
-    IconCategory["ARROW"] = "arrow";
-    IconCategory["SHAPE"] = "shape";
-    IconCategory["DEVICE"] = "device";
-    IconCategory["SOCIAL"] = "social";
-    IconCategory["OTHER"] = "other";
-})(exports.IconCategory || (exports.IconCategory = {}));
+var IconCategory = /* @__PURE__ */ ((IconCategory2) => {
+  IconCategory2["EDITOR"] = "editor";
+  IconCategory2["FORMAT"] = "format";
+  IconCategory2["ACTION"] = "action";
+  IconCategory2["FILE"] = "file";
+  IconCategory2["NAVIGATION"] = "navigation";
+  IconCategory2["MEDIA"] = "media";
+  IconCategory2["ARROW"] = "arrow";
+  IconCategory2["SHAPE"] = "shape";
+  IconCategory2["DEVICE"] = "device";
+  IconCategory2["SOCIAL"] = "social";
+  IconCategory2["OTHER"] = "other";
+  return IconCategory2;
+})(IconCategory || {});
+
+exports.IconCategory = IconCategory;
 /*! End of @ldesign/editor-core | Powered by @ldesign/builder */
 //# sourceMappingURL=types.cjs.map

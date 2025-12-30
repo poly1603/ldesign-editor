@@ -31,3 +31,4 @@ export declare class ColorPicker extends Modal {
     getSelectedColor(): string;
     setSelectedColor(color: string): void;
 }
+//# sourceMappingURL=ColorPicker.d.ts.map

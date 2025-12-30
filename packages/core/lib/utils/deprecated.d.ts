@@ -10,3 +10,4 @@
  */
 export declare function $(selector: string, parent?: Element | Document): Element | null;
 export declare function $$(selector: string, parent?: Element | Document): Element[];
+//# sourceMappingURL=deprecated.d.ts.map

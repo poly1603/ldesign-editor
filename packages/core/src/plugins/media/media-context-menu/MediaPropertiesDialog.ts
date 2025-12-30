@@ -17,8 +17,16 @@ export class MediaPropertiesDialog extends BaseComponent {
   private dialogElement?: HTMLElement
   private overlayElement?: HTMLElement
 
-  constructor(container: HTMLElement) {
-    super(container)
+  constructor(container?: HTMLElement) {
+    super({ container, visible: false })
+  }
+
+  protected createElement(): HTMLElement {
+    // 返回一个空容器，实际内容在 render() 中创建
+    const el = document.createElement('div')
+    el.className = 'media-properties-container'
+    el.style.display = 'none'
+    return el
   }
 
   show(properties: MediaProperties, onSave: (props: MediaProperties) => void, onCancel?: () => void): void {

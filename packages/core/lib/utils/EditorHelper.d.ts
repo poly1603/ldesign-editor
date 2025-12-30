@@ -42,3 +42,4 @@ export declare class EditorHelper {
  * 创建编辑器助手实例
  */
 export declare function createEditorHelper(editor: any): EditorHelper;
+//# sourceMappingURL=EditorHelper.d.ts.map

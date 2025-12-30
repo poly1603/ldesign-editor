@@ -88,3 +88,4 @@ export declare function validateConfig(config: EditorConfig): ValidationResult;
  * 快捷函数：自动修复配置
  */
 export declare function autoFixConfig(config: EditorConfig): EditorConfig;
+//# sourceMappingURL=ConfigValidator.d.ts.map

@@ -65,3 +65,4 @@ export declare class Document {
      */
     private getNodeSize;
 }
+//# sourceMappingURL=Document.d.ts.map

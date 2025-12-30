@@ -13,3 +13,4 @@ export declare function hideTooltip(): void;
  * 绑定工具提示到元素
  */
 export declare function bindTooltip(element: HTMLElement, text: string): void;
+//# sourceMappingURL=Tooltip.d.ts.map

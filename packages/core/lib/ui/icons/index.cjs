@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -14,44 +14,32 @@ var formatting = require('./formatting.cjs');
 var lucide = require('./lucide.cjs');
 var media = require('./media.cjs');
 
-/**
- * 统一图标系统
- * 整合原 ui/icons.ts 和 utils/icons.ts
- */
-// 合并所有图标集
 const icons = {
-    ...basic.basicIcons,
-    ...formatting.formattingIcons,
-    ...media.mediaIcons,
-    ...lucide.lucideIcons,
+  ...basic.basicIcons,
+  ...formatting.formattingIcons,
+  ...media.mediaIcons,
+  ...lucide.lucideIcons
 };
-/**
- * 创建图标元素
- */
 function createIcon(name) {
-    const iconSVG = icons[name];
-    if (!iconSVG) {
-        console.warn(`Icon "${name}" not found`);
-        return null;
-    }
-    const template = document.createElement('template');
-    template.innerHTML = iconSVG.trim();
-    const element = template.content.firstChild;
-    // 设置默认属性
-    if (element) {
-        element.classList.add('editor-icon');
-        if (!element.getAttribute('width'))
-            element.setAttribute('width', '18');
-        if (!element.getAttribute('height'))
-            element.setAttribute('height', '18');
-    }
-    return element;
+  const iconSVG = icons[name];
+  if (!iconSVG) {
+    console.warn(`Icon "${name}" not found`);
+    return null;
+  }
+  const template = document.createElement("template");
+  template.innerHTML = iconSVG.trim();
+  const element = template.content.firstChild;
+  if (element) {
+    element.classList.add("editor-icon");
+    if (!element.getAttribute("width"))
+      element.setAttribute("width", "18");
+    if (!element.getAttribute("height"))
+      element.setAttribute("height", "18");
+  }
+  return element;
 }
-/**
- * 获取图标 HTML
- */
 function getIconHTML(name) {
-    return icons[name] || '';
+  return icons[name] || "";
 }
 
 exports.basicIcons = basic.basicIcons;

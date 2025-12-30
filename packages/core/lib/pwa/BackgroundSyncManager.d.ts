@@ -57,3 +57,4 @@ export declare class BackgroundSyncManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=BackgroundSyncManager.d.ts.map

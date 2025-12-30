@@ -3,9 +3,9 @@
  * 管理实时协作编辑、CRDT同步、P2P连接
  */
 import type { Editor } from '../core/Editor';
-import type { CollaborationConfig, CollaborationEvents, CollaborationUser, ConnectionStatus } from './crdt/types';
+import type { CollaborationConfig, CollaborationUser, ConnectionStatus } from './crdt/types';
 import { EventEmitter } from '../core/EventEmitter';
-export declare class CollaborationManager extends EventEmitter<CollaborationEvents> {
+export declare class CollaborationManager extends EventEmitter<any> {
     private editor;
     private config;
     private crdt;
@@ -134,3 +134,4 @@ export declare class CollaborationManager extends EventEmitter<CollaborationEven
      */
     destroy(): void;
 }
+//# sourceMappingURL=CollaborationManager.d.ts.map

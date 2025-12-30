@@ -18,3 +18,4 @@ export declare function updateHeadingButton(button: HTMLElement): void;
  * 初始化标题功能增强
  */
 export declare function initHeadingEnhancement(editor: any): void;
+//# sourceMappingURL=HeadingEnhanced.d.ts.map

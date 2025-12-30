@@ -58,3 +58,4 @@ export declare class ConfigWizard {
  * 显示配置向导
  */
 export declare function showConfigWizard(onComplete: (preset: PresetName) => void): ConfigWizard;
+//# sourceMappingURL=ConfigWizard.d.ts.map

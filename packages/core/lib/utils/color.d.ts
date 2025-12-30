@@ -96,3 +96,4 @@ export declare function setCSSVariableColor(variable: string, color: string): vo
  * 将颜色转换为CSS格式
  */
 export declare function toCSSColor(color: string | RGB | RGBA): string;
+//# sourceMappingURL=color.d.ts.map

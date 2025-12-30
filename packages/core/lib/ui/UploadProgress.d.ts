@@ -64,3 +64,4 @@ export declare function createUploadProgress(options?: UploadProgressOptions): U
  * 显示上传进度
  */
 export declare function showUploadProgress(options?: UploadProgressOptions): UploadProgress;
+//# sourceMappingURL=UploadProgress.d.ts.map

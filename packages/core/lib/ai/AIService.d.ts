@@ -24,7 +24,7 @@ export declare class AIService {
     /**
      * 设置当前提供商
      */
-    setProvider(provider: AIProvider): void;
+    setProvider(provider: AIProvider): boolean;
     /**
      * 更新配置
      */
@@ -94,3 +94,4 @@ export declare function getAIService(config?: Partial<AIConfig>): AIService;
  * 重置 AI 服务实例
  */
 export declare function resetAIService(): void;
+//# sourceMappingURL=AIService.d.ts.map

@@ -35,3 +35,4 @@ export declare class LucideIconSet implements IconSet {
      */
     searchIcons(query: string): IconDefinition[];
 }
+//# sourceMappingURL=lucide.d.ts.map

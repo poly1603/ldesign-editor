@@ -42,3 +42,4 @@ export declare class DiagramRenderer implements DiagramRendererInterface {
      */
     destroy(): void;
 }
+//# sourceMappingURL=DiagramRenderer.d.ts.map

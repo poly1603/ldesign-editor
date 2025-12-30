@@ -10,3 +10,4 @@ export declare const SuperscriptPlugin: Plugin;
  * 下标插件
  */
 export declare const SubscriptPlugin: Plugin;
+//# sourceMappingURL=script.d.ts.map

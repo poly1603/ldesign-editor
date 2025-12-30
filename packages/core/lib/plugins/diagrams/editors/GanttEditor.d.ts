@@ -16,3 +16,4 @@ export declare class GanttEditor implements DiagramEditor {
     private bindEvents;
     destroy(): void;
 }
+//# sourceMappingURL=GanttEditor.d.ts.map

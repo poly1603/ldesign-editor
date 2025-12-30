@@ -21,3 +21,4 @@ export declare class QwenProvider implements AIProviderInterface {
         description: string;
     }[];
 }
+//# sourceMappingURL=QwenProvider.d.ts.map

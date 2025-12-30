@@ -9,3 +9,4 @@
 export { createIcon, getIconHTML, icons } from '../ui/icons';
 export type { IconName } from '../ui/icons';
 export { getLucideIcon } from '../ui/icons/lucide';
+//# sourceMappingURL=icons.d.ts.map

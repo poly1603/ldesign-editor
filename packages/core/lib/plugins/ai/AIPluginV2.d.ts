@@ -4,3 +4,4 @@
  */
 declare const AIPlugin: import("../../types").Plugin;
 export default AIPlugin;
+//# sourceMappingURL=AIPluginV2.d.ts.map

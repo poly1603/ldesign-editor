@@ -166,3 +166,4 @@ export declare function getPluginRegistry(): PluginRegistry;
  * 重置全局插件注册中心
  */
 export declare function resetPluginRegistry(): void;
+//# sourceMappingURL=PluginRegistry.d.ts.map

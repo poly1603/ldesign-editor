@@ -85,3 +85,4 @@ export declare class SelectionManager {
      */
     clear(): void;
 }
+//# sourceMappingURL=Selection.d.ts.map

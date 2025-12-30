@@ -56,3 +56,4 @@ export declare function redo(): boolean;
  */
 export declare function indent(): boolean;
 export declare function outdent(): boolean;
+//# sourceMappingURL=EditorUtils.d.ts.map

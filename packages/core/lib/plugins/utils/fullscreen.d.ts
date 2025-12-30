@@ -5,3 +5,4 @@
 import type { Plugin } from '../../types';
 declare const FullscreenPlugin: Plugin;
 export default FullscreenPlugin;
+//# sourceMappingURL=fullscreen.d.ts.map

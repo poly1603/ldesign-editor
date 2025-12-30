@@ -5,3 +5,4 @@
 import type { Plugin } from '../../types';
 declare const MediaCommandsPlugin: Plugin;
 export default MediaCommandsPlugin;
+//# sourceMappingURL=media-commands.d.ts.map

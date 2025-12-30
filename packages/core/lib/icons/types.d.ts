@@ -207,3 +207,4 @@ export interface IconLoader {
     loadFromUrl?: (url: string) => Promise<Map<string, IconDefinition>>;
     loadFromString?: (data: string) => Map<string, IconDefinition>;
 }
+//# sourceMappingURL=types.d.ts.map

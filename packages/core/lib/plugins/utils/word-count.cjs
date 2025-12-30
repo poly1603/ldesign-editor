@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -11,19 +11,14 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-/**
- * Word count plugin
- * Provides word and character count functionality
- */
 const WordCountPlugin = {
-    name: 'WordCount',
-    install(editor) {
-        let countElement = null;
-        // Create word count display element
-        function createCountElement() {
-            const div = document.createElement('div');
-            div.className = 'word-count-status';
-            div.style.cssText = `
+  name: "WordCount",
+  install(editor) {
+    let countElement = null;
+    function createCountElement() {
+      const div = document.createElement("div");
+      div.className = "word-count-status";
+      div.style.cssText = `
         position: fixed;
         bottom: 10px;
         right: 10px;
@@ -34,48 +29,44 @@ const WordCountPlugin = {
         font-size: 12px;
         z-index: 1000;
       `;
-            document.body.appendChild(div);
-            return div;
-        }
-        // Count words
-        function countWords(text) {
-            const cleanText = text.replace(/<[^>]*>/g, '').trim();
-            const words = cleanText.match(/\S+/g) || [];
-            const chars = cleanText.length;
-            const charsNoSpaces = cleanText.replace(/\s/g, '').length;
-            return {
-                words: words.length,
-                chars,
-                charsNoSpaces,
-            };
-        }
-        // Update count
-        function updateCount() {
-            const content = editor.getHTML();
-            const stats = countWords(content);
-            if (!countElement)
-                countElement = createCountElement();
-            countElement.innerHTML = `
+      document.body.appendChild(div);
+      return div;
+    }
+    function countWords(text) {
+      const cleanText = text.replace(/<[^>]*>/g, "").trim();
+      const words = cleanText.match(/\S+/g) || [];
+      const chars = cleanText.length;
+      const charsNoSpaces = cleanText.replace(/\s/g, "").length;
+      return {
+        words: words.length,
+        chars,
+        charsNoSpaces
+      };
+    }
+    function updateCount() {
+      const content = editor.getHTML();
+      const stats = countWords(content);
+      if (!countElement)
+        countElement = createCountElement();
+      countElement.innerHTML = `
         Words: ${stats.words} | 
         Chars: ${stats.chars} | 
         Chars (no spaces): ${stats.charsNoSpaces}
       `;
-        }
-        // Register show/hide word count command
-        editor.commands.register('toggleWordCount', () => {
-            if (countElement)
-                countElement.style.display = countElement.style.display === 'none' ? 'block' : 'none';
-            else
-                updateCount();
-            return true;
-        });
-        // Listen for content changes
-        editor.on('input', () => {
-            if (countElement && countElement.style.display !== 'none')
-                updateCount();
-        });
-        console.log('[WordCountPlugin] Installed');
-    },
+    }
+    editor.commands.register("toggleWordCount", () => {
+      if (countElement)
+        countElement.style.display = countElement.style.display === "none" ? "block" : "none";
+      else
+        updateCount();
+      return true;
+    });
+    editor.on("input", () => {
+      if (countElement && countElement.style.display !== "none")
+        updateCount();
+    });
+    console.log("[WordCountPlugin] Installed");
+  }
 };
 
 exports.default = WordCountPlugin;

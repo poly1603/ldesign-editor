@@ -3,7 +3,7 @@
  * 集中管理编辑器的所有配置：图标、主题、语言等
  */
 import type { I18nConfig, I18nManager } from '../i18n';
-import type { IconManager, IconManagerConfig } from '../icons/IconManager';
+import type { IconManager } from '../icons/IconManager';
 import type { IconSetType } from '../icons/types';
 import type { Theme, ThemeManager } from '../theme';
 import { EventEmitter } from '../core/EventEmitter';
@@ -11,13 +11,18 @@ import { EventEmitter } from '../core/EventEmitter';
  * 编辑器配置接口
  */
 export interface EditorConfig {
-    icons?: IconManagerConfig;
+    icons?: any;
     theme?: {
         defaultTheme?: string;
         customThemes?: Theme[];
         followSystem?: boolean;
     };
     i18n?: Partial<I18nConfig>;
+    features?: {
+        enabled?: string[];
+        disabled?: string[];
+        lazy?: boolean;
+    };
     autoSave?: boolean;
     autoSaveInterval?: number;
     spellCheck?: boolean;
@@ -126,3 +131,4 @@ export declare function getConfigManager(config?: EditorConfig): ConfigManager;
  * 重置全局配置管理器
  */
 export declare function resetConfigManager(): void;
+//# sourceMappingURL=ConfigManager.d.ts.map

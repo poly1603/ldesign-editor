@@ -1,15 +1,23 @@
 /**
- * @ldesign/editor
+ * @ldesign/editor-core
  * 功能强大、扩展性强的富文本编辑器
+ *
+ * @example
+ * ```typescript
+ * import { Editor } from '@ldesign/editor-core'
+ * import { standardPlugins } from '@ldesign/editor-core/presets'
+ * import '@ldesign/editor-core/styles/editor.css'
+ *
+ * const editor = new Editor({
+ *   element: '#editor',
+ *   plugins: standardPlugins,
+ * })
+ * ```
  */
 
-// 应用表格补丁 - 自动替换旧的表格插入功能
-import { patchTableInsertCommand } from './plugins/table-patch'
-// 核心
-// 样式
-import './styles/editor.css'
 
-import './styles/ai.css'
+// 注意：CSS 不再自动导入，用户需要手动导入
+// import '@ldesign/editor-core/styles/editor.css'
 
 // AI 功能
 export { AIService, getAIService, resetAIService } from './ai/AIService'
@@ -65,7 +73,7 @@ export {
   toolbarConfigExample,
 } from './config/editor.config.example'
 
-// 预设配置
+// 配置预设（编辑器配置，包括主题、图标、功能开关等）
 export {
   aiEnhancedPreset,
   blogPreset,
@@ -77,14 +85,14 @@ export {
   getPreset,
   getPresetNames,
   markdownPreset,
-  minimalPreset,
+  minimalPreset as minimalConfigPreset,
   mobilePreset,
   notePreset,
   presetDescriptions,
-  presets,
+  presets as configPresets,
   richTextPreset,
 } from './config/presets'
-export type { PresetName } from './config/presets'
+export type { PresetName as ConfigPresetName } from './config/presets'
 
 // 插件基类
 export { BasePlugin } from './core/base/BasePlugin'
@@ -224,7 +232,17 @@ export type {
   SequenceData,
   UMLData,
 } from './plugins/diagrams'
-export { patchTableInsertCommand } from './plugins/table-patch'
+export { patchTableInsertCommand } from './plugins/table/table-patch'
+// 插件预设（插件数组，可直接传入 Editor options.plugins）
+export {
+  basicPlugins,
+  blogPlugins,
+  createPreset,
+  documentPlugins,
+  fullPlugins,
+  minimalPlugins,
+  standardPlugins,
+} from './presets'
 // PWA支持
 export { OfflineStorage, PWAManager } from './pwa'
 export type { OfflineData, PWAConfig, PWAStatus } from './pwa'
@@ -243,10 +261,11 @@ export type {
   ThemeFonts,
   ThemeSpacing,
 } from './theme'
+
 // 类型
 export type * from './types'
-
 export { showAIConfigDialog } from './ui/AIConfigDialog'
+
 export { type AIDialogType, AIMockUtils, showAIDialog } from './ui/AIDialog'
 
 export { showAISuggestionsOverlay } from './ui/AISuggestionsOverlay'
@@ -261,7 +280,6 @@ export {
   createSelect,
   getComponentFactory,
 } from './ui/base/ComponentFactory'
-
 export type {
   ButtonOptions,
   ButtonType,
@@ -277,20 +295,21 @@ export { createDropdown, showDropdown } from './ui/Dropdown'
 export { showEmojiPicker } from './ui/EmojiPicker'
 export { FeatureManagerPanel, showFeatureManager } from './ui/FeatureManagerPanel'
 export { createFindReplaceDialog, showFindReplaceDialog } from './ui/FindReplaceDialog'
-export { createIcon, getIconHTML } from './ui/icons'
 
+export { createIcon, getIconHTML } from './ui/icons'
 export { PluginMarketPanel, showPluginMarket } from './ui/PluginMarketPanel'
 export { SettingsPanel, showSettingsPanel } from './ui/SettingsPanel'
 export { showTableDialog } from './ui/TableDialog'
 export { showEnhancedTableGridSelector, showTableGridSelector } from './ui/TableGridSelector'
 // UI
 export { Toolbar } from './ui/Toolbar'
-export { ToolbarManager } from './ui/ToolbarManager'
 
+export { ToolbarManager } from './ui/ToolbarManager'
 export type {
   ToolbarGroupConfig,
   ToolbarManagerConfig,
 } from './ui/ToolbarManager'
+
 export {
   showAlertDialog,
   showConfirmDialog,
@@ -298,10 +317,9 @@ export {
   showUnifiedDialog,
   UnifiedDialog,
 } from './ui/UnifiedDialog'
-
 export { createUploadProgress, showUploadProgress, UploadProgress } from './ui/UploadProgress'
-export type { UploadProgressOptions } from './ui/UploadProgress'
 
+export type { UploadProgressOptions } from './ui/UploadProgress'
 // 自动优化
 export {
   AutoOptimizer,
@@ -309,11 +327,11 @@ export {
   startAutoOptimization,
   stopAutoOptimization,
 } from './utils/AutoOptimizer'
+
 export type {
   AutoOptimizerConfig,
   OptimizationSuggestion,
 } from './utils/AutoOptimizer'
-
 // 工具函数
 export {
   Batcher,
@@ -330,6 +348,7 @@ export {
   retry,
   throttle,
 } from './utils/helpers'
+
 // 性能监控
 export {
   endTimer,
@@ -338,31 +357,23 @@ export {
   PerformanceMonitor,
   startTimer,
 } from './utils/PerformanceMonitor'
-
 export type {
   PerformanceEntry,
   PerformanceMetrics,
 } from './utils/PerformanceMonitor'
+
 // 快捷函数
 export { batch, debug, editor, optimize, quick } from './utils/shortcuts'
 
 // 简化工具
 export { $, classNames, cmd, css, on, str, ui } from './utils/simplify'
-
 // WebAssembly加速
 export { WasmAccelerator } from './wasm/WasmAccelerator'
+
 export type { AcceleratorOptions, AcceleratorStats } from './wasm/WasmAccelerator'
-
 export { WasmDiff } from './wasm/WasmDiff'
+
 export type { DiffOperation, DiffResult, WasmDiffOptions } from './wasm/WasmDiff'
-
 export { WasmParser } from './wasm/WasmParser'
-export type { NodeType, ParsedNode, ParseResult, WasmParserOptions } from './wasm/WasmParser'
 
-// 自动应用补丁
-if (typeof window !== 'undefined') {
-  // 延迟执行，确保编辑器已初始化
-  setTimeout(() => {
-    patchTableInsertCommand()
-  }, 500)
-}
+export type { NodeType, ParsedNode, ParseResult, WasmParserOptions } from './wasm/WasmParser'

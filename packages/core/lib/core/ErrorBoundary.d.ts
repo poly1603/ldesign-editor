@@ -82,3 +82,4 @@ export declare function captureError(error: Error, source: string, context?: Rec
  * 便捷函数：包装函数
  */
 export declare function withErrorBoundary<T extends (...args: any[]) => any>(fn: T, source: string, fallback?: (...args: Parameters<T>) => ReturnType<T>): T;
+//# sourceMappingURL=ErrorBoundary.d.ts.map

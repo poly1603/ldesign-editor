@@ -139,3 +139,4 @@ export declare class WasmParser {
      */
     dispose(): void;
 }
+//# sourceMappingURL=WasmParser.d.ts.map

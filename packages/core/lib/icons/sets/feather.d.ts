@@ -24,3 +24,4 @@ export declare class FeatherIconSet implements IconSet {
     getIconsByCategory(category: IconCategory): IconDefinition[];
     searchIcons(query: string): IconDefinition[];
 }
+//# sourceMappingURL=feather.d.ts.map

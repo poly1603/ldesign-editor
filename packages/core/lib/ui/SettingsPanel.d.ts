@@ -99,3 +99,4 @@ export declare class SettingsPanel {
  * 显示设置面板
  */
 export declare function showSettingsPanel(options?: SettingsPanelOptions): SettingsPanel;
+//# sourceMappingURL=SettingsPanel.d.ts.map

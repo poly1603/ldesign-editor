@@ -102,3 +102,4 @@ export declare const AIEnhancedPlugin: import("../../types").Plugin;
  * @returns AI增强管理器
  */
 export declare function getAIEnhancedManager(editor: EditorInstance): AIEnhancedManager | null;
+//# sourceMappingURL=ai-enhanced.d.ts.map

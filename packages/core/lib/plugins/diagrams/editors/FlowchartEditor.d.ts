@@ -23,3 +23,4 @@ export declare class FlowchartEditor implements DiagramEditor {
     private deleteEdge;
     destroy(): void;
 }
+//# sourceMappingURL=FlowchartEditor.d.ts.map

@@ -28,3 +28,4 @@ export declare const AIMockUtils: {
     mockRewrite: (text: string) => string;
 };
 export {};
+//# sourceMappingURL=AIDialog.d.ts.map

@@ -43,3 +43,4 @@ export declare class ImageResizePlugin extends Plugin {
     destroy(): void;
 }
 export default ImageResizePlugin;
+//# sourceMappingURL=index.d.ts.map

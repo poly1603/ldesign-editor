@@ -204,3 +204,4 @@ export interface CacheResponse {
     /** 缓存时间 */
     cachedAt?: number;
 }
+//# sourceMappingURL=types.d.ts.map

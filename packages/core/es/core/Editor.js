@@ -2,13 +2,12 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
 import { DebugPanel } from '../devtools/DebugPanel.js';
-import * as index from '../plugins/index.js';
 import { DEFAULT_TOOLBAR_ITEMS } from '../ui/defaultToolbar.js';
 import { Toolbar } from '../ui/Toolbar.js';
 import { createLogger } from '../utils/logger.js';
@@ -21,845 +20,620 @@ import { IncrementalRenderer } from './IncrementalRenderer.js';
 import { PluginManager } from './Plugin.js';
 import { defaultSchema } from './Schema.js';
 import { SelectionManager, Selection } from './Selection.js';
-import MediaCommandsPlugin from '../plugins/media/media-commands.js';
-import FormattingCommandsPlugin from '../plugins/formatting/formatting-commands.js';
-import AIPlugin from '../plugins/ai/AIPluginV2.js';
-import { ImagePlugin } from '../plugins/media/image.js';
-import HistoryPlugin from '../plugins/utils/history.js';
-import FullscreenPlugin from '../plugins/utils/fullscreen.js';
-import { FindReplacePlugin } from '../plugins/utils/find-replace.js';
-import WordCountPlugin from '../plugins/utils/word-count.js';
-import { ExportMarkdownPlugin } from '../plugins/utils/export-markdown.js';
-import { MediaDialogPlugin } from '../plugins/media/media-dialog.js';
-import { ContextMenuPlugin } from '../plugins/utils/context-menu.js';
-import { MediaContextMenuPlugin } from '../plugins/media/media-context-menu/MediaContextMenuPlugin.js';
-import { ImageResizePlugin } from '../plugins/media/image-resize/index.js';
-import { HeadingPlugin } from '../plugins/text/heading.js';
-import { BoldPlugin, ItalicPlugin, UnderlinePlugin, StrikePlugin, InlineCodePlugin, ClearFormatPlugin } from '../plugins/formatting/formatting.js';
-import { SuperscriptPlugin, SubscriptPlugin } from '../plugins/formatting/script.js';
-import { BlockquotePlugin } from '../plugins/text/blockquote.js';
-import { CodeBlockPlugin } from '../plugins/codeblock.js';
-import { BulletListPlugin, OrderedListPlugin, TaskListPlugin } from '../plugins/text/list.js';
-import { LinkPlugin } from '../plugins/text/link.js';
-import { TablePlugin } from '../plugins/table.js';
-import { AlignPlugin } from '../plugins/formatting/align.js';
-import { TextColorPlugin, BackgroundColorPlugin } from '../plugins/formatting/color.js';
-import { FontSizePlugin, FontFamilyPlugin } from '../plugins/formatting/font.js';
-import { IndentPlugin } from '../plugins/formatting/indent.js';
-import { LineHeightPlugin } from '../plugins/formatting/line-height.js';
-import { TextTransformPlugin } from '../plugins/formatting/text-transform.js';
-import { EmojiPlugin } from '../plugins/emoji.js';
 
-/**
- * Editor - 编辑器核心类
- * 管理编辑器的所有功能
- */
-const logger = createLogger('Editor');
+const logger = createLogger("Editor");
 class Editor {
-    constructor(options = {}) {
-        this.version = '1.3.0';
-        this.editable = true;
-        // DOM
-        this.element = null;
-        this.contentElement = null;
-        this.toolbarElement = null;
-        // 状态
-        this.destroyed = false;
-        // DOM 选区快照（用于在弹窗交互后恢复插入位置）
-        this.savedRange = null;
-        this.options = options;
-        this.editable = options.editable !== false;
-        // 初始化核心组件
-        this.eventEmitter = new EventEmitter();
-        this.schema = defaultSchema;
-        this.document = new Document(options.content, this.schema);
-        this.selectionManager = new SelectionManager(this);
-        // 初始化管理器
-        this.commands = new CommandManager(this);
-        this.keymap = new KeymapManager(this);
-        this.plugins = new PluginManager(this);
-        // 初始化 DOM
-        if (options.element)
-            this.mount(options.element);
-        // 注册插件 - 如果没有指定插件，默认加载所有插件
-        logger.debug('options.plugins provided?', !!options.plugins);
-        if (options.plugins)
-            logger.debug('Using provided plugins:', options.plugins.length);
-        else
-            logger.debug('Using default plugins from getAllDefaultPlugins()');
-        const pluginsToLoad = options.plugins || this.getAllDefaultPlugins();
-        logger.debug('Loading plugins, total:', pluginsToLoad.length);
-        logger.debug('Plugin list:', pluginsToLoad.map(p => typeof p === 'string' ? p : p?.name || 'unnamed'));
-        logger.debug('HeadingPlugin exists in AllPlugins:', !!HeadingPlugin);
-        if (HeadingPlugin) {
-            logger.debug('HeadingPlugin name:', HeadingPlugin.name);
-            logger.debug('HeadingPlugin config:', HeadingPlugin.config);
-            logger.debug('Is HeadingPlugin in pluginsToLoad?', pluginsToLoad.includes(HeadingPlugin));
+  constructor(options = {}) {
+    this.version = "1.3.0";
+    this.editable = true;
+    // DOM
+    this.element = null;
+    this.contentElement = null;
+    this.toolbarElement = null;
+    // 状态
+    this.destroyed = false;
+    // DOM 选区快照（用于在弹窗交互后恢复插入位置）
+    this.savedRange = null;
+    this.options = options;
+    this.editable = options.editable !== false;
+    this.eventEmitter = new EventEmitter();
+    this.schema = defaultSchema;
+    this.document = new Document(options.content, this.schema);
+    this.selectionManager = new SelectionManager(this);
+    this.commands = new CommandManager(this);
+    this.keymap = new KeymapManager(this);
+    this.plugins = new PluginManager(this);
+    if (options.element)
+      this.mount(options.element);
+    const pluginsToLoad = options.plugins || [];
+    if (pluginsToLoad.length > 0) {
+      logger.debug("Loading plugins, total:", pluginsToLoad.length);
+      pluginsToLoad.forEach((plugin, index) => {
+        if (typeof plugin === "string") {
+          logger.debug(`Loading builtin plugin [${index}]: "${plugin}"`);
+          this.loadBuiltinPlugin(plugin);
+        } else {
+          logger.debug(`Loading plugin [${index}]: "${plugin.name || "unnamed"}"`);
+          this.plugins.register(plugin);
         }
-        pluginsToLoad.forEach((plugin, index) => {
-            if (typeof plugin === 'string') {
-                logger.debug(`Loading builtin plugin [${index}]: "${plugin}"`);
-                // 从内置插件加载
-                this.loadBuiltinPlugin(plugin);
-            }
-            else {
-                logger.debug(`Loading plugin [${index}]: "${plugin.name || 'unnamed'}"`);
-                if (plugin.name === 'heading') {
-                    logger.debug('HeadingPlugin found in plugins list!');
-                    logger.debug('HeadingPlugin config:', plugin.config);
-                }
-                this.plugins.register(plugin);
-            }
+      });
+      logger.debug("All plugins loaded");
+    }
+    this.setupEventListeners();
+  }
+  /**
+   * 链式注册插件
+   * @param plugin - 插件实例或插件名称
+   * @returns 编辑器实例（支持链式调用）
+   *
+   * @example
+   * ```typescript
+   * editor
+   *   .use(BoldPlugin)
+   *   .use(ItalicPlugin)
+   *   .use(new CustomPlugin({ option: 'value' }))
+   * ```
+   */
+  use(plugin) {
+    if (typeof plugin === "string") {
+      this.loadBuiltinPlugin(plugin);
+    } else {
+      this.plugins.register(plugin);
+    }
+    return this;
+  }
+  /**
+   * 批量注册插件
+   * @param plugins - 插件数组
+   * @returns 编辑器实例（支持链式调用）
+   *
+   * @example
+   * ```typescript
+   * import { standardPlugins } from '@ldesign/editor-core/presets'
+   * editor.usePlugins(standardPlugins)
+   * ```
+   */
+  usePlugins(plugins) {
+    plugins.forEach((plugin) => this.use(plugin));
+    return this;
+  }
+  /**
+   * 挂载编辑器
+   */
+  mount(element) {
+    if (typeof element === "string") {
+      const el = document.querySelector(element);
+      if (!el)
+        throw new Error(`Element "${element}" not found`);
+      this.element = el;
+    } else {
+      this.element = element;
+    }
+    this.element.classList.add("ldesign-editor");
+    this.element.classList.add("ldesign-editor-wrapper");
+    if (this.options.toolbar !== false) {
+      this.toolbarElement = document.createElement("div");
+      this.toolbarElement.classList.add("ldesign-toolbar");
+      this.element.appendChild(this.toolbarElement);
+      this.toolbar = new Toolbar(this, {
+        container: this.toolbarElement,
+        items: this.options.toolbarItems || DEFAULT_TOOLBAR_ITEMS
+      });
+    }
+    this.contentElement = document.createElement("div");
+    this.contentElement.classList.add("ldesign-editor-content");
+    this.contentElement.contentEditable = String(this.editable);
+    if (this.options.placeholder)
+      this.contentElement.dataset.placeholder = this.options.placeholder;
+    this.element.appendChild(this.contentElement);
+    if (this.options.incrementalRender?.enabled !== false) {
+      this.incrementalRenderer = new IncrementalRenderer({
+        batchDelay: this.options.incrementalRender?.batchDelay,
+        maxBatchSize: this.options.incrementalRender?.maxBatchSize,
+        useRAF: this.options.incrementalRender?.useRAF !== false,
+        useWorker: this.options.incrementalRender?.useWorker,
+        useVirtualDOM: this.options.incrementalRender?.useVirtualDOM
+      });
+      this.incrementalRenderer.observeElement(this.contentElement);
+    }
+    if (this.options.wasm?.enabled !== false && WasmAccelerator.isSupported()) {
+      this.wasmAccelerator = new WasmAccelerator({
+        enabled: this.options.wasm?.enabled !== false,
+        enableDiff: this.options.wasm?.enableDiff !== false,
+        enableParser: this.options.wasm?.enableParser !== false,
+        useWorker: this.options.wasm?.useWorker,
+        warmupStrategy: this.options.wasm?.warmupStrategy || "lazy"
+      });
+      if (this.options.wasm?.warmupStrategy === "eager") {
+        this.wasmAccelerator.initialize().catch((error) => {
+          logger.warn("WASM initialization failed:", error);
         });
-        logger.debug('All plugins loaded');
-        logger.debug('Registered commands:', this.commands.getCommands());
-        // 初始化事件监听
-        this.setupEventListeners();
-        // 将编辑器实例保存到全局，以便工具栏访问
-        if (typeof window !== 'undefined')
-            window.editor = this;
+      }
     }
-    /**
-     * 获取所有默认插件
-     */
-    getAllDefaultPlugins() {
-        logger.debug('Getting default plugins...');
-        logger.debug('AllPlugins keys:', Object.keys(index));
-        // 检查 HeadingPlugin 是否存在
-        logger.debug('HeadingPlugin check:', {
-            exists: !!HeadingPlugin,
-            type: typeof HeadingPlugin,
-            value: HeadingPlugin,
+    if (this.options.virtualScroll?.enabled) {
+      this.virtualScroller = new EditorVirtualScroller({
+        editor: this,
+        lineHeight: this.options.virtualScroll.lineHeight,
+        maxLines: this.options.virtualScroll.maxLines,
+        enableSyntaxHighlight: this.options.virtualScroll.enableSyntaxHighlight,
+        enableLineNumbers: this.options.virtualScroll.enableLineNumbers,
+        enableWordWrap: this.options.virtualScroll.enableWordWrap
+      });
+      this.virtualScroller.setContent(this.document.toText());
+    } else {
+      this.render();
+    }
+    if (this.options.autofocus)
+      this.focus();
+    if (this.options.debugPanel?.enabled) {
+      this.debugPanel = new DebugPanel({
+        editor: this,
+        expanded: this.options.debugPanel.expanded,
+        initialTab: this.options.debugPanel.initialTab,
+        theme: this.options.debugPanel.theme,
+        position: this.options.debugPanel.position,
+        size: this.options.debugPanel.size,
+        resizable: this.options.debugPanel.resizable,
+        showInProduction: this.options.debugPanel.showInProduction
+      });
+    }
+  }
+  /**
+   * 设置事件监听
+   */
+  setupEventListeners() {
+    if (!this.contentElement)
+      return;
+    this.contentElement.addEventListener("keydown", (e) => {
+      if (this.keymap.handleKeyDown(e))
+        e.preventDefault();
+    });
+    this.contentElement.addEventListener("input", (_e) => {
+      this.handleInput();
+    });
+    document.addEventListener("selectionchange", () => {
+      const sel = window.getSelection();
+      if (this.contentElement && this.contentElement.contains(sel?.anchorNode || null)) {
+        this.selectionManager.syncFromDOM();
+        this.emit("selectionUpdate", this.getSelection());
+        if (sel && sel.rangeCount > 0) {
+          try {
+            this.savedRange = sel.getRangeAt(0).cloneRange();
+          } catch {
+          }
+        }
+      }
+    });
+    this.contentElement.addEventListener("focus", () => {
+      this.emit("focus");
+      this.options.onFocus?.();
+    });
+    this.contentElement.addEventListener("blur", () => {
+      this.emit("blur");
+      this.options.onBlur?.();
+    });
+  }
+  /**
+   * 处理输入
+   */
+  handleInput() {
+    if (!this.contentElement)
+      return;
+    const html = this.contentElement.innerHTML;
+    this.document = new Document(html, this.schema);
+    this.emit("update", this.getState());
+    this.options.onUpdate?.(this.getState());
+    this.options.onChange?.(this.getHTML());
+  }
+  /**
+   * 渲染内容
+   */
+  render() {
+    if (!this.contentElement)
+      return;
+    const html = this.document.toHTML();
+    if (this.incrementalRenderer) {
+      this.renderIncremental(html);
+    } else {
+      const selection = this.getSelection();
+      this.contentElement.innerHTML = html;
+      if (selection)
+        this.setSelection(selection);
+    }
+  }
+  /**
+   * 增量渲染内容
+   */
+  renderIncremental(newHTML) {
+    if (!this.contentElement || !this.incrementalRenderer)
+      return;
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = newHTML;
+    const patches = this.calculatePatches(this.contentElement, tempDiv);
+    if (patches.length > 0)
+      this.incrementalRenderer.queuePatches(patches);
+  }
+  /**
+   * 计算DOM补丁
+   */
+  calculatePatches(oldRoot, newRoot) {
+    const patches = [];
+    const oldChildren = Array.from(oldRoot.children);
+    const newChildren = Array.from(newRoot.children);
+    oldChildren.forEach((oldChild, index) => {
+      if (!newChildren[index]) {
+        patches.push({
+          type: "remove",
+          target: oldChild
         });
-        const plugins = [];
-        // 最重要！首先加载 HeadingPlugin
-        if (HeadingPlugin) {
-            logger.debug('✅ Adding HeadingPlugin to default plugins');
-            plugins.push(HeadingPlugin);
-        }
-        else {
-            logger.error('❌ HeadingPlugin is undefined! This is critical!');
-        }
-        // 首先加入基础插件（命令插件）
-        if (MediaCommandsPlugin) {
-            logger.debug('Adding MediaCommandsPlugin');
-            plugins.push(MediaCommandsPlugin);
-        }
-        if (FormattingCommandsPlugin) {
-            logger.debug('Adding FormattingCommandsPlugin');
-            plugins.push(FormattingCommandsPlugin);
-        }
-        // AI 功能 - 最重要，默认启用
-        if (AIPlugin) {
-            logger.debug('Adding AIPlugin to default plugins');
-            plugins.push(AIPlugin);
-        }
-        // 基础格式化
-        if (BoldPlugin)
-            plugins.push(BoldPlugin);
-        if (ItalicPlugin)
-            plugins.push(ItalicPlugin);
-        if (UnderlinePlugin)
-            plugins.push(UnderlinePlugin);
-        if (StrikePlugin)
-            plugins.push(StrikePlugin);
-        if (InlineCodePlugin)
-            plugins.push(InlineCodePlugin);
-        if (SuperscriptPlugin)
-            plugins.push(SuperscriptPlugin);
-        if (SubscriptPlugin)
-            plugins.push(SubscriptPlugin);
-        if (ClearFormatPlugin)
-            plugins.push(ClearFormatPlugin);
-        // 标题和块级元素 - 特别检查 HeadingPlugin
-        if (HeadingPlugin) {
-            console.log('[Editor] Adding HeadingPlugin to list');
-            plugins.push(HeadingPlugin);
-        }
-        else {
-            console.error('[Editor] HeadingPlugin is undefined!');
-        }
-        if (BlockquotePlugin)
-            plugins.push(BlockquotePlugin);
-        if (CodeBlockPlugin)
-            plugins.push(CodeBlockPlugin);
-        // 列表
-        if (BulletListPlugin)
-            plugins.push(BulletListPlugin);
-        if (OrderedListPlugin)
-            plugins.push(OrderedListPlugin);
-        if (TaskListPlugin)
-            plugins.push(TaskListPlugin);
-        // 节点插件
-        if (LinkPlugin)
-            plugins.push(LinkPlugin);
-        if (ImagePlugin)
-            plugins.push(ImagePlugin);
-        if (TablePlugin)
-            plugins.push(TablePlugin);
-        // 文本样式
-        if (AlignPlugin)
-            plugins.push(AlignPlugin);
-        if (TextColorPlugin)
-            plugins.push(TextColorPlugin);
-        if (BackgroundColorPlugin)
-            plugins.push(BackgroundColorPlugin);
-        if (FontSizePlugin)
-            plugins.push(FontSizePlugin);
-        if (FontFamilyPlugin)
-            plugins.push(FontFamilyPlugin);
-        if (IndentPlugin)
-            plugins.push(IndentPlugin);
-        if (LineHeightPlugin)
-            plugins.push(LineHeightPlugin);
-        if (TextTransformPlugin)
-            plugins.push(TextTransformPlugin);
-        // 功能插件
-        if (HistoryPlugin)
-            plugins.push(HistoryPlugin);
-        if (FullscreenPlugin)
-            plugins.push(FullscreenPlugin);
-        if (FindReplacePlugin)
-            plugins.push(FindReplacePlugin);
-        if (WordCountPlugin)
-            plugins.push(WordCountPlugin);
-        if (ExportMarkdownPlugin)
-            plugins.push(ExportMarkdownPlugin);
-        if (MediaDialogPlugin)
-            plugins.push(MediaDialogPlugin);
-        if (ContextMenuPlugin)
-            plugins.push(ContextMenuPlugin);
-        // 图片编辑功能插件 - 创建实例
-        if (MediaContextMenuPlugin)
-            plugins.push(new MediaContextMenuPlugin());
-        if (ImageResizePlugin) {
-            plugins.push(new ImageResizePlugin({
-                minWidth: 50,
-                minHeight: 50,
-                preserveAspectRatio: true,
-                showDimensions: true,
-            }));
-        }
-        logger.debug(`Total plugins to load: ${plugins.length}`);
-        logger.debug('Plugin names:', plugins.map(p => p.name).join(', '));
-        // 添加 EmojiPlugin（确保它被加载）
-        if (EmojiPlugin) {
-            logger.debug('✅ EmojiPlugin found, adding to plugins list');
-            plugins.push(EmojiPlugin);
-        }
-        else {
-            logger.warn('⚠️ EmojiPlugin not found in AllPlugins!');
-            logger.debug('Available plugins:', Object.keys(index).filter(k => k.includes('Plugin')));
-        }
-        return plugins;
-    }
-    /**
-     * 挂载编辑器
-     */
-    mount(element) {
-        if (typeof element === 'string') {
-            const el = document.querySelector(element);
-            if (!el)
-                throw new Error(`Element "${element}" not found`);
-            this.element = el;
-        }
-        else {
-            this.element = element;
-        }
-        // 创建编辑器 DOM 结构
-        this.element.classList.add('ldesign-editor');
-        this.element.classList.add('ldesign-editor-wrapper');
-        // 创建工具栏容器 (默认创建)
-        if (this.options.toolbar !== false) {
-            this.toolbarElement = document.createElement('div');
-            this.toolbarElement.classList.add('ldesign-toolbar');
-            this.element.appendChild(this.toolbarElement);
-            // 创建工具栏实例
-            this.toolbar = new Toolbar(this, {
-                container: this.toolbarElement,
-                items: this.options.toolbarItems || DEFAULT_TOOLBAR_ITEMS,
-            });
-        }
-        // 创建编辑器内容区域
-        this.contentElement = document.createElement('div');
-        this.contentElement.classList.add('ldesign-editor-content');
-        this.contentElement.contentEditable = String(this.editable);
-        // 设置占位符
-        if (this.options.placeholder)
-            this.contentElement.dataset.placeholder = this.options.placeholder;
-        this.element.appendChild(this.contentElement);
-        // 初始化增量渲染器
-        if (this.options.incrementalRender?.enabled !== false) {
-            this.incrementalRenderer = new IncrementalRenderer({
-                batchDelay: this.options.incrementalRender?.batchDelay,
-                maxBatchSize: this.options.incrementalRender?.maxBatchSize,
-                useRAF: this.options.incrementalRender?.useRAF !== false,
-                useWorker: this.options.incrementalRender?.useWorker,
-                useVirtualDOM: this.options.incrementalRender?.useVirtualDOM,
-            });
-            // 观察内容元素的变化
-            this.incrementalRenderer.observeElement(this.contentElement);
-        }
-        // 初始化WebAssembly加速器
-        if (this.options.wasm?.enabled !== false && WasmAccelerator.isSupported()) {
-            this.wasmAccelerator = new WasmAccelerator({
-                enabled: this.options.wasm?.enabled !== false,
-                enableDiff: this.options.wasm?.enableDiff !== false,
-                enableParser: this.options.wasm?.enableParser !== false,
-                useWorker: this.options.wasm?.useWorker,
-                warmupStrategy: this.options.wasm?.warmupStrategy || 'lazy',
-            });
-            // 预热WASM模块（异步）
-            if (this.options.wasm?.warmupStrategy === 'eager') {
-                this.wasmAccelerator.initialize().catch((error) => {
-                    logger.warn('WASM initialization failed:', error);
-                });
-            }
-        }
-        // 初始化虚拟滚动（如果启用）
-        if (this.options.virtualScroll?.enabled) {
-            this.virtualScroller = new EditorVirtualScroller({
-                editor: this,
-                lineHeight: this.options.virtualScroll.lineHeight,
-                maxLines: this.options.virtualScroll.maxLines,
-                enableSyntaxHighlight: this.options.virtualScroll.enableSyntaxHighlight,
-                enableLineNumbers: this.options.virtualScroll.enableLineNumbers,
-                enableWordWrap: this.options.virtualScroll.enableWordWrap,
-            });
-            // 使用虚拟滚动渲染
-            this.virtualScroller.setContent(this.document.toText());
-        }
-        else {
-            // 普通渲染
-            this.render();
-        }
-        // 自动聚焦
-        if (this.options.autofocus)
-            this.focus();
-        // 初始化调试面板
-        if (this.options.debugPanel?.enabled) {
-            this.debugPanel = new DebugPanel({
-                editor: this,
-                expanded: this.options.debugPanel.expanded,
-                initialTab: this.options.debugPanel.initialTab,
-                theme: this.options.debugPanel.theme,
-                position: this.options.debugPanel.position,
-                size: this.options.debugPanel.size,
-                resizable: this.options.debugPanel.resizable,
-                showInProduction: this.options.debugPanel.showInProduction,
-            });
-        }
-    }
-    /**
-     * 设置事件监听
-     */
-    setupEventListeners() {
-        if (!this.contentElement)
-            return;
-        // 键盘事件
-        this.contentElement.addEventListener('keydown', (e) => {
-            if (this.keymap.handleKeyDown(e))
-                e.preventDefault();
+      }
+    });
+    newChildren.forEach((newChild, index) => {
+      const oldChild = oldChildren[index];
+      if (!oldChild) {
+        patches.push({
+          type: "insert",
+          parent: oldRoot,
+          newNode: newChild.cloneNode(true),
+          index
         });
-        // 输入事件
-        this.contentElement.addEventListener('input', (e) => {
-            this.handleInput();
+      } else if (oldChild.outerHTML !== newChild.outerHTML) {
+        patches.push({
+          type: "update",
+          target: oldChild,
+          newNode: newChild.cloneNode(true)
         });
-        // 选区变化
-        document.addEventListener('selectionchange', () => {
-            const sel = window.getSelection();
-            if (this.contentElement && this.contentElement.contains(sel?.anchorNode || null)) {
-                // 同步到内部 Selection 模型
-                this.selectionManager.syncFromDOM();
-                this.emit('selectionUpdate', this.getSelection());
-                // 保存 DOM 级别的 Range 以便弹窗关闭后恢复
-                if (sel && sel.rangeCount > 0) {
-                    try {
-                        this.savedRange = sel.getRangeAt(0).cloneRange();
-                    }
-                    catch { }
-                }
-            }
+      }
+    });
+    return patches;
+  }
+  /**
+   * 加载内置插件
+   */
+  loadBuiltinPlugin(name) {
+    switch (name) {
+      case "image":
+        import('../plugins/media/image.js').then((module) => {
+          this.plugins.register(module.ImagePlugin);
         });
-        // 聚焦和失焦
-        this.contentElement.addEventListener('focus', () => {
-            this.emit('focus');
-            this.options.onFocus?.();
+        break;
+      case "formatting":
+        import('../plugins/formatting/index.js').then((module) => {
+          if (module.BoldPlugin)
+            this.plugins.register(module.BoldPlugin);
+          if (module.ItalicPlugin)
+            this.plugins.register(module.ItalicPlugin);
+          if (module.UnderlinePlugin)
+            this.plugins.register(module.UnderlinePlugin);
         });
-        this.contentElement.addEventListener('blur', () => {
-            this.emit('blur');
-            this.options.onBlur?.();
-        });
+        break;
+      default:
+        logger.warn(`\u672A\u77E5\u63D2\u4EF6: ${name}`);
     }
-    /**
-     * 处理输入
-     */
-    handleInput() {
-        if (!this.contentElement)
-            return;
-        // 更新文档
-        const html = this.contentElement.innerHTML;
-        this.document = new Document(html, this.schema);
-        // 触发更新事件
-        this.emit('update', this.getState());
-        this.options.onUpdate?.(this.getState());
-        this.options.onChange?.(this.getHTML());
+  }
+  /**
+   * 获取编辑器容器元素
+   */
+  getElement() {
+    if (!this.element)
+      throw new Error("Editor not mounted");
+    return this.element;
+  }
+  /**
+   * 获取编辑器状态
+   */
+  getState() {
+    return {
+      doc: this.document.toJSON(),
+      selection: this.getSelection().toJSON()
+    };
+  }
+  /**
+   * 分发事务
+   */
+  dispatch(tr) {
+    this.document = new Document(tr.doc, this.schema);
+    if (tr.selection)
+      this.setSelection(Selection.fromJSON(tr.selection));
+    this.render();
+    this.emit("update", this.getState());
+    this.options.onUpdate?.(this.getState());
+    this.options.onChange?.(this.getHTML());
+  }
+  /**
+   * 获取选区
+   */
+  getSelection() {
+    return this.selectionManager.getSelection();
+  }
+  /**
+   * 设置选区
+   */
+  setSelection(selection) {
+    this.selectionManager.setSelection(selection);
+  }
+  /**
+   * 保存当前 DOM 选区（仅当选区在编辑器内部时）
+   */
+  saveSelection() {
+    if (!this.contentElement)
+      return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0)
+      return;
+    const range = sel.getRangeAt(0);
+    if (this.contentElement.contains(range.commonAncestorContainer)) {
+      try {
+        this.savedRange = range.cloneRange();
+        logger.debug("DOM selection saved");
+      } catch (e) {
+        logger.warn("Failed to save selection:", e);
+      }
     }
-    /**
-     * 渲染内容
-     */
-    render() {
-        if (!this.contentElement)
-            return;
-        const html = this.document.toHTML();
-        if (this.incrementalRenderer) {
-            // 使用增量渲染
-            this.renderIncremental(html);
-        }
-        else {
-            // 保存当前选区
-            const selection = this.getSelection();
-            // 更新内容
-            this.contentElement.innerHTML = html;
-            // 恢复选区
-            if (selection)
-                this.setSelection(selection);
-        }
+  }
+  /**
+   * 恢复先前保存的 DOM 选区
+   * 返回是否恢复成功
+   */
+  restoreSelection() {
+    if (!this.contentElement || !this.savedRange)
+      return false;
+    try {
+      if (!this.contentElement.contains(this.savedRange.commonAncestorContainer))
+        return false;
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(this.savedRange);
+      logger.debug("DOM selection restored");
+      return true;
+    } catch (e) {
+      logger.warn("Failed to restore selection:", e);
+      return false;
     }
-    /**
-     * 增量渲染内容
-     */
-    renderIncremental(newHTML) {
-        if (!this.contentElement || !this.incrementalRenderer)
-            return;
-        // 创建临时DOM来解析新HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newHTML;
-        // 计算差异并生成补丁
-        const patches = this.calculatePatches(this.contentElement, tempDiv);
-        // 应用补丁
-        if (patches.length > 0)
-            this.incrementalRenderer.queuePatches(patches);
-    }
-    /**
-     * 计算DOM补丁
-     */
-    calculatePatches(oldRoot, newRoot) {
-        const patches = [];
-        // 简单的差异算法（实际应该使用更复杂的算法）
-        const oldChildren = Array.from(oldRoot.children);
-        const newChildren = Array.from(newRoot.children);
-        // 处理删除的节点
-        oldChildren.forEach((oldChild, index) => {
-            if (!newChildren[index]) {
-                patches.push({
-                    type: 'remove',
-                    target: oldChild,
-                });
-            }
-        });
-        // 处理新增和更新的节点
-        newChildren.forEach((newChild, index) => {
-            const oldChild = oldChildren[index];
-            if (!oldChild) {
-                // 新增节点
-                patches.push({
-                    type: 'insert',
-                    parent: oldRoot,
-                    newNode: newChild.cloneNode(true),
-                    index,
-                });
-            }
-            else if (oldChild.outerHTML !== newChild.outerHTML) {
-                // 更新节点
-                patches.push({
-                    type: 'update',
-                    target: oldChild,
-                    newNode: newChild.cloneNode(true),
-                });
-            }
-        });
-        return patches;
-    }
-    /**
-     * 加载内置插件
-     */
-    loadBuiltinPlugin(name) {
-        // 动态导入插件
-        switch (name) {
-            case 'image':
-                import('../plugins/media/image.js').then((module) => {
-                    this.plugins.register(module.ImagePlugin);
-                });
-                break;
-            case 'formatting':
-                import('../plugins/formatting/index.js').then((module) => {
-                    if (module.BoldPlugin)
-                        this.plugins.register(module.BoldPlugin);
-                    if (module.ItalicPlugin)
-                        this.plugins.register(module.ItalicPlugin);
-                    if (module.UnderlinePlugin)
-                        this.plugins.register(module.UnderlinePlugin);
-                });
-                break;
-            // 其他插件可以在这里添加
-            default:
-                logger.warn(`未知插件: ${name}`);
-        }
-    }
-    /**
-     * 获取编辑器容器元素
-     */
-    getElement() {
-        if (!this.element)
-            throw new Error('Editor not mounted');
-        return this.element;
-    }
-    /**
-     * 获取编辑器状态
-     */
-    getState() {
-        return {
-            doc: this.document.toJSON(),
-            selection: this.getSelection().toJSON(),
-        };
-    }
-    /**
-     * 分发事务
-     */
-    dispatch(tr) {
-        // 更新文档
-        this.document = new Document(tr.doc, this.schema);
-        // 更新选区
-        if (tr.selection)
-            this.setSelection(Selection.fromJSON(tr.selection));
-        // 重新渲染
-        this.render();
-        // 触发更新事件
-        this.emit('update', this.getState());
-        this.options.onUpdate?.(this.getState());
-        this.options.onChange?.(this.getHTML());
-    }
-    /**
-     * 获取选区
-     */
-    getSelection() {
-        return this.selectionManager.getSelection();
-    }
-    /**
-     * 设置选区
-     */
-    setSelection(selection) {
-        this.selectionManager.setSelection(selection);
-    }
-    /**
-     * 保存当前 DOM 选区（仅当选区在编辑器内部时）
-     */
-    saveSelection() {
-        if (!this.contentElement)
-            return;
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0)
-            return;
-        const range = sel.getRangeAt(0);
-        if (this.contentElement.contains(range.commonAncestorContainer)) {
-            try {
-                this.savedRange = range.cloneRange();
-                logger.debug('DOM selection saved');
-            }
-            catch (e) {
-                logger.warn('Failed to save selection:', e);
-            }
-        }
-    }
-    /**
-     * 恢复先前保存的 DOM 选区
-     * 返回是否恢复成功
-     */
-    restoreSelection() {
-        if (!this.contentElement || !this.savedRange)
-            return false;
-        try {
-            if (!this.contentElement.contains(this.savedRange.commonAncestorContainer))
-                return false;
-            const sel = window.getSelection();
-            sel?.removeAllRanges();
-            sel?.addRange(this.savedRange);
-            logger.debug('DOM selection restored');
-            return true;
-        }
-        catch (e) {
-            logger.warn('Failed to restore selection:', e);
-            return false;
-        }
-    }
-    /**
-     * 获取 HTML 内容
-     */
-    getHTML() {
-        return this.document.toHTML();
-    }
-    /**
-     * 获取选中的纯文本
-     */
-    getSelectedText() {
-        if (!this.contentElement)
-            return '';
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0)
-            return '';
-        const range = selection.getRangeAt(0);
-        if (!this.contentElement.contains(range.commonAncestorContainer))
-            return '';
-        // 获取选中的纯文本
-        return selection.toString();
-    }
-    /**
-     * 设置 HTML 内容
-     */
-    setHTML(html) {
-        this.document = new Document(html, this.schema);
-        this.render();
-    }
-    /**
-     * 获取 JSON 内容
-     */
-    getJSON() {
-        return this.document.toJSON();
-    }
-    /**
-     * 设置 JSON 内容
-     */
-    setJSON(json) {
-        this.document = Document.fromJSON(json, this.schema);
-        this.render();
-    }
-    /**
-     * 插入 HTML 内容到当前光标位置
-     */
-    insertHTML(html) {
-        if (!this.contentElement)
-            return;
-        const beforeLen = this.contentElement.innerHTML.length;
-        logger.debug('insertHTML called. Before length:', beforeLen);
-        logger.debug('html length:', html?.length);
-        // 获取当前选区
-        let selection = window.getSelection();
-        logger.debug('Initial selection:', selection);
-        if (!selection || selection.rangeCount === 0) {
-            // 尝试恢复之前保存的选区
-            const restored = this.restoreSelection();
-            selection = window.getSelection();
-            if (!restored || !selection || selection.rangeCount === 0) {
-                // 如果没有选区，退化到在编辑器末尾插入
-                logger.warn('No selection, creating range at end of editor');
-                this.contentElement.focus();
-                const range = document.createRange();
-                range.selectNodeContents(this.contentElement);
-                range.collapse(false);
-                selection = window.getSelection();
-                selection?.removeAllRanges();
-                selection?.addRange(range);
-            }
-        }
-        let range = selection.getRangeAt(0);
-        logger.debug('Range obtained. Collapsed:', range.collapsed);
-        // 确保选区在编辑器内
-        if (!this.contentElement.contains(range.commonAncestorContainer)) {
-            logger.warn('Selection is not in editor; attempting to restore saved selection');
-            const restored = this.restoreSelection();
-            selection = window.getSelection();
-            if (restored && selection && selection.rangeCount > 0 && this.contentElement.contains(selection.getRangeAt(0).commonAncestorContainer)) {
-                range = selection.getRangeAt(0);
-            }
-            else {
-                logger.warn('Saved selection unavailable; moving caret to end');
-                this.contentElement.focus();
-                const newRange = document.createRange();
-                newRange.selectNodeContents(this.contentElement);
-                newRange.collapse(false);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
-                range = newRange;
-            }
-        }
-        // 再次确保焦点在编辑器
+  }
+  /**
+   * 获取 HTML 内容
+   */
+  getHTML() {
+    return this.document.toHTML();
+  }
+  /**
+   * 获取选中的纯文本
+   */
+  getSelectedText() {
+    if (!this.contentElement)
+      return "";
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0)
+      return "";
+    const range = selection.getRangeAt(0);
+    if (!this.contentElement.contains(range.commonAncestorContainer))
+      return "";
+    return selection.toString();
+  }
+  /**
+   * 设置 HTML 内容
+   */
+  setHTML(html) {
+    this.document = new Document(html, this.schema);
+    this.render();
+  }
+  /**
+   * 获取 JSON 内容
+   */
+  getJSON() {
+    return this.document.toJSON();
+  }
+  /**
+   * 设置 JSON 内容
+   */
+  setJSON(json) {
+    this.document = Document.fromJSON(json, this.schema);
+    this.render();
+  }
+  /**
+   * 插入 HTML 内容到当前光标位置
+   */
+  insertHTML(html) {
+    if (!this.contentElement)
+      return;
+    const beforeLen = this.contentElement.innerHTML.length;
+    logger.debug("insertHTML called. Before length:", beforeLen);
+    logger.debug("html length:", html?.length);
+    let selection = window.getSelection();
+    logger.debug("Initial selection:", selection);
+    if (!selection || selection.rangeCount === 0) {
+      const restored = this.restoreSelection();
+      selection = window.getSelection();
+      if (!restored || !selection || selection.rangeCount === 0) {
+        logger.warn("No selection, creating range at end of editor");
         this.contentElement.focus();
-        // 尝试使用 execCommand，如果失败或无效果则使用手动插入
-        let success = false;
-        try {
-            success = document.execCommand('insertHTML', false, html);
-            logger.debug('execCommand("insertHTML") returned:', success);
-        }
-        catch (err) {
-            logger.warn('execCommand threw error, will use manual insertion:', err);
-            success = false;
-        }
-        // 检测 execCommand 是否无效果（内容长度未变化）
-        const afterLenCandidate = this.contentElement.innerHTML.length;
-        const noChange = afterLenCandidate === beforeLen;
-        if (!success || noChange) {
-            if (success && noChange)
-                logger.warn('execCommand reported success but content did not change, falling back to manual insertion');
-            else
-                logger.debug('Falling back to manual insertion');
-            // 手动插入 HTML
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            // 删除选中的内容
-            try {
-                range.deleteContents();
-            }
-            catch (err) {
-                logger.warn('deleteContents error:', err);
-            }
-            // 插入新内容
-            const fragment = document.createDocumentFragment();
-            while (tempDiv.firstChild)
-                fragment.appendChild(tempDiv.firstChild);
-            try {
-                range.insertNode(fragment);
-            }
-            catch (err) {
-                logger.error('insertNode error:', err);
-            }
-            // 移动光标到插入内容之后
-            try {
-                range.collapse(false);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-            catch (err) {
-                logger.warn('Reselection error:', err);
-            }
-        }
-        const afterLen = this.contentElement.innerHTML.length;
-        logger.debug('After length:', afterLen, 'Delta:', afterLen - beforeLen);
-        // 简要诊断：统计媒体标签数量
-        try {
-            const snapshot = this.contentElement.innerHTML;
-            const imgCount = (snapshot.match(/<img\b/gi) || []).length;
-            const videoCount = (snapshot.match(/<video\b/gi) || []).length;
-            const audioCount = (snapshot.match(/<audio\b/gi) || []).length;
-            logger.debug('Media counts -> img:', imgCount, 'video:', videoCount, 'audio:', audioCount);
-        }
-        catch { }
-        // 将插入位置滚动到可见区域
-        try {
-            const selNow = window.getSelection();
-            const anchor = selNow?.anchorNode;
-            let targetEl = null;
-            if (anchor) {
-                if (anchor.nodeType === 3)
-                    targetEl = anchor.parentElement || null;
-                else if (anchor.nodeType === 1)
-                    targetEl = anchor;
-                else
-                    targetEl = anchor.parentElement || null;
-            }
-            // 优先滚动选区附近的元素，其次滚动到底部
-            if (targetEl && this.contentElement?.contains(targetEl))
-                targetEl.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-            else if (this.contentElement)
-                this.contentElement.scrollTop = this.contentElement.scrollHeight;
-        }
-        catch (err) {
-            logger.warn('scrollIntoView failed:', err);
-        }
-        // 触发更新事件
-        this.handleInput();
+        const range2 = document.createRange();
+        range2.selectNodeContents(this.contentElement);
+        range2.collapse(false);
+        selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range2);
+      }
     }
-    /**
-     * 清空内容
-     */
-    clear() {
-        this.setHTML('<p></p>');
+    let range = selection.getRangeAt(0);
+    logger.debug("Range obtained. Collapsed:", range.collapsed);
+    if (!this.contentElement.contains(range.commonAncestorContainer)) {
+      logger.warn("Selection is not in editor; attempting to restore saved selection");
+      const restored = this.restoreSelection();
+      selection = window.getSelection();
+      if (restored && selection && selection.rangeCount > 0 && this.contentElement.contains(selection.getRangeAt(0).commonAncestorContainer)) {
+        range = selection.getRangeAt(0);
+      } else {
+        logger.warn("Saved selection unavailable; moving caret to end");
+        this.contentElement.focus();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(this.contentElement);
+        newRange.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        range = newRange;
+      }
     }
-    /**
-     * 聚焦编辑器
-     */
-    focus() {
-        this.contentElement?.focus();
+    this.contentElement.focus();
+    let success = false;
+    try {
+      success = document.execCommand("insertHTML", false, html);
+      logger.debug('execCommand("insertHTML") returned:', success);
+    } catch (err) {
+      logger.warn("execCommand threw error, will use manual insertion:", err);
+      success = false;
     }
-    /**
-     * 失焦编辑器
-     */
-    blur() {
-        this.contentElement?.blur();
+    const afterLenCandidate = this.contentElement.innerHTML.length;
+    const noChange = afterLenCandidate === beforeLen;
+    if (!success || noChange) {
+      if (success && noChange)
+        logger.warn("execCommand reported success but content did not change, falling back to manual insertion");
+      else
+        logger.debug("Falling back to manual insertion");
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = html;
+      try {
+        range.deleteContents();
+      } catch (err) {
+        logger.warn("deleteContents error:", err);
+      }
+      const fragment = document.createDocumentFragment();
+      while (tempDiv.firstChild)
+        fragment.appendChild(tempDiv.firstChild);
+      try {
+        range.insertNode(fragment);
+      } catch (err) {
+        logger.error("insertNode error:", err);
+      }
+      try {
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch (err) {
+        logger.warn("Reselection error:", err);
+      }
     }
-    /**
-     * 设置是否可编辑
-     */
-    setEditable(editable) {
-        this.editable = editable;
-        if (this.contentElement)
-            this.contentElement.contentEditable = String(editable);
+    const afterLen = this.contentElement.innerHTML.length;
+    logger.debug("After length:", afterLen, "Delta:", afterLen - beforeLen);
+    try {
+      const snapshot = this.contentElement.innerHTML;
+      const imgCount = (snapshot.match(/<img\b/gi) || []).length;
+      const videoCount = (snapshot.match(/<video\b/gi) || []).length;
+      const audioCount = (snapshot.match(/<audio\b/gi) || []).length;
+      logger.debug("Media counts -> img:", imgCount, "video:", videoCount, "audio:", audioCount);
+    } catch {
     }
-    /**
-     * 检查是否可编辑
-     */
-    isEditable() {
-        return this.editable;
+    try {
+      const selNow = window.getSelection();
+      const anchor = selNow?.anchorNode;
+      let targetEl = null;
+      if (anchor) {
+        if (anchor.nodeType === 3)
+          targetEl = anchor.parentElement || null;
+        else if (anchor.nodeType === 1)
+          targetEl = anchor;
+        else
+          targetEl = anchor.parentElement || null;
+      }
+      if (targetEl && this.contentElement?.contains(targetEl))
+        targetEl.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+          behavior: "smooth"
+        });
+      else if (this.contentElement)
+        this.contentElement.scrollTop = this.contentElement.scrollHeight;
+    } catch (err) {
+      logger.warn("scrollIntoView failed:", err);
     }
-    /**
-     * 扩展 Schema
-     */
-    extendSchema(spec) {
-        // 合并节点
-        if (spec.nodes) {
-            Object.entries(spec.nodes).forEach(([name, nodeSpec]) => {
-                this.schema.nodes.set(name, nodeSpec);
-            });
-        }
-        // 合并标记
-        if (spec.marks) {
-            Object.entries(spec.marks).forEach(([name, markSpec]) => {
-                this.schema.marks.set(name, markSpec);
-            });
-        }
+    this.handleInput();
+  }
+  /**
+   * 清空内容
+   */
+  clear() {
+    this.setHTML("<p></p>");
+  }
+  /**
+   * 聚焦编辑器
+   */
+  focus() {
+    this.contentElement?.focus();
+  }
+  /**
+   * 失焦编辑器
+   */
+  blur() {
+    this.contentElement?.blur();
+  }
+  /**
+   * 设置是否可编辑
+   */
+  setEditable(editable) {
+    this.editable = editable;
+    if (this.contentElement)
+      this.contentElement.contentEditable = String(editable);
+  }
+  /**
+   * 检查是否可编辑
+   */
+  isEditable() {
+    return this.editable;
+  }
+  /**
+   * 扩展 Schema
+   */
+  extendSchema(spec) {
+    if (spec.nodes) {
+      Object.entries(spec.nodes).forEach(([name, nodeSpec]) => {
+        this.schema.nodes.set(name, nodeSpec);
+      });
     }
-    /**
-     * 事件系统
-     */
-    on(event, handler) {
-        return this.eventEmitter.on(event, handler);
+    if (spec.marks) {
+      Object.entries(spec.marks).forEach(([name, markSpec]) => {
+        this.schema.marks.set(name, markSpec);
+      });
     }
-    once(event, handler) {
-        this.eventEmitter.once(event, handler);
-    }
-    off(event, handler) {
-        this.eventEmitter.off(event, handler);
-    }
-    emit(event, ...args) {
-        this.eventEmitter.emit(event, ...args);
-    }
-    /**
-     * 销毁编辑器
-     */
-    destroy() {
-        if (this.destroyed)
-            return;
-        // 清理插件
-        this.plugins.clear();
-        // 清理命令和快捷键
-        this.commands.clear();
-        this.keymap.clear();
-        // 清理事件
-        this.eventEmitter.clear();
-        // 清理 DOM
-        if (this.element)
-            this.element.innerHTML = '';
-        this.destroyed = true;
-    }
-    /**
-     * 检查是否已销毁
-     */
-    isDestroyed() {
-        return this.destroyed;
-    }
+  }
+  /**
+   * 事件系统
+   */
+  on(event, handler) {
+    return this.eventEmitter.on(event, handler);
+  }
+  once(event, handler) {
+    this.eventEmitter.once(event, handler);
+  }
+  off(event, handler) {
+    this.eventEmitter.off(event, handler);
+  }
+  emit(event, ...args) {
+    this.eventEmitter.emit(event, ...args);
+  }
+  /**
+   * 销毁编辑器
+   */
+  destroy() {
+    if (this.destroyed)
+      return;
+    this.plugins.clear();
+    this.commands.clear();
+    this.keymap.clear();
+    this.eventEmitter.clear();
+    if (this.element)
+      this.element.innerHTML = "";
+    this.destroyed = true;
+  }
+  /**
+   * 检查是否已销毁
+   */
+  isDestroyed() {
+    return this.destroyed;
+  }
 }
 // 版本信息
-Editor.version = '1.3.0';
+Editor.version = "1.3.0";
 
 export { Editor };
 /*! End of @ldesign/editor-core | Powered by @ldesign/builder */

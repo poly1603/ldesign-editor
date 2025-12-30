@@ -7,3 +7,4 @@ import type { Plugin } from '../../types';
  * 对齐插件
  */
 export declare const AlignPlugin: Plugin;
+//# sourceMappingURL=align.d.ts.map

@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -17,10 +17,6 @@ export { LINE_HEIGHTS, LineHeightPlugin } from './line-height.js';
 export { SubscriptPlugin, SuperscriptPlugin } from './script.js';
 export { CapitalizePlugin, LowerCasePlugin, TextTransformPlugin, UpperCasePlugin } from './text-transform.js';
 
-/**
- * 格式化相关插件导出
- */
-// Export all formatting plugins as array
 const formattingPlugins = [];
 
 export { formattingPlugins };

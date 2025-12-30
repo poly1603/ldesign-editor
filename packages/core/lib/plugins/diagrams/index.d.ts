@@ -10,3 +10,4 @@ export { MindMapEditor } from './editors/MindMapEditor';
 export { SequenceDiagramEditor } from './editors/SequenceDiagramEditor';
 export { UMLEditor } from './editors/UMLEditor';
 export type { DiagramConfig, DiagramData, DiagramEditor, DiagramOptions, DiagramRendererInterface, DiagramTheme, DiagramType, ExportOptions, FlowchartData, FlowchartEdge, FlowchartNode, GanttData, GanttTask, LayoutOptions, MindMapData, MindMapNode, SequenceActor, SequenceData, SequenceMessage, UMLClass, UMLData, UMLRelationship, } from './types';
+//# sourceMappingURL=index.d.ts.map

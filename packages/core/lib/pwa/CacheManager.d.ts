@@ -49,3 +49,4 @@ export declare class CacheManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=CacheManager.d.ts.map

@@ -8,3 +8,4 @@ import type { Plugin } from '../../types';
  */
 export declare const ImagePlugin: Plugin;
 export default ImagePlugin;
+//# sourceMappingURL=image.d.ts.map

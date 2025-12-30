@@ -74,7 +74,7 @@ export async function createPlugin(name: string, options: PluginOptions) {
         execSync('git commit -m "Initial commit"', { cwd: targetDir, stdio: 'ignore' })
         spinner.succeed('Git仓库初始化成功')
       }
-      catch (error) {
+      catch (_error) {
         spinner.fail('Git初始化失败')
       }
     }
@@ -86,7 +86,7 @@ export async function createPlugin(name: string, options: PluginOptions) {
         execSync('npm install', { cwd: targetDir, stdio: 'ignore' })
         spinner.succeed('依赖安装成功')
       }
-      catch (error) {
+      catch (_error) {
         spinner.fail('依赖安装失败，请手动运行 npm install')
       }
     }

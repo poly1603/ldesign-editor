@@ -20,3 +20,4 @@ export declare function showFindReplaceDialog(editor: any): void;
  */
 export declare const FindReplacePlugin: Plugin;
 export default FindReplacePlugin;
+//# sourceMappingURL=find-replace.d.ts.map

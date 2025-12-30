@@ -22,6 +22,7 @@ export class DiagramPlugin implements Plugin {
   config = {
     name: 'diagram',
   }
+
   version = '1.0.0'
   description = '高级图表编辑支持'
 

@@ -2,58 +2,54 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
-/**
- * AI 建议浮层组件
- * 用于显示 AI 生成的建议内容
- */
 class AISuggestionsOverlay {
-    constructor(editor, suggestions, onSelect, options = {}) {
-        this.selectedIndex = 0;
-        this.handleKeyDown = (e) => {
-            switch (e.key) {
-                case 'ArrowUp':
-                    e.preventDefault();
-                    this.selectedIndex = Math.max(0, this.selectedIndex - 1);
-                    this.updateSelection();
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    this.selectedIndex = Math.min(this.suggestions.length - 1, this.selectedIndex + 1);
-                    this.updateSelection();
-                    break;
-                case 'Enter':
-                    e.preventDefault();
-                    this.acceptSuggestion();
-                    break;
-                case 'Escape':
-                    e.preventDefault();
-                    this.hide();
-                    break;
-            }
-        };
-        this.suggestions = suggestions;
-        this.onSelect = onSelect;
-        this.options = {
-            autoHide: false,
-            position: 'cursor',
-            maxHeight: 300,
-            width: 400,
-            ...options,
-        };
-        this.container = this.createElement();
-        this.render();
-        this.attachEventListeners();
-        this.show(editor);
-    }
-    createElement() {
-        const container = document.createElement('div');
-        container.className = 'ldesign-ai-suggestions-overlay';
-        container.style.cssText = `
+  constructor(editor, suggestions, onSelect, options = {}) {
+    this.selectedIndex = 0;
+    this.handleKeyDown = (e) => {
+      switch (e.key) {
+        case "ArrowUp":
+          e.preventDefault();
+          this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+          this.updateSelection();
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          this.selectedIndex = Math.min(this.suggestions.length - 1, this.selectedIndex + 1);
+          this.updateSelection();
+          break;
+        case "Enter":
+          e.preventDefault();
+          this.acceptSuggestion();
+          break;
+        case "Escape":
+          e.preventDefault();
+          this.hide();
+          break;
+      }
+    };
+    this.suggestions = suggestions;
+    this.onSelect = onSelect;
+    this.options = {
+      autoHide: false,
+      position: "cursor",
+      maxHeight: 300,
+      width: 400,
+      ...options
+    };
+    this.container = this.createElement();
+    this.render();
+    this.attachEventListeners();
+    this.show(editor);
+  }
+  createElement() {
+    const container = document.createElement("div");
+    container.className = "ldesign-ai-suggestions-overlay";
+    container.style.cssText = `
       position: absolute;
       z-index: 10000;
       background: white;
@@ -65,10 +61,10 @@ class AISuggestionsOverlay {
       overflow-y: auto;
       display: none;
     `;
-        return container;
-    }
-    render() {
-        this.container.innerHTML = `
+    return container;
+  }
+  render() {
+    this.container.innerHTML = `
       <div class="ldesign-ai-suggestions-header" style="
         padding: 12px 16px;
         border-bottom: 1px solid #e0e0e0;
@@ -77,8 +73,8 @@ class AISuggestionsOverlay {
         justify-content: space-between;
       ">
         <div style="display: flex; align-items: center;">
-          <span style="font-size: 20px; margin-right: 8px;">🤖</span>
-          <span style="font-weight: 500;">AI 建议</span>
+          <span style="font-size: 20px; margin-right: 8px;">\u{1F916}</span>
+          <span style="font-weight: 500;">AI \u5EFA\u8BAE</span>
         </div>
         <button class="ldesign-ai-suggestions-close" style="
           background: none;
@@ -87,15 +83,15 @@ class AISuggestionsOverlay {
           font-size: 18px;
           color: #666;
           padding: 4px;
-        ">✕</button>
+        ">\u2715</button>
       </div>
       <div class="ldesign-ai-suggestions-list" style="padding: 8px;">
         ${this.suggestions.map((suggestion, index) => `
           <div class="ldesign-ai-suggestion-item" data-index="${index}" style="
             padding: 12px;
             margin-bottom: 8px;
-            background: ${index === this.selectedIndex ? '#f5f5f5' : 'white'};
-            border: 1px solid ${index === this.selectedIndex ? '#1890ff' : '#e0e0e0'};
+            background: ${index === this.selectedIndex ? "#f5f5f5" : "white"};
+            border: 1px solid ${index === this.selectedIndex ? "#1890ff" : "#e0e0e0"};
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
@@ -109,8 +105,7 @@ class AISuggestionsOverlay {
               white-space: pre-wrap;
               word-wrap: break-word;
             ">${this.escapeHtml(suggestion)}</div>
-            ${index === 0
-            ? `
+            ${index === 0 ? `
               <div style="
                 margin-top: 8px;
                 display: flex;
@@ -124,7 +119,7 @@ class AISuggestionsOverlay {
                   border-radius: 4px;
                   font-size: 12px;
                   cursor: pointer;
-                ">接受 (Enter)</button>
+                ">\u63A5\u53D7 (Enter)</button>
                 <button class="ldesign-ai-reject" style="
                   padding: 4px 12px;
                   background: white;
@@ -133,126 +128,108 @@ class AISuggestionsOverlay {
                   border-radius: 4px;
                   font-size: 12px;
                   cursor: pointer;
-                ">取消 (Esc)</button>
+                ">\u53D6\u6D88 (Esc)</button>
               </div>
-            `
-            : ''}
+            ` : ""}
           </div>
-        `).join('')}
+        `).join("")}
       </div>
-      ${this.suggestions.length === 0
-            ? `
+      ${this.suggestions.length === 0 ? `
         <div style="
           padding: 32px;
           text-align: center;
           color: #999;
-        ">暂无建议</div>
-      `
-            : ''}
+        ">\u6682\u65E0\u5EFA\u8BAE</div>
+      ` : ""}
     `;
+  }
+  escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  attachEventListeners() {
+    const closeBtn = this.container.querySelector(".ldesign-ai-suggestions-close");
+    closeBtn?.addEventListener("click", () => this.hide());
+    this.container.querySelectorAll(".ldesign-ai-suggestion-item").forEach((item, index) => {
+      item.addEventListener("click", () => {
+        this.selectedIndex = index;
+        this.acceptSuggestion();
+      });
+    });
+    const acceptBtn = this.container.querySelector(".ldesign-ai-accept");
+    const rejectBtn = this.container.querySelector(".ldesign-ai-reject");
+    acceptBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.acceptSuggestion();
+    });
+    rejectBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.hide();
+    });
+    document.addEventListener("keydown", this.handleKeyDown);
+    if (this.options.autoHide)
+      setTimeout(() => this.hide(), 5e3);
+  }
+  updateSelection() {
+    this.container.querySelectorAll(".ldesign-ai-suggestion-item").forEach((item, index) => {
+      const element = item;
+      if (index === this.selectedIndex) {
+        element.style.background = "#f5f5f5";
+        element.style.borderColor = "#1890ff";
+      } else {
+        element.style.background = "white";
+        element.style.borderColor = "#e0e0e0";
+      }
+    });
+  }
+  acceptSuggestion() {
+    if (this.suggestions.length > 0) {
+      this.onSelect(this.suggestions[this.selectedIndex]);
+      this.hide();
     }
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+  }
+  show(editor) {
+    const editorRect = editor.element?.getBoundingClientRect();
+    if (!editorRect)
+      return;
+    if (this.options.position === "cursor") {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        this.container.style.left = `${rect.left}px`;
+        this.container.style.top = `${rect.bottom + 10}px`;
+      }
+    } else if (this.options.position === "center") {
+      this.container.style.left = `${editorRect.left + (editorRect.width - this.options.width) / 2}px`;
+      this.container.style.top = `${editorRect.top + 100}px`;
+    } else {
+      this.container.style.left = `${editorRect.left + 20}px`;
+      this.container.style.bottom = `${window.innerHeight - editorRect.bottom + 20}px`;
+      this.container.style.top = "auto";
     }
-    attachEventListeners() {
-        // 关闭按钮
-        const closeBtn = this.container.querySelector('.ldesign-ai-suggestions-close');
-        closeBtn?.addEventListener('click', () => this.hide());
-        // 建议项点击
-        this.container.querySelectorAll('.ldesign-ai-suggestion-item').forEach((item, index) => {
-            item.addEventListener('click', () => {
-                this.selectedIndex = index;
-                this.acceptSuggestion();
-            });
-        });
-        // 接受/拒绝按钮
-        const acceptBtn = this.container.querySelector('.ldesign-ai-accept');
-        const rejectBtn = this.container.querySelector('.ldesign-ai-reject');
-        acceptBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.acceptSuggestion();
-        });
-        rejectBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.hide();
-        });
-        // 键盘事件
-        document.addEventListener('keydown', this.handleKeyDown);
-        // 自动隐藏
-        if (this.options.autoHide)
-            setTimeout(() => this.hide(), 5000);
-    }
-    updateSelection() {
-        this.container.querySelectorAll('.ldesign-ai-suggestion-item').forEach((item, index) => {
-            const element = item;
-            if (index === this.selectedIndex) {
-                element.style.background = '#f5f5f5';
-                element.style.borderColor = '#1890ff';
-            }
-            else {
-                element.style.background = 'white';
-                element.style.borderColor = '#e0e0e0';
-            }
-        });
-    }
-    acceptSuggestion() {
-        if (this.suggestions.length > 0) {
-            this.onSelect(this.suggestions[this.selectedIndex]);
-            this.hide();
-        }
-    }
-    show(editor) {
-        // 获取编辑器位置
-        const editorRect = editor.element?.getBoundingClientRect();
-        if (!editorRect)
-            return;
-        // 根据位置选项设置位置
-        if (this.options.position === 'cursor') {
-            // 获取光标位置
-            const selection = window.getSelection();
-            if (selection && selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                const rect = range.getBoundingClientRect();
-                this.container.style.left = `${rect.left}px`;
-                this.container.style.top = `${rect.bottom + 10}px`;
-            }
-        }
-        else if (this.options.position === 'center') {
-            this.container.style.left = `${editorRect.left + (editorRect.width - this.options.width) / 2}px`;
-            this.container.style.top = `${editorRect.top + 100}px`;
-        }
-        else {
-            this.container.style.left = `${editorRect.left + 20}px`;
-            this.container.style.bottom = `${window.innerHeight - editorRect.bottom + 20}px`;
-            this.container.style.top = 'auto';
-        }
-        document.body.appendChild(this.container);
-        this.container.style.display = 'block';
-        // 添加动画
-        this.container.style.opacity = '0';
-        this.container.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-            this.container.style.transition = 'all 0.3s';
-            this.container.style.opacity = '1';
-            this.container.style.transform = 'translateY(0)';
-        }, 10);
-    }
-    hide() {
-        this.container.style.opacity = '0';
-        this.container.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-            this.container.remove();
-            document.removeEventListener('keydown', this.handleKeyDown);
-        }, 300);
-    }
+    document.body.appendChild(this.container);
+    this.container.style.display = "block";
+    this.container.style.opacity = "0";
+    this.container.style.transform = "translateY(-10px)";
+    setTimeout(() => {
+      this.container.style.transition = "all 0.3s";
+      this.container.style.opacity = "1";
+      this.container.style.transform = "translateY(0)";
+    }, 10);
+  }
+  hide() {
+    this.container.style.opacity = "0";
+    this.container.style.transform = "translateY(-10px)";
+    setTimeout(() => {
+      this.container.remove();
+      document.removeEventListener("keydown", this.handleKeyDown);
+    }, 300);
+  }
 }
-/**
- * 显示 AI 建议浮层
- */
 function showAISuggestionsOverlay(editor, suggestions, onSelect, options) {
-    return new AISuggestionsOverlay(editor, suggestions, onSelect, options);
+  return new AISuggestionsOverlay(editor, suggestions, onSelect, options);
 }
 
 export { showAISuggestionsOverlay };

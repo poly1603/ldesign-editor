@@ -8,3 +8,4 @@ export declare const lucideIcons: Record<string, string>;
  * @deprecated 请使用统一的 getIconHTML 函数
  */
 export declare function getLucideIcon(name: keyof typeof lucideIcons | string): string;
+//# sourceMappingURL=lucide.d.ts.map

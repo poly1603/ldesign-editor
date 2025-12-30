@@ -69,3 +69,4 @@ export declare class FeatureManagerPanel {
  * 显示功能管理面板
  */
 export declare function showFeatureManager(): FeatureManagerPanel;
+//# sourceMappingURL=FeatureManagerPanel.d.ts.map

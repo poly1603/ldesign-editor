@@ -146,3 +146,4 @@ export declare function css(styles: Record<string, string | number>): string;
  * 组合类名
  */
 export declare function classNames(...args: (string | false | undefined | null)[]): string;
+//# sourceMappingURL=simplify.d.ts.map

@@ -33,3 +33,4 @@ export declare function createFindReplaceDialog(options: FindReplaceOptions): HT
  */
 export declare function showFindReplaceDialog(options: FindReplaceOptions): void;
 export default showFindReplaceDialog;
+//# sourceMappingURL=FindReplaceDialog.d.ts.map

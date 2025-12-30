@@ -192,3 +192,4 @@ export declare const CollaborationPlugin: import("../../types").Plugin;
  * @returns 协作管理器
  */
 export declare function getCollaborationManager(editor: EditorInstance): CollaborationManager | null;
+//# sourceMappingURL=index.d.ts.map

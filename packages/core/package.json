@@ -22,175 +22,215 @@
     "directory": "libraries/editor/packages/core"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./es/index.d.ts",
       "import": "./es/index.js",
-      "require": "./lib/index.cjs"
+      "require": "./lib/index.cjs",
+      "default": "./es/index.js"
     },
     "./ai/*": {
       "types": "./es/ai/*.d.ts",
       "import": "./es/ai/*.js",
-      "require": "./lib/ai/*.cjs"
+      "require": "./lib/ai/*.cjs",
+      "default": "./es/ai/*.js"
     },
     "./cli": {
       "types": "./es/cli/index.d.ts",
       "import": "./es/cli/index.js",
-      "require": "./lib/cli/index.cjs"
+      "require": "./lib/cli/index.cjs",
+      "default": "./es/cli/index.js"
     },
     "./cli/*": {
       "types": "./es/cli/*.d.ts",
       "import": "./es/cli/*.js",
-      "require": "./lib/cli/*.cjs"
+      "require": "./lib/cli/*.cjs",
+      "default": "./es/cli/*.js"
     },
     "./collaboration": {
       "types": "./es/collaboration/index.d.ts",
       "import": "./es/collaboration/index.js",
-      "require": "./lib/collaboration/index.cjs"
+      "require": "./lib/collaboration/index.cjs",
+      "default": "./es/collaboration/index.js"
     },
     "./collaboration/*": {
       "types": "./es/collaboration/*.d.ts",
       "import": "./es/collaboration/*.js",
-      "require": "./lib/collaboration/*.cjs"
-    },
-    "./components/*": {
-      "types": "./es/components/*.d.ts",
-      "import": "./es/components/*.js",
-      "require": "./lib/components/*.cjs"
+      "require": "./lib/collaboration/*.cjs",
+      "default": "./es/collaboration/*.js"
     },
     "./config/*": {
       "types": "./es/config/*.d.ts",
       "import": "./es/config/*.js",
-      "require": "./lib/config/*.cjs"
+      "require": "./lib/config/*.cjs",
+      "default": "./es/config/*.js"
     },
     "./core/*": {
       "types": "./es/core/*.d.ts",
       "import": "./es/core/*.js",
-      "require": "./lib/core/*.cjs"
+      "require": "./lib/core/*.cjs",
+      "default": "./es/core/*.js"
     },
     "./devtools/*": {
       "types": "./es/devtools/*.d.ts",
       "import": "./es/devtools/*.js",
-      "require": "./lib/devtools/*.cjs"
+      "require": "./lib/devtools/*.cjs",
+      "default": "./es/devtools/*.js"
     },
     "./enterprise": {
       "types": "./es/enterprise/index.d.ts",
       "import": "./es/enterprise/index.js",
-      "require": "./lib/enterprise/index.cjs"
+      "require": "./lib/enterprise/index.cjs",
+      "default": "./es/enterprise/index.js"
     },
     "./enterprise/*": {
       "types": "./es/enterprise/*.d.ts",
       "import": "./es/enterprise/*.js",
-      "require": "./lib/enterprise/*.cjs"
+      "require": "./lib/enterprise/*.cjs",
+      "default": "./es/enterprise/*.js"
     },
     "./i18n": {
       "types": "./es/i18n/index.d.ts",
       "import": "./es/i18n/index.js",
-      "require": "./lib/i18n/index.cjs"
+      "require": "./lib/i18n/index.cjs",
+      "default": "./es/i18n/index.js"
     },
     "./i18n/*": {
       "types": "./es/i18n/*.d.ts",
       "import": "./es/i18n/*.js",
-      "require": "./lib/i18n/*.cjs"
+      "require": "./lib/i18n/*.cjs",
+      "default": "./es/i18n/*.js"
     },
     "./icons/*": {
       "types": "./es/icons/*.d.ts",
       "import": "./es/icons/*.js",
-      "require": "./lib/icons/*.cjs"
+      "require": "./lib/icons/*.cjs",
+      "default": "./es/icons/*.js"
     },
     "./marketplace/*": {
       "types": "./es/marketplace/*.d.ts",
       "import": "./es/marketplace/*.js",
-      "require": "./lib/marketplace/*.cjs"
+      "require": "./lib/marketplace/*.cjs",
+      "default": "./es/marketplace/*.js"
     },
     "./mobile": {
       "types": "./es/mobile/index.d.ts",
       "import": "./es/mobile/index.js",
-      "require": "./lib/mobile/index.cjs"
+      "require": "./lib/mobile/index.cjs",
+      "default": "./es/mobile/index.js"
     },
     "./mobile/*": {
       "types": "./es/mobile/*.d.ts",
       "import": "./es/mobile/*.js",
-      "require": "./lib/mobile/*.cjs"
+      "require": "./lib/mobile/*.cjs",
+      "default": "./es/mobile/*.js"
     },
     "./plugins": {
       "types": "./es/plugins/index.d.ts",
       "import": "./es/plugins/index.js",
-      "require": "./lib/plugins/index.cjs"
+      "require": "./lib/plugins/index.cjs",
+      "default": "./es/plugins/index.js"
     },
     "./plugins/*": {
       "types": "./es/plugins/*.d.ts",
       "import": "./es/plugins/*.js",
-      "require": "./lib/plugins/*.cjs"
+      "require": "./lib/plugins/*.cjs",
+      "default": "./es/plugins/*.js"
+    },
+    "./presets": {
+      "types": "./es/presets/index.d.ts",
+      "import": "./es/presets/index.js",
+      "require": "./lib/presets/index.cjs",
+      "default": "./es/presets/index.js"
+    },
+    "./presets/*": {
+      "types": "./es/presets/*.d.ts",
+      "import": "./es/presets/*.js",
+      "require": "./lib/presets/*.cjs",
+      "default": "./es/presets/*.js"
     },
     "./pwa": {
       "types": "./es/pwa/index.d.ts",
       "import": "./es/pwa/index.js",
-      "require": "./lib/pwa/index.cjs"
+      "require": "./lib/pwa/index.cjs",
+      "default": "./es/pwa/index.js"
     },
     "./pwa/*": {
       "types": "./es/pwa/*.d.ts",
       "import": "./es/pwa/*.js",
-      "require": "./lib/pwa/*.cjs"
+      "require": "./lib/pwa/*.cjs",
+      "default": "./es/pwa/*.js"
     },
     "./template/*": {
       "types": "./es/template/*.d.ts",
       "import": "./es/template/*.js",
-      "require": "./lib/template/*.cjs"
+      "require": "./lib/template/*.cjs",
+      "default": "./es/template/*.js"
     },
     "./theme": {
       "types": "./es/theme/index.d.ts",
       "import": "./es/theme/index.js",
-      "require": "./lib/theme/index.cjs"
+      "require": "./lib/theme/index.cjs",
+      "default": "./es/theme/index.js"
     },
     "./theme/*": {
       "types": "./es/theme/*.d.ts",
       "import": "./es/theme/*.js",
-      "require": "./lib/theme/*.cjs"
+      "require": "./lib/theme/*.cjs",
+      "default": "./es/theme/*.js"
     },
     "./toolbar/*": {
       "types": "./es/toolbar/*.d.ts",
       "import": "./es/toolbar/*.js",
-      "require": "./lib/toolbar/*.cjs"
+      "require": "./lib/toolbar/*.cjs",
+      "default": "./es/toolbar/*.js"
     },
     "./types": {
       "types": "./es/types/index.d.ts",
       "import": "./es/types/index.js",
-      "require": "./lib/types/index.cjs"
+      "require": "./lib/types/index.cjs",
+      "default": "./es/types/index.js"
     },
     "./types/*": {
       "types": "./es/types/*.d.ts",
       "import": "./es/types/*.js",
-      "require": "./lib/types/*.cjs"
+      "require": "./lib/types/*.cjs",
+      "default": "./es/types/*.js"
     },
     "./ui/*": {
       "types": "./es/ui/*.d.ts",
       "import": "./es/ui/*.js",
-      "require": "./lib/ui/*.cjs"
+      "require": "./lib/ui/*.cjs",
+      "default": "./es/ui/*.js"
     },
     "./utils": {
       "types": "./es/utils/index.d.ts",
       "import": "./es/utils/index.js",
-      "require": "./lib/utils/index.cjs"
+      "require": "./lib/utils/index.cjs",
+      "default": "./es/utils/index.js"
     },
     "./utils/*": {
       "types": "./es/utils/*.d.ts",
       "import": "./es/utils/*.js",
-      "require": "./lib/utils/*.cjs"
+      "require": "./lib/utils/*.cjs",
+      "default": "./es/utils/*.js"
     },
     "./wasm/*": {
       "types": "./es/wasm/*.d.ts",
       "import": "./es/wasm/*.js",
-      "require": "./lib/wasm/*.cjs"
+      "require": "./lib/wasm/*.cjs",
+      "default": "./es/wasm/*.js"
     },
-    "./es/core/Editor.css": "./es/core/Editor.css",
     "./es/index.css": "./es/index.css",
     "./es/plugins/media/image-resize/index.css": "./es/plugins/media/image-resize/index.css",
     "./es/plugins/media/media-context-menu/index.css": "./es/plugins/media/media-context-menu/index.css",
-    "./lib/core/Editor.css": "./lib/core/Editor.css",
     "./lib/index.css": "./lib/index.css",
     "./lib/plugins/media/image-resize/index.css": "./lib/plugins/media/image-resize/index.css",
-    "./lib/plugins/media/media-context-menu/index.css": "./lib/plugins/media/media-context-menu/index.css"
+    "./lib/plugins/media/media-context-menu/index.css": "./lib/plugins/media/media-context-menu/index.css",
+    "./dist/index.css": "./dist/index.css",
+    "./dist/index.min.css": "./dist/index.min.css",
+    "./package.json": "./package.json"
   },
   "main": "./lib/index.cjs",
   "module": "./es/index.js",
@@ -200,9 +240,10 @@
   "files": [
     "README.md",
     "LICENSE",
-    "package.json",
+    "CHANGELOG.md",
     "es",
-    "lib"
+    "lib",
+    "dist"
   ],
   "scripts": {
     "dev": "ldesign-builder build --watch --config .ldesign/builder.config.ts",
@@ -231,5 +272,7 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "typings": "./es/index.d.ts",
+  "browser": "./dist/index.js"
 }

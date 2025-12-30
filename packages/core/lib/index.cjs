@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -11,7 +11,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var tablePatch = require('./plugins/table-patch.cjs');
 var AIService = require('./ai/AIService.cjs');
 var BaiduProvider = require('./ai/providers/BaiduProvider.cjs');
 var ClaudeProvider = require('./ai/providers/ClaudeProvider.cjs');
@@ -59,20 +58,22 @@ var MobileToolbar = require('./mobile/components/MobileToolbar.cjs');
 var SwipeMenu = require('./mobile/components/SwipeMenu.cjs');
 var GestureRecognizer = require('./mobile/gestures/GestureRecognizer.cjs');
 var MobileEditorAdapter = require('./mobile/MobileEditorAdapter.cjs');
-var index$4 = require('./plugins/index.cjs');
+var index$5 = require('./plugins/index.cjs');
 var DiagramPlugin = require('./plugins/diagrams/DiagramPlugin.cjs');
 require('./plugins/diagrams/DiagramRenderer.cjs');
 require('./plugins/diagrams/DiagramToolbar.cjs');
 require('./plugins/diagrams/editors/FlowchartEditor.cjs');
 require('./plugins/diagrams/editors/MindMapEditor.cjs');
 require('./plugins/diagrams/editors/UMLEditor.cjs');
+var tablePatch = require('./plugins/table/table-patch.cjs');
+var index$2 = require('./presets/index.cjs');
 require('./pwa/BackgroundSyncManager.cjs');
 require('./pwa/CacheManager.cjs');
 require('./pwa/InstallPromptManager.cjs');
 var OfflineStorage = require('./pwa/OfflineStorage.cjs');
 var PWAManager = require('./pwa/PWAManager.cjs');
 require('./pwa/ServiceWorkerManager.cjs');
-var index$2 = require('./theme/index.cjs');
+var index$3 = require('./theme/index.cjs');
 var AIConfigDialog = require('./ui/AIConfigDialog.cjs');
 var AIDialog = require('./ui/AIDialog.cjs');
 var AISuggestionsOverlay = require('./ui/AISuggestionsOverlay.cjs');
@@ -85,7 +86,7 @@ var Dropdown = require('./ui/Dropdown.cjs');
 var EmojiPicker = require('./ui/EmojiPicker.cjs');
 var FeatureManagerPanel = require('./ui/FeatureManagerPanel.cjs');
 var FindReplaceDialog = require('./ui/FindReplaceDialog.cjs');
-var index$3 = require('./ui/icons/index.cjs');
+var index$4 = require('./ui/icons/index.cjs');
 var PluginMarketPanel = require('./ui/PluginMarketPanel.cjs');
 var SettingsPanel = require('./ui/SettingsPanel.cjs');
 var TableDialog = require('./ui/TableDialog.cjs');
@@ -103,10 +104,12 @@ var WasmAccelerator = require('./wasm/WasmAccelerator.cjs');
 var WasmDiff = require('./wasm/WasmDiff.cjs');
 var WasmParser = require('./wasm/WasmParser.cjs');
 var AIPluginV2 = require('./plugins/ai/AIPluginV2.cjs');
-var template = require('./plugins/template.cjs');
+var index$8 = require('./plugins/template/index.cjs');
 var formattingCommands = require('./plugins/formatting/formatting-commands.cjs');
 var image = require('./plugins/media/image.cjs');
-var index$7 = require('./plugins/media/image-resize/index.cjs');
+var index$c = require('./plugins/media/image-resize/index.cjs');
+var imageToolbar = require('./plugins/media/image-toolbar.cjs');
+var imageStyleDialog = require('./plugins/media/image-style-dialog.cjs');
 var mediaCommands = require('./plugins/media/media-commands.cjs');
 var MediaContextMenuPlugin = require('./plugins/media/media-context-menu/MediaContextMenuPlugin.cjs');
 var mediaDialog = require('./plugins/media/media-dialog.cjs');
@@ -116,8 +119,10 @@ var findReplace = require('./plugins/utils/find-replace.cjs');
 var fullscreen = require('./plugins/utils/fullscreen.cjs');
 var history = require('./plugins/utils/history.cjs');
 var wordCount = require('./plugins/utils/word-count.cjs');
-var codeblock = require('./plugins/codeblock.cjs');
-var emoji = require('./plugins/emoji.cjs');
+var registry = require('./plugins/registry.cjs');
+var index$6 = require('./plugins/codeblock/index.cjs');
+var index$7 = require('./plugins/horizontal-rule/index.cjs');
+var index$9 = require('./plugins/emoji/index.cjs');
 var align = require('./plugins/formatting/align.cjs');
 var color = require('./plugins/formatting/color.cjs');
 var font = require('./plugins/formatting/font.cjs');
@@ -126,31 +131,22 @@ var indent = require('./plugins/formatting/indent.cjs');
 var lineHeight = require('./plugins/formatting/line-height.cjs');
 var script = require('./plugins/formatting/script.cjs');
 var textTransform = require('./plugins/formatting/text-transform.cjs');
-var index$5 = require('./plugins/formatting/index.cjs');
-var index$6 = require('./plugins/media/index.cjs');
-var table = require('./plugins/table.cjs');
-var tableEnhanced = require('./plugins/table-enhanced.cjs');
+var index$a = require('./plugins/formatting/index.cjs');
+var index$b = require('./plugins/media/index.cjs');
+var table = require('./plugins/table/table.cjs');
+var tableEnhanced = require('./plugins/table/table-enhanced.cjs');
+var tableToolbar = require('./plugins/table/table-toolbar.cjs');
+var index$d = require('./plugins/table/index.cjs');
 var blockquote = require('./plugins/text/blockquote.cjs');
 var heading = require('./plugins/text/heading.cjs');
 var link = require('./plugins/text/link.cjs');
+var linkPreview = require('./plugins/text/link-preview.cjs');
 var list = require('./plugins/text/list.cjs');
-var index$8 = require('./plugins/text/index.cjs');
-var index$9 = require('./plugins/utils/index.cjs');
+var index$e = require('./plugins/text/index.cjs');
+var index$f = require('./plugins/utils/index.cjs');
 
-/**
- * @ldesign/editor
- * 功能强大、扩展性强的富文本编辑器
- */
-// 应用表格补丁 - 自动替换旧的表格插入功能
-// 自动应用补丁
-if (typeof window !== 'undefined') {
-    // 延迟执行，确保编辑器已初始化
-    setTimeout(() => {
-        tablePatch.patchTableInsertCommand();
-    }, 500);
-}
 
-exports.patchTableInsertCommand = tablePatch.patchTableInsertCommand;
+
 exports.AIService = AIService.AIService;
 exports.getAIService = AIService.getAIService;
 exports.resetAIService = AIService.resetAIService;
@@ -183,15 +179,15 @@ exports.cmsPreset = index.cmsPreset;
 exports.codeDocPreset = index.codeDocPreset;
 exports.collaborationPreset = index.collaborationPreset;
 exports.commentPreset = index.commentPreset;
+exports.configPresets = index.presets;
 exports.emailPreset = index.emailPreset;
 exports.getPreset = index.getPreset;
 exports.getPresetNames = index.getPresetNames;
 exports.markdownPreset = index.markdownPreset;
-exports.minimalPreset = index.minimalPreset;
+exports.minimalConfigPreset = index.minimalPreset;
 exports.mobilePreset = index.mobilePreset;
 exports.notePreset = index.notePreset;
 exports.presetDescriptions = index.presetDescriptions;
-exports.presets = index.presets;
 exports.richTextPreset = index.richTextPreset;
 exports.BasePlugin = BasePlugin.BasePlugin;
 exports.CommandManager = Command.CommandManager;
@@ -210,10 +206,7 @@ exports.captureError = ErrorBoundary.captureError;
 exports.getErrorBoundary = ErrorBoundary.getErrorBoundary;
 exports.withErrorBoundary = ErrorBoundary.withErrorBoundary;
 exports.EventEmitter = event.EventEmitter;
-Object.defineProperty(exports, "FeatureCategory", {
-    enumerable: true,
-    get: function () { return FeatureFlags.FeatureCategory; }
-});
+exports.FeatureCategory = FeatureFlags.FeatureCategory;
 exports.FeatureFlags = FeatureFlags.FeatureFlags;
 exports.getFeatureFlags = FeatureFlags.getFeatureFlags;
 exports.resetFeatureFlags = FeatureFlags.resetFeatureFlags;
@@ -225,10 +218,7 @@ exports.OptimizedEventEmitter = OptimizedEventEmitter.OptimizedEventEmitter;
 exports.Plugin = Plugin.Plugin;
 exports.PluginManager = Plugin.PluginManager;
 exports.createPlugin = Plugin.createPlugin;
-Object.defineProperty(exports, "PluginCategory", {
-    enumerable: true,
-    get: function () { return PluginRegistry.PluginCategory; }
-});
+exports.PluginCategory = PluginRegistry.PluginCategory;
 exports.PluginRegistry = PluginRegistry.PluginRegistry;
 exports.getPluginRegistry = PluginRegistry.getPluginRegistry;
 exports.resetPluginRegistry = PluginRegistry.resetPluginRegistry;
@@ -257,17 +247,25 @@ exports.MobileToolbar = MobileToolbar.MobileToolbar;
 exports.SwipeMenu = SwipeMenu.SwipeMenu;
 exports.GestureRecognizer = GestureRecognizer.GestureRecognizer;
 exports.MobileEditorAdapter = MobileEditorAdapter.MobileEditorAdapter;
-exports.allPlugins = index$4.allPlugins;
-exports.defaultPlugins = index$4.defaultPlugins;
-exports.extendedPlugins = index$4.extendedPlugins;
+exports.allPlugins = index$5.allPlugins;
+exports.defaultPlugins = index$5.defaultPlugins;
+exports.extendedPlugins = index$5.extendedPlugins;
 exports.DiagramPlugin = DiagramPlugin.DiagramPlugin;
+exports.patchTableInsertCommand = tablePatch.patchTableInsertCommand;
+exports.basicPlugins = index$2.basicPlugins;
+exports.blogPlugins = index$2.blogPlugins;
+exports.createPreset = index$2.createPreset;
+exports.documentPlugins = index$2.documentPlugins;
+exports.fullPlugins = index$2.fullPlugins;
+exports.minimalPlugins = index$2.minimalPlugins;
+exports.standardPlugins = index$2.standardPlugins;
 exports.OfflineStorage = OfflineStorage.OfflineStorage;
 exports.PWAManager = PWAManager.PWAManager;
-exports.ThemeManager = index$2.ThemeManager;
-exports.getAvailableThemes = index$2.getAvailableThemes;
-exports.getCurrentTheme = index$2.getCurrentTheme;
-exports.getThemeManager = index$2.getThemeManager;
-exports.setTheme = index$2.setTheme;
+exports.ThemeManager = index$3.ThemeManager;
+exports.getAvailableThemes = index$3.getAvailableThemes;
+exports.getCurrentTheme = index$3.getCurrentTheme;
+exports.getThemeManager = index$3.getThemeManager;
+exports.setTheme = index$3.setTheme;
 exports.showAIConfigDialog = AIConfigDialog.showAIConfigDialog;
 exports.AIMockUtils = AIDialog.AIMockUtils;
 exports.showAIDialog = AIDialog.showAIDialog;
@@ -294,8 +292,8 @@ exports.FeatureManagerPanel = FeatureManagerPanel.FeatureManagerPanel;
 exports.showFeatureManager = FeatureManagerPanel.showFeatureManager;
 exports.createFindReplaceDialog = FindReplaceDialog.createFindReplaceDialog;
 exports.showFindReplaceDialog = FindReplaceDialog.showFindReplaceDialog;
-exports.createIcon = index$3.createIcon;
-exports.getIconHTML = index$3.getIconHTML;
+exports.createIcon = index$4.createIcon;
+exports.getIconHTML = index$4.getIconHTML;
 exports.PluginMarketPanel = PluginMarketPanel.PluginMarketPanel;
 exports.showPluginMarket = PluginMarketPanel.showPluginMarket;
 exports.SettingsPanel = SettingsPanel.SettingsPanel;
@@ -351,11 +349,13 @@ exports.WasmAccelerator = WasmAccelerator.WasmAccelerator;
 exports.WasmDiff = WasmDiff.WasmDiff;
 exports.WasmParser = WasmParser.WasmParser;
 exports.AIPlugin = AIPluginV2.default;
-exports.TemplatePlugin = template.default;
-exports.getTemplateManager = template.getTemplateManager;
+exports.TemplatePlugin = index$8.default;
+exports.getTemplateManager = index$8.getTemplateManager;
 exports.FormattingCommandsPlugin = formattingCommands.default;
 exports.ImagePlugin = image.ImagePlugin;
-exports.ImageResizePlugin = index$7.ImageResizePlugin;
+exports.ImageResizePlugin = index$c.ImageResizePlugin;
+exports.ImageToolbarPlugin = imageToolbar.ImageToolbarPlugin;
+exports.ImageStyleDialogPlugin = imageStyleDialog.ImageStyleDialogPlugin;
 exports.MediaCommandsPlugin = mediaCommands.default;
 exports.MediaContextMenuPlugin = MediaContextMenuPlugin.MediaContextMenuPlugin;
 exports.MediaDialogPlugin = mediaDialog.MediaDialogPlugin;
@@ -365,8 +365,11 @@ exports.FindReplacePlugin = findReplace.FindReplacePlugin;
 exports.FullscreenPlugin = fullscreen.default;
 exports.HistoryPlugin = history.default;
 exports.WordCountPlugin = wordCount.default;
-exports.CodeBlockPlugin = codeblock.CodeBlockPlugin;
-exports.EmojiPlugin = emoji.EmojiPlugin;
+exports.PluginPresets = registry.PluginPresets;
+exports.registerBuiltinPlugins = registry.registerBuiltinPlugins;
+exports.CodeBlockPlugin = index$6.CodeBlockPlugin;
+exports.HorizontalRulePlugin = index$7.HorizontalRulePlugin;
+exports.EmojiPlugin = index$9.EmojiPlugin;
 exports.AlignPlugin = align.AlignPlugin;
 exports.BackgroundColorPlugin = color.BackgroundColorPlugin;
 exports.PRESET_COLORS = color.PRESET_COLORS;
@@ -391,18 +394,20 @@ exports.CapitalizePlugin = textTransform.CapitalizePlugin;
 exports.LowerCasePlugin = textTransform.LowerCasePlugin;
 exports.TextTransformPlugin = textTransform.TextTransformPlugin;
 exports.UpperCasePlugin = textTransform.UpperCasePlugin;
-exports.formattingPlugins = index$5.formattingPlugins;
-exports.mediaPlugins = index$6.mediaPlugins;
+exports.formattingPlugins = index$a.formattingPlugins;
+exports.mediaPlugins = index$b.mediaPlugins;
 exports.TablePlugin = table.TablePlugin;
-exports.tablePlugins = table.tablePlugins;
 exports.EnhancedTablePlugin = tableEnhanced.EnhancedTablePlugin;
+exports.TableToolbarPlugin = tableToolbar.TableToolbarPlugin;
+exports.tablePlugins = index$d.tablePlugins;
 exports.BlockquotePlugin = blockquote.BlockquotePlugin;
 exports.HeadingPlugin = heading.HeadingPlugin;
 exports.LinkPlugin = link.LinkPlugin;
+exports.LinkPreviewPlugin = linkPreview.LinkPreviewPlugin;
 exports.BulletListPlugin = list.BulletListPlugin;
 exports.OrderedListPlugin = list.OrderedListPlugin;
 exports.TaskListPlugin = list.TaskListPlugin;
-exports.textPlugins = index$8.textPlugins;
-exports.utilPlugins = index$9.utilPlugins;
+exports.textPlugins = index$e.textPlugins;
+exports.utilPlugins = index$f.utilPlugins;
 /*! End of @ldesign/editor-core | Powered by @ldesign/builder */
 //# sourceMappingURL=index.cjs.map

@@ -20,12 +20,12 @@ export interface UseEditorReturn {
   content: Ref<string>
   /** 是否准备就绪 */
   ready: Ref<boolean>
-  /** 获取内容 */
-  getContent: () => string
-  /** 设置内容 */
-  setContent: (content: string) => void
-  /** 插入文本 */
-  insertText: (text: string) => void
+  /** 获取HTML内容 */
+  getHTML: () => string
+  /** 设置HTML内容 */
+  setHTML: (content: string) => void
+  /** 插入HTML */
+  insertHTML: (html: string) => void
   /** 聚焦编辑器 */
   focus: () => void
   /** 销毁编辑器 */
@@ -58,7 +58,7 @@ export interface UseEditorReturn {
  */
 export function useEditor(options: UseEditorOptions = {}): UseEditorReturn {
   const editor = ref<Editor | null>(null)
-  const content = ref<string>(options.content || '')
+  const content = ref<string>(typeof options.content === 'string' ? options.content : '')
   const ready = ref(false)
 
   onMounted(() => {
@@ -83,25 +83,25 @@ export function useEditor(options: UseEditorOptions = {}): UseEditorReturn {
   })
 
   /**
-   * 获取内容
+   * 获取HTML内容
    */
-  const getContent = (): string => {
-    return editor.value?.getContent?.() || content.value
+  const getHTML = (): string => {
+    return editor.value?.getHTML?.() || content.value
   }
 
   /**
-   * 设置内容
+   * 设置HTML内容
    */
-  const setContent = (newContent: string): void => {
+  const setHTML = (newContent: string): void => {
     content.value = newContent
-    editor.value?.setContent?.(newContent)
+    editor.value?.setHTML?.(newContent)
   }
 
   /**
-   * 插入文本
+   * 插入HTML
    */
-  const insertText = (text: string): void => {
-    editor.value?.insertText?.(text)
+  const insertHTML = (html: string): void => {
+    editor.value?.insertHTML?.(html)
   }
 
   /**
@@ -124,9 +124,9 @@ export function useEditor(options: UseEditorOptions = {}): UseEditorReturn {
     editor,
     content,
     ready,
-    getContent,
-    setContent,
-    insertText,
+    getHTML,
+    setHTML,
+    insertHTML,
     focus,
     destroy
   }

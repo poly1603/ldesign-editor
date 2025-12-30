@@ -138,3 +138,4 @@ export declare class PerformanceMonitor {
  * 单例模式的性能监控器
  */
 export declare const performanceMonitor: PerformanceMonitor;
+//# sourceMappingURL=performance.d.ts.map

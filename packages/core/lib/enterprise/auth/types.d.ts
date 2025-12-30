@@ -238,3 +238,4 @@ export interface Session {
     /** 自定义数据 */
     data?: Record<string, any>;
 }
+//# sourceMappingURL=types.d.ts.map

@@ -7,3 +7,4 @@ export interface PluginTemplate {
     files?: string[];
 }
 export declare function getTemplates(): Record<string, PluginTemplate>;
+//# sourceMappingURL=index.d.ts.map

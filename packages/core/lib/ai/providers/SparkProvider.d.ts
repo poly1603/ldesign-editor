@@ -27,3 +27,4 @@ export declare class SparkProvider implements AIProviderInterface {
         description: string;
     }[];
 }
+//# sourceMappingURL=SparkProvider.d.ts.map

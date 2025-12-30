@@ -7,3 +7,4 @@ import type { AIConfig } from '../ai/types';
  * 显示 AI 配置对话框
  */
 export declare function showAIConfigDialog(editor: any, currentConfig: AIConfig, onSave: (config: AIConfig) => void): void;
+//# sourceMappingURL=AIConfigDialog.d.ts.map

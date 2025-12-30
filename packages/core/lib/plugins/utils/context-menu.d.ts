@@ -11,3 +11,4 @@ declare global {
     }
 }
 export default ContextMenuPlugin;
+//# sourceMappingURL=context-menu.d.ts.map

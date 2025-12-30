@@ -36,9 +36,11 @@ export declare class Modal extends BaseComponent {
     center(): void;
     setContent(content: string | HTMLElement): void;
     setTitle(title: string): void;
+    setFooter(content: string | HTMLElement): void;
     protected beforeShow(): void;
     protected beforeHide(): void;
     protected beforeDestroy(): void;
     close(): void;
     open(): void;
 }
+//# sourceMappingURL=Modal.d.ts.map

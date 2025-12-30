@@ -2,8 +2,8 @@
  * 右键菜单管理器
  * 统一管理编辑器中所有的右键菜单，提供注册、注销、更新等功能
  */
-import type { MenuItem } from '../components/ContextMenuSystem';
-import { ContextMenuSystem } from '../components/ContextMenuSystem';
+import type { MenuItem } from '../ui/ContextMenuSystem';
+import { ContextMenuSystem } from '../ui/ContextMenuSystem';
 import { EventEmitter } from './EventEmitter';
 export interface MenuRegistration {
     id: string;
@@ -71,7 +71,7 @@ export declare class ContextMenuManager extends EventEmitter {
     /**
      * 手动触发右键菜单
      */
-    trigger(e: MouseEvent, menuId: string, context?: any): void;
+    trigger(e: MouseEvent, menuId: string, _context?: any): void;
     /**
      * 关闭当前活动的菜单
      */
@@ -117,3 +117,4 @@ export declare function registerContextMenu(registration: MenuRegistration): voi
  * 快捷函数：为元素添加右键菜单
  */
 export declare function addContextMenuToElement(element: HTMLElement, items: MenuItem[], options?: Partial<MenuRegistration>): string;
+//# sourceMappingURL=ContextMenuManager.d.ts.map

@@ -108,3 +108,4 @@ export declare function toggleMark(markType: string): Command;
 export declare function setBlockType(nodeType: string, attrs?: any): Command;
 export declare function insertNode(node: any): Command;
 export declare const deleteSelection: Command;
+//# sourceMappingURL=Command.d.ts.map

@@ -51,3 +51,4 @@ export declare class LocalTemplateStorage implements TemplateStorage {
         percentage: number;
     }>;
 }
+//# sourceMappingURL=LocalTemplateStorage.d.ts.map

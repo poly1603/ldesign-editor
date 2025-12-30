@@ -25,3 +25,4 @@ export declare const FontSizePlugin: Plugin;
  * 字体家族插件
  */
 export declare const FontFamilyPlugin: Plugin;
+//# sourceMappingURL=font.d.ts.map

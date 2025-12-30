@@ -2,13 +2,15 @@
  * 插件导出 - 优化后的结构
  */
 
-// 格式化插件
-// 聚合导出所有插件集合
+// 插件注册表和预设
 import { formattingPlugins } from './formatting'
 import { mediaPlugins } from './media'
 import { tablePlugins } from './table'
 import { textPlugins } from './text'
 import { utilPlugins } from './utils'
+
+export { registerBuiltinPlugins, PluginPresets } from './registry'
+export type { PresetName } from './registry'
 
 // AI 插件
 export { default as AIPlugin } from './ai'
@@ -19,22 +21,24 @@ export { CodeBlockPlugin } from './codeblock'
 // Emoji 插件
 export * from './emoji'
 
+// 格式化插件
 export * from './formatting'
+
+// 水平线插件
+export { HorizontalRulePlugin } from './horizontal-rule'
+
 // 媒体插件
 export * from './media'
 
 // 表格插件
 export * from './table'
 
-export * from './table-enhanced'
-
 // 模板插件
-export { default as TemplatePlugin } from './template'
-
-export { getTemplateManager } from './template'
+export { default as TemplatePlugin, getTemplateManager } from './template'
 
 // 文本结构插件
 export * from './text'
+
 // 工具插件
 export * from './utils'
 

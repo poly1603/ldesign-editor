@@ -69,3 +69,4 @@ export declare class SwipeMenu extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=SwipeMenu.d.ts.map

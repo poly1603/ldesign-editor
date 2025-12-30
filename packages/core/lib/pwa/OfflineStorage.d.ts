@@ -53,3 +53,4 @@ export declare class OfflineStorage {
      */
     destroy(): void;
 }
+//# sourceMappingURL=OfflineStorage.d.ts.map

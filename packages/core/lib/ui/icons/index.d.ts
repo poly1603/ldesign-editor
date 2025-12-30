@@ -39,3 +39,4 @@ export { basicIcons } from './basic';
 export { formattingIcons } from './formatting';
 export { lucideIcons } from './lucide';
 export { mediaIcons } from './media';
+//# sourceMappingURL=index.d.ts.map

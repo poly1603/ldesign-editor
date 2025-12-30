@@ -83,3 +83,4 @@ export declare class TemplateDialog {
  * 显示模板选择对话框
  */
 export declare function showTemplateDialog(templateManager: TemplateManager, onSelect?: (template: Template) => void): TemplateDialog;
+//# sourceMappingURL=TemplateDialog.d.ts.map

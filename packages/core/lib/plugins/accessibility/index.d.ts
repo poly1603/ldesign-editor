@@ -104,3 +104,4 @@ export declare const AccessibilityPlugin: import("../../types").Plugin;
  * @returns 无障碍管理器
  */
 export declare function getAccessibilityManager(editor: EditorInstance): AccessibilityManager | null;
+//# sourceMappingURL=index.d.ts.map

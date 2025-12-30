@@ -326,3 +326,4 @@ export interface LayoutOptions {
     fit?: boolean;
     padding?: number;
 }
+//# sourceMappingURL=types.d.ts.map

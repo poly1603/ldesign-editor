@@ -37,3 +37,4 @@ export declare class MediaContextMenuPlugin implements Plugin {
     destroy(): void;
 }
 export default MediaContextMenuPlugin;
+//# sourceMappingURL=MediaContextMenuPlugin.d.ts.map

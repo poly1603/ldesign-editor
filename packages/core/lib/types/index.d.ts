@@ -544,3 +544,4 @@ export interface EditorKeyboardEvent {
     /** Alt键是否按下 */
     altKey?: boolean;
 }
+//# sourceMappingURL=index.d.ts.map

@@ -104,3 +104,4 @@ export declare function isInViewport(element: HTMLElement): boolean;
  * 检查元素是否部分在视口内
  */
 export declare function isPartiallyInViewport(element: HTMLElement): boolean;
+//# sourceMappingURL=position.d.ts.map

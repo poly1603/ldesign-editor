@@ -5,3 +5,4 @@
 import type { Plugin } from '../../types';
 declare const FormattingCommandsPlugin: Plugin;
 export default FormattingCommandsPlugin;
+//# sourceMappingURL=formatting-commands.d.ts.map

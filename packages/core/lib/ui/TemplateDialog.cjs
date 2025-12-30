@@ -2,63 +2,62 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
 'use strict';
 
-/**
- * 模板选择器对话框
- */
+var types = require('../template/types.cjs');
+
 class TemplateDialog {
-    constructor(templateManager) {
-        this.selectedCategory = 'all';
-        this.searchQuery = '';
-        this.templateManager = templateManager;
-        this.container = this.createDialog();
-    }
-    /**
-     * 显示对话框
-     */
-    show(onSelect) {
-        this.onSelect = onSelect;
-        document.body.appendChild(this.container);
-        this.loadTemplates();
-    }
-    /**
-     * 隐藏对话框
-     */
-    hide() {
-        if (this.container.parentNode)
-            this.container.parentNode.removeChild(this.container);
-    }
-    /**
-     * 创建对话框结构
-     */
-    createDialog() {
-        const dialog = document.createElement('div');
-        dialog.className = 'template-dialog-overlay';
-        dialog.innerHTML = `
+  constructor(templateManager) {
+    this.selectedCategory = "all";
+    this.searchQuery = "";
+    this.templateManager = templateManager;
+    this.container = this.createDialog();
+  }
+  /**
+   * 显示对话框
+   */
+  show(onSelect) {
+    this.onSelect = onSelect;
+    document.body.appendChild(this.container);
+    this.loadTemplates();
+  }
+  /**
+   * 隐藏对话框
+   */
+  hide() {
+    if (this.container.parentNode)
+      this.container.parentNode.removeChild(this.container);
+  }
+  /**
+   * 创建对话框结构
+   */
+  createDialog() {
+    const dialog = document.createElement("div");
+    dialog.className = "template-dialog-overlay";
+    dialog.innerHTML = `
       <div class="template-dialog">
         <div class="template-dialog-header">
-          <h2>选择模板</h2>
-          <button class="template-dialog-close" aria-label="关闭">×</button>
+          <h2>\u9009\u62E9\u6A21\u677F</h2>
+          <button class="template-dialog-close" aria-label="\u5173\u95ED">\xD7</button>
         </div>
         
         <div class="template-dialog-toolbar">
           <div class="template-search">
-            <input type="text" placeholder="搜索模板..." class="template-search-input">
+            <input type="text" placeholder="\u641C\u7D22\u6A21\u677F..." class="template-search-input">
           </div>
           <div class="template-categories">
-            <button class="category-btn active" data-category="all">全部</button>
-            <button class="category-btn" data-category="business">商务</button>
-            <button class="category-btn" data-category="personal">个人</button>
-            <button class="category-btn" data-category="creative">创意</button>
-            <button class="category-btn" data-category="education">教育</button>
-            <button class="category-btn" data-category="technical">技术</button>
-            <button class="category-btn" data-category="custom">自定义</button>
+            <button class="category-btn active" data-category="all">\u5168\u90E8</button>
+            <button class="category-btn" data-category="business">\u5546\u52A1</button>
+            <button class="category-btn" data-category="personal">\u4E2A\u4EBA</button>
+            <button class="category-btn" data-category="creative">\u521B\u610F</button>
+            <button class="category-btn" data-category="education">\u6559\u80B2</button>
+            <button class="category-btn" data-category="technical">\u6280\u672F</button>
+            <button class="category-btn" data-category="custom">\u81EA\u5B9A\u4E49</button>
           </div>
         </div>
         
@@ -67,263 +66,244 @@ class TemplateDialog {
         </div>
         
         <div class="template-dialog-footer">
-          <button class="btn-secondary" id="import-template">导入模板</button>
-          <button class="btn-secondary" id="create-from-current">从当前内容创建</button>
-          <button class="btn-primary" id="manage-templates">管理模板</button>
+          <button class="btn-secondary" id="import-template">\u5BFC\u5165\u6A21\u677F</button>
+          <button class="btn-secondary" id="create-from-current">\u4ECE\u5F53\u524D\u5185\u5BB9\u521B\u5EFA</button>
+          <button class="btn-primary" id="manage-templates">\u7BA1\u7406\u6A21\u677F</button>
         </div>
       </div>
     `;
-        // 添加样式
-        this.addStyles();
-        // 绑定事件
-        this.bindEvents(dialog);
-        return dialog;
-    }
-    /**
-     * 绑定事件
-     */
-    bindEvents(dialog) {
-        // 关闭按钮
-        const closeBtn = dialog.querySelector('.template-dialog-close');
-        closeBtn?.addEventListener('click', () => this.hide());
-        // 点击遮罩层关闭
-        dialog.addEventListener('click', (e) => {
-            if (e.target === dialog)
-                this.hide();
+    this.addStyles();
+    this.bindEvents(dialog);
+    return dialog;
+  }
+  /**
+   * 绑定事件
+   */
+  bindEvents(dialog) {
+    const closeBtn = dialog.querySelector(".template-dialog-close");
+    closeBtn?.addEventListener("click", () => this.hide());
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog)
+        this.hide();
+    });
+    const searchInput = dialog.querySelector(".template-search-input");
+    searchInput?.addEventListener("input", (e) => {
+      this.searchQuery = e.target.value;
+      this.loadTemplates();
+    });
+    const categoryBtns = dialog.querySelectorAll(".category-btn");
+    categoryBtns.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        categoryBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        this.selectedCategory = btn.dataset.category;
+        this.loadTemplates();
+      });
+    });
+    const importBtn = dialog.querySelector("#import-template");
+    importBtn?.addEventListener("click", () => this.handleImport());
+    const createBtn = dialog.querySelector("#create-from-current");
+    createBtn?.addEventListener("click", () => this.handleCreateFromCurrent());
+    const manageBtn = dialog.querySelector("#manage-templates");
+    manageBtn?.addEventListener("click", () => this.showManageDialog());
+  }
+  /**
+   * 加载模板列表
+   */
+  async loadTemplates() {
+    const grid = this.container.querySelector(".template-grid");
+    if (!grid)
+      return;
+    grid.innerHTML = '<div class="loading">\u52A0\u8F7D\u4E2D...</div>';
+    try {
+      let templates = [];
+      if (this.searchQuery)
+        templates = await this.templateManager.searchTemplates(this.searchQuery);
+      else if (this.selectedCategory === "all")
+        templates = await this.templateManager.getAllTemplates();
+      else
+        templates = await this.templateManager.getTemplatesByCategory(this.selectedCategory);
+      if (templates.length === 0) {
+        grid.innerHTML = '<div class="empty-state">\u6CA1\u6709\u627E\u5230\u6A21\u677F</div>';
+        return;
+      }
+      grid.innerHTML = templates.map((template) => this.renderTemplateCard(template)).join("");
+      grid.querySelectorAll(".template-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const templateId = card.dataset.templateId;
+          if (templateId)
+            this.selectTemplate(templateId);
         });
-        // 搜索
-        const searchInput = dialog.querySelector('.template-search-input');
-        searchInput?.addEventListener('input', (e) => {
-            this.searchQuery = e.target.value;
-            this.loadTemplates();
-        });
-        // 分类切换
-        const categoryBtns = dialog.querySelectorAll('.category-btn');
-        categoryBtns.forEach((btn) => {
-            btn.addEventListener('click', (e) => {
-                categoryBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.selectedCategory = btn.dataset.category;
-                this.loadTemplates();
-            });
-        });
-        // 导入模板
-        const importBtn = dialog.querySelector('#import-template');
-        importBtn?.addEventListener('click', () => this.handleImport());
-        // 从当前内容创建
-        const createBtn = dialog.querySelector('#create-from-current');
-        createBtn?.addEventListener('click', () => this.handleCreateFromCurrent());
-        // 管理模板
-        const manageBtn = dialog.querySelector('#manage-templates');
-        manageBtn?.addEventListener('click', () => this.showManageDialog());
+      });
+    } catch (error) {
+      console.error("Failed to load templates:", error);
+      grid.innerHTML = '<div class="error">\u52A0\u8F7D\u6A21\u677F\u5931\u8D25</div>';
     }
-    /**
-     * 加载模板列表
-     */
-    async loadTemplates() {
-        const grid = this.container.querySelector('.template-grid');
-        if (!grid)
-            return;
-        grid.innerHTML = '<div class="loading">加载中...</div>';
-        try {
-            let templates = [];
-            if (this.searchQuery)
-                templates = await this.templateManager.searchTemplates(this.searchQuery);
-            else if (this.selectedCategory === 'all')
-                templates = await this.templateManager.getAllTemplates();
-            else
-                templates = await this.templateManager.getTemplatesByCategory(this.selectedCategory);
-            if (templates.length === 0) {
-                grid.innerHTML = '<div class="empty-state">没有找到模板</div>';
-                return;
-            }
-            grid.innerHTML = templates.map(template => this.renderTemplateCard(template)).join('');
-            // 绑定模板卡片点击事件
-            grid.querySelectorAll('.template-card').forEach((card) => {
-                card.addEventListener('click', () => {
-                    const templateId = card.dataset.templateId;
-                    if (templateId)
-                        this.selectTemplate(templateId);
-                });
-            });
-        }
-        catch (error) {
-            console.error('Failed to load templates:', error);
-            grid.innerHTML = '<div class="error">加载模板失败</div>';
-        }
-    }
-    /**
-     * 渲染模板卡片
-     */
-    renderTemplateCard(template) {
-        const { metadata } = template;
-        const icon = this.getTemplateIcon(metadata.category);
-        const badges = [
-            metadata.isBuiltin ? '<span class="badge badge-builtin">内置</span>' : '',
-            metadata.isCustom ? '<span class="badge badge-custom">自定义</span>' : '',
-        ].filter(Boolean).join('');
-        return `
+  }
+  /**
+   * 渲染模板卡片
+   */
+  renderTemplateCard(template) {
+    const {
+      metadata
+    } = template;
+    const icon = this.getTemplateIcon(metadata.category);
+    const badges = [metadata.isBuiltin ? '<span class="badge badge-builtin">\u5185\u7F6E</span>' : "", metadata.isCustom ? '<span class="badge badge-custom">\u81EA\u5B9A\u4E49</span>' : ""].filter(Boolean).join("");
+    return `
       <div class="template-card" data-template-id="${metadata.id}">
         <div class="template-icon">${icon}</div>
         <h3 class="template-name">${metadata.name}</h3>
-        <p class="template-desc">${metadata.description || '无描述'}</p>
+        <p class="template-desc">${metadata.description || "\u65E0\u63CF\u8FF0"}</p>
         <div class="template-meta">
           ${badges}
-          ${metadata.tags ? metadata.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+          ${metadata.tags ? metadata.tags.map((tag) => `<span class="tag">${tag}</span>`).join("") : ""}
         </div>
       </div>
     `;
+  }
+  /**
+   * 获取模板图标
+   */
+  getTemplateIcon(category) {
+    const icons = {
+      [types.TemplateCategory.BUSINESS]: "\u{1F4CA}",
+      [types.TemplateCategory.PERSONAL]: "\u{1F464}",
+      [types.TemplateCategory.CREATIVE]: "\u{1F3A8}",
+      [types.TemplateCategory.EDUCATION]: "\u{1F4DA}",
+      [types.TemplateCategory.TECHNICAL]: "\u{1F4BB}",
+      [types.TemplateCategory.CUSTOM]: "\u2699\uFE0F"
+    };
+    return icons[category] || "\u{1F4C4}";
+  }
+  /**
+   * 选择模板
+   */
+  async selectTemplate(templateId) {
+    const template = await this.templateManager.getTemplate(templateId);
+    if (template) {
+      if (template.variables && template.variables.length > 0) {
+        this.showVariableDialog(template);
+      } else {
+        this.applyTemplate(template);
+      }
     }
-    /**
-     * 获取模板图标
-     */
-    getTemplateIcon(category) {
-        const icons = {
-            [TemplateCategory.BUSINESS]: '📊',
-            [TemplateCategory.PERSONAL]: '👤',
-            [TemplateCategory.CREATIVE]: '🎨',
-            [TemplateCategory.EDUCATION]: '📚',
-            [TemplateCategory.TECHNICAL]: '💻',
-            [TemplateCategory.CUSTOM]: '⚙️',
-        };
-        return icons[category] || '📄';
-    }
-    /**
-     * 选择模板
-     */
-    async selectTemplate(templateId) {
-        const template = await this.templateManager.getTemplate(templateId);
-        if (template) {
-            if (template.variables && template.variables.length > 0) {
-                // 如果有变量，显示变量填充对话框
-                this.showVariableDialog(template);
-            }
-            else {
-                // 直接应用模板
-                this.applyTemplate(template);
-            }
-        }
-    }
-    /**
-     * 显示变量填充对话框
-     */
-    showVariableDialog(template) {
-        const dialog = document.createElement('div');
-        dialog.className = 'variable-dialog-overlay';
-        const variableInputs = template.variables?.map(v => `
+  }
+  /**
+   * 显示变量填充对话框
+   */
+  showVariableDialog(template) {
+    const dialog = document.createElement("div");
+    dialog.className = "variable-dialog-overlay";
+    const variableInputs = template.variables?.map((v) => `
       <div class="variable-input-group">
         <label for="${v.key}">
           ${v.label}
-          ${v.required ? '<span class="required">*</span>' : ''}
+          ${v.required ? '<span class="required">*</span>' : ""}
         </label>
         ${this.renderVariableInput(v)}
       </div>
-    `).join('') || '';
-        dialog.innerHTML = `
+    `).join("") || "";
+    dialog.innerHTML = `
       <div class="variable-dialog">
         <div class="variable-dialog-header">
-          <h3>填充模板变量 - ${template.metadata.name}</h3>
-          <button class="close-btn">×</button>
+          <h3>\u586B\u5145\u6A21\u677F\u53D8\u91CF - ${template.metadata.name}</h3>
+          <button class="close-btn">\xD7</button>
         </div>
         <div class="variable-dialog-content">
           ${variableInputs}
         </div>
         <div class="variable-dialog-footer">
-          <button class="btn-secondary cancel-btn">取消</button>
-          <button class="btn-primary apply-btn">应用模板</button>
+          <button class="btn-secondary cancel-btn">\u53D6\u6D88</button>
+          <button class="btn-primary apply-btn">\u5E94\u7528\u6A21\u677F</button>
         </div>
       </div>
     `;
-        document.body.appendChild(dialog);
-        // 绑定事件
-        dialog.querySelector('.close-btn')?.addEventListener('click', () => {
-            document.body.removeChild(dialog);
-        });
-        dialog.querySelector('.cancel-btn')?.addEventListener('click', () => {
-            document.body.removeChild(dialog);
-        });
-        dialog.querySelector('.apply-btn')?.addEventListener('click', () => {
-            const variables = {};
-            template.variables?.forEach((v) => {
-                const input = dialog.querySelector(`[name="${v.key}"]`);
-                if (input)
-                    variables[v.key] = input.value || v.defaultValue || '';
-            });
-            document.body.removeChild(dialog);
-            this.applyTemplate(template, variables);
-        });
+    document.body.appendChild(dialog);
+    dialog.querySelector(".close-btn")?.addEventListener("click", () => {
+      document.body.removeChild(dialog);
+    });
+    dialog.querySelector(".cancel-btn")?.addEventListener("click", () => {
+      document.body.removeChild(dialog);
+    });
+    dialog.querySelector(".apply-btn")?.addEventListener("click", () => {
+      const variables = {};
+      template.variables?.forEach((v) => {
+        const input = dialog.querySelector(`[name="${v.key}"]`);
+        if (input)
+          variables[v.key] = input.value || v.defaultValue || "";
+      });
+      document.body.removeChild(dialog);
+      this.applyTemplate(template, variables);
+    });
+  }
+  /**
+   * 渲染变量输入控件
+   */
+  renderVariableInput(variable) {
+    switch (variable.type) {
+      case "text":
+        return `<input type="text" name="${variable.key}" value="${variable.defaultValue || ""}" />`;
+      case "date":
+        return `<input type="date" name="${variable.key}" value="${variable.defaultValue || ""}" />`;
+      case "select":
+        const options = variable.options?.map((opt) => `<option value="${opt.value}">${opt.label}</option>`).join("") || "";
+        return `<select name="${variable.key}">${options}</select>`;
+      case "boolean":
+        return `<input type="checkbox" name="${variable.key}" ${variable.defaultValue ? "checked" : ""} />`;
+      default:
+        return `<input type="text" name="${variable.key}" value="${variable.defaultValue || ""}" />`;
     }
-    /**
-     * 渲染变量输入控件
-     */
-    renderVariableInput(variable) {
-        switch (variable.type) {
-            case 'text':
-                return `<input type="text" name="${variable.key}" value="${variable.defaultValue || ''}" />`;
-            case 'date':
-                return `<input type="date" name="${variable.key}" value="${variable.defaultValue || ''}" />`;
-            case 'select':
-                const options = variable.options?.map((opt) => `<option value="${opt.value}">${opt.label}</option>`).join('') || '';
-                return `<select name="${variable.key}">${options}</select>`;
-            case 'boolean':
-                return `<input type="checkbox" name="${variable.key}" ${variable.defaultValue ? 'checked' : ''} />`;
-            default:
-                return `<input type="text" name="${variable.key}" value="${variable.defaultValue || ''}" />`;
-        }
+  }
+  /**
+   * 应用模板
+   */
+  applyTemplate(template, variables) {
+    if (this.onSelect)
+      this.onSelect(template);
+    this.hide();
+  }
+  /**
+   * 处理导入
+   */
+  handleImport() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const jsonStr = event.target?.result;
+            await this.templateManager.importTemplate(jsonStr);
+            alert("\u6A21\u677F\u5BFC\u5165\u6210\u529F\uFF01");
+            this.loadTemplates();
+          } catch (error) {
+            alert(`\u6A21\u677F\u5BFC\u5165\u5931\u8D25\uFF1A${error}`);
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+    input.click();
+  }
+  /**
+   * 从当前内容创建模板
+   */
+  handleCreateFromCurrent() {
+    this.hide();
+    if (window.editor) {
+      window.editor.emit("template:create-from-content");
     }
-    /**
-     * 应用模板
-     */
-    applyTemplate(template, variables) {
-        if (this.onSelect)
-            this.onSelect(template);
-        this.hide();
-    }
-    /**
-     * 处理导入
-     */
-    handleImport() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.addEventListener('change', async (e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    try {
-                        const jsonStr = event.target?.result;
-                        await this.templateManager.importTemplate(jsonStr);
-                        alert('模板导入成功！');
-                        this.loadTemplates();
-                    }
-                    catch (error) {
-                        alert(`模板导入失败：${error}`);
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-        input.click();
-    }
-    /**
-     * 从当前内容创建模板
-     */
-    handleCreateFromCurrent() {
-        // 这个功能需要访问编辑器实例，将在插件中实现
-        this.hide();
-        if (window.editor) {
-            // 触发创建模板事件
-            window.editor.emit('template:create-from-content');
-        }
-    }
-    /**
-     * 显示模板管理对话框
-     */
-    showManageDialog() {
-        const overlay = document.createElement('div');
-        overlay.className = 'template-manage-overlay';
-        overlay.style.cssText = `
+  }
+  /**
+   * 显示模板管理对话框
+   */
+  async showManageDialog() {
+    const overlay = document.createElement("div");
+    overlay.className = "template-manage-overlay";
+    overlay.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
@@ -335,9 +315,9 @@ class TemplateDialog {
       justify-content: center;
       z-index: 10001;
     `;
-        const dialog = document.createElement('div');
-        dialog.className = 'template-manage-dialog';
-        dialog.style.cssText = `
+    const dialog = document.createElement("div");
+    dialog.className = "template-manage-dialog";
+    dialog.style.cssText = `
       background: white;
       border-radius: 8px;
       width: 700px;
@@ -346,34 +326,31 @@ class TemplateDialog {
       flex-direction: column;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     `;
-        // 头部
-        const header = document.createElement('div');
-        header.className = 'dialog-header';
-        header.style.cssText = `
+    const header = document.createElement("div");
+    header.className = "dialog-header";
+    header.style.cssText = `
       padding: 20px;
       border-bottom: 1px solid #e0e0e0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     `;
-        header.innerHTML = `
-      <h2 style="margin: 0; font-size: 18px;">模板管理</h2>
+    header.innerHTML = `
+      <h2 style="margin: 0; font-size: 18px;">\u6A21\u677F\u7BA1\u7406</h2>
       <button class="close-btn" style="border: none; background: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
     `;
-        // 内容区域
-        const content = document.createElement('div');
-        content.className = 'dialog-content';
-        content.style.cssText = `
+    const content = document.createElement("div");
+    content.className = "dialog-content";
+    content.style.cssText = `
       padding: 20px;
       flex: 1;
       overflow-y: auto;
     `;
-        // 模板列表
-        const templates = this.templateManager.getTemplates();
-        templates.forEach((template) => {
-            const item = document.createElement('div');
-            item.className = 'template-item';
-            item.style.cssText = `
+    const templates = await this.templateManager.getAllTemplates();
+    templates.forEach((template) => {
+      const item = document.createElement("div");
+      item.className = "template-item";
+      item.style.cssText = `
         padding: 16px;
         border: 1px solid #e0e0e0;
         border-radius: 6px;
@@ -382,17 +359,16 @@ class TemplateDialog {
         justify-content: space-between;
         align-items: center;
       `;
-            const info = document.createElement('div');
-            info.innerHTML = `
-        <div style="font-weight: 600; margin-bottom: 4px;">${template.name}</div>
-        <div style="font-size: 12px; color: #666;">${template.category}</div>
+      const info = document.createElement("div");
+      info.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 4px;">${template.metadata.name}</div>
+        <div style="font-size: 12px; color: #666;">${template.metadata.category}</div>
       `;
-            const actions = document.createElement('div');
-            actions.style.cssText = 'display: flex; gap: 8px;';
-            // 编辑按钮
-            const editBtn = document.createElement('button');
-            editBtn.textContent = '编辑';
-            editBtn.style.cssText = `
+      const actions = document.createElement("div");
+      actions.style.cssText = "display: flex; gap: 8px;";
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "\u7F16\u8F91";
+      editBtn.style.cssText = `
         padding: 6px 12px;
         border: 1px solid #3b82f6;
         background: white;
@@ -400,13 +376,12 @@ class TemplateDialog {
         border-radius: 4px;
         cursor: pointer;
       `;
-            editBtn.addEventListener('click', () => {
-                this.showEditTemplateDialog(template);
-            });
-            // 删除按钮
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = '删除';
-            deleteBtn.style.cssText = `
+      editBtn.addEventListener("click", () => {
+        this.showEditTemplateDialog(template.metadata.id, template);
+      });
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "\u5220\u9664";
+      deleteBtn.style.cssText = `
         padding: 6px 12px;
         border: 1px solid #ef4444;
         background: white;
@@ -414,29 +389,28 @@ class TemplateDialog {
         border-radius: 4px;
         cursor: pointer;
       `;
-            deleteBtn.addEventListener('click', () => {
-                if (confirm(`确定要删除模板 "${template.name}" 吗？`)) {
-                    this.templateManager.deleteTemplate(template.id);
-                    item.remove();
-                }
-            });
-            actions.appendChild(editBtn);
-            actions.appendChild(deleteBtn);
-            item.appendChild(info);
-            item.appendChild(actions);
-            content.appendChild(item);
-        });
-        // 底部按钮
-        const footer = document.createElement('div');
-        footer.style.cssText = `
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`\u786E\u5B9A\u8981\u5220\u9664\u6A21\u677F "${template.metadata.name}" \u5417\uFF1F`)) {
+          this.templateManager.deleteTemplate(template.metadata.id);
+          item.remove();
+        }
+      });
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
+      item.appendChild(info);
+      item.appendChild(actions);
+      content.appendChild(item);
+    });
+    const footer = document.createElement("div");
+    footer.style.cssText = `
       padding: 16px 20px;
       border-top: 1px solid #e0e0e0;
       display: flex;
       justify-content: space-between;
     `;
-        const addBtn = document.createElement('button');
-        addBtn.textContent = '+ 新建模板';
-        addBtn.style.cssText = `
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "+ \u65B0\u5EFA\u6A21\u677F";
+    addBtn.style.cssText = `
       padding: 8px 16px;
       border: none;
       background: #3b82f6;
@@ -444,12 +418,12 @@ class TemplateDialog {
       border-radius: 6px;
       cursor: pointer;
     `;
-        addBtn.addEventListener('click', () => {
-            this.showCreateTemplateDialog();
-        });
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = '关闭';
-        closeBtn.style.cssText = `
+    addBtn.addEventListener("click", () => {
+      this.showCreateTemplateDialog();
+    });
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "\u5173\u95ED";
+    closeBtn.style.cssText = `
       padding: 8px 16px;
       border: 1px solid #d1d5db;
       background: white;
@@ -457,71 +431,72 @@ class TemplateDialog {
       border-radius: 6px;
       cursor: pointer;
     `;
-        closeBtn.addEventListener('click', () => {
-            document.body.removeChild(overlay);
-        });
-        footer.appendChild(addBtn);
-        footer.appendChild(closeBtn);
-        dialog.appendChild(header);
-        dialog.appendChild(content);
-        dialog.appendChild(footer);
-        overlay.appendChild(dialog);
-        // 关闭按钮事件
-        header.querySelector('.close-btn')?.addEventListener('click', () => {
-            document.body.removeChild(overlay);
-        });
-        // 点击遮罩层关闭
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay)
-                document.body.removeChild(overlay);
-        });
-        document.body.appendChild(overlay);
-    }
-    /**
-     * 显示创建模板对话框
-     */
-    showCreateTemplateDialog() {
-        // 简化实现，实际应该有完整的表单
-        const name = prompt('请输入模板名称:');
-        if (!name)
-            return;
-        const content = prompt('请输入模板内容:');
-        if (!content)
-            return;
-        this.templateManager.saveTemplate({
-            id: `custom-${Date.now()}`,
-            name,
-            content,
-            category: 'custom',
-        });
-        alert('模板已创建！');
-    }
-    /**
-     * 显示编辑模板对话框
-     */
-    showEditTemplateDialog(template) {
-        const name = prompt('请输入模板名称:', template.name);
-        if (!name)
-            return;
-        const content = prompt('请输入模板内容:', template.content);
-        if (!content)
-            return;
-        this.templateManager.saveTemplate({
-            ...template,
-            name,
-            content,
-        });
-        alert('模板已更新！');
-    }
-    /**
-     * 添加样式
-     */
-    addStyles() {
-        if (document.getElementById('template-dialog-styles'))
-            return;
-        const style = document.createElement('style');
-        style.id = 'template-dialog-styles';
-        style.textContent = `
+    closeBtn.addEventListener("click", () => {
+      document.body.removeChild(overlay);
+    });
+    footer.appendChild(addBtn);
+    footer.appendChild(closeBtn);
+    dialog.appendChild(header);
+    dialog.appendChild(content);
+    dialog.appendChild(footer);
+    overlay.appendChild(dialog);
+    header.querySelector(".close-btn")?.addEventListener("click", () => {
+      document.body.removeChild(overlay);
+    });
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay)
+        document.body.removeChild(overlay);
+    });
+    document.body.appendChild(overlay);
+  }
+  /**
+   * 显示创建模板对话框
+   */
+  showCreateTemplateDialog() {
+    const name = prompt("\u8BF7\u8F93\u5165\u6A21\u677F\u540D\u79F0:");
+    if (!name)
+      return;
+    const content = prompt("\u8BF7\u8F93\u5165\u6A21\u677F\u5185\u5BB9:");
+    if (!content)
+      return;
+    this.templateManager.saveCustomTemplate({
+      metadata: {
+        id: `custom-${Date.now()}`,
+        name,
+        category: types.TemplateCategory.CUSTOM
+      },
+      content
+    });
+    alert("\u6A21\u677F\u5DF2\u521B\u5EFA\uFF01");
+  }
+  /**
+   * 显示编辑模板对话框
+   */
+  showEditTemplateDialog(id, template) {
+    const name = prompt("\u8BF7\u8F93\u5165\u6A21\u677F\u540D\u79F0:", template.metadata.name);
+    if (!name)
+      return;
+    const content = prompt("\u8BF7\u8F93\u5165\u6A21\u677F\u5185\u5BB9:", template.content);
+    if (!content)
+      return;
+    this.templateManager.updateTemplate(id, {
+      metadata: {
+        ...template.metadata,
+        name
+      },
+      content
+    });
+    alert("\u6A21\u677F\u5DF2\u66F4\u65B0\uFF01");
+  }
+  /**
+   * 添加样式
+   */
+  addStyles() {
+    if (document.getElementById("template-dialog-styles"))
+      return;
+    const style = document.createElement("style");
+    style.id = "template-dialog-styles";
+    style.textContent = `
       .template-dialog-overlay,
       .variable-dialog-overlay {
         position: fixed;
@@ -783,16 +758,13 @@ class TemplateDialog {
         color: #e74c3c;
       }
     `;
-        document.head.appendChild(style);
-    }
+    document.head.appendChild(style);
+  }
 }
-/**
- * 显示模板选择对话框
- */
 function showTemplateDialog(templateManager, onSelect) {
-    const dialog = new TemplateDialog(templateManager);
-    dialog.show(onSelect);
-    return dialog;
+  const dialog = new TemplateDialog(templateManager);
+  dialog.show(onSelect);
+  return dialog;
 }
 
 exports.TemplateDialog = TemplateDialog;

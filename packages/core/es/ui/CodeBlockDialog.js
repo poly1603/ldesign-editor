@@ -2,23 +2,19 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
-/**
- * 代码块插入对话框
- * 类似 LinkDialog 的实现方式
- */
-/**
- * 显示代码块插入对话框
- */
 function showCodeBlockDialog(options = {}) {
-    const { selectedText = '', onConfirm, onCancel } = options;
-    // 创建遮罩层
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
+  const {
+    selectedText = "",
+    onConfirm,
+    onCancel
+  } = options;
+  const overlay = document.createElement("div");
+  overlay.style.cssText = `
     position: fixed;
     top: 0;
     left: 0;
@@ -32,9 +28,8 @@ function showCodeBlockDialog(options = {}) {
     z-index: 10000;
     animation: fadeIn 0.2s ease-out;
   `;
-    // 创建对话框
-    const dialog = document.createElement('div');
-    dialog.style.cssText = `
+  const dialog = document.createElement("div");
+  dialog.style.cssText = `
     background: white;
     border-radius: 12px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -45,8 +40,7 @@ function showCodeBlockDialog(options = {}) {
     flex-direction: column;
     animation: slideUp 0.3s ease-out;
   `;
-    // 创建内容
-    dialog.innerHTML = `
+  dialog.innerHTML = `
     <div style="padding: 24px;">
       <h3 style="
         margin: 0 0 20px 0;
@@ -61,10 +55,10 @@ function showCodeBlockDialog(options = {}) {
           <polyline points="16 18 22 12 16 6"></polyline>
           <polyline points="8 6 2 12 8 18"></polyline>
         </svg>
-        插入代码块
+        \u63D2\u5165\u4EE3\u7801\u5757
       </h3>
       
-      <!-- 选项区域 -->
+      <!-- \u9009\u9879\u533A\u57DF -->
       <div style="display: flex; gap: 12px; margin-bottom: 16px;">
         <div style="flex: 1;">
           <label style="
@@ -73,7 +67,7 @@ function showCodeBlockDialog(options = {}) {
             font-size: 14px;
             font-weight: 500;
             color: #374151;
-          ">编程语言</label>
+          ">\u7F16\u7A0B\u8BED\u8A00</label>
           <select id="codeblock-language-select" style="
             width: 100%;
             padding: 10px 12px;
@@ -87,7 +81,7 @@ function showCodeBlockDialog(options = {}) {
             transition: all 0.2s;
             box-sizing: border-box;
           ">
-            <option value="plaintext">纯文本</option>
+            <option value="plaintext">\u7EAF\u6587\u672C</option>
             <option value="javascript">JavaScript</option>
             <option value="typescript">TypeScript</option>
             <option value="python">Python</option>
@@ -119,7 +113,7 @@ function showCodeBlockDialog(options = {}) {
             font-size: 14px;
             font-weight: 500;
             color: #374151;
-          ">主题样式</label>
+          ">\u4E3B\u9898\u6837\u5F0F</label>
           <select id="codeblock-theme-select" style="
             width: 100%;
             padding: 10px 12px;
@@ -133,15 +127,15 @@ function showCodeBlockDialog(options = {}) {
             transition: all 0.2s;
             box-sizing: border-box;
           ">
-            <option value="oneDark">One Dark (暗色)</option>
-            <option value="vsLight">VS Light (亮色)</option>
+            <option value="oneDark">One Dark (\u6697\u8272)</option>
+            <option value="vsLight">VS Light (\u4EAE\u8272)</option>
             <option value="monokai">Monokai</option>
             <option value="dracula">Dracula</option>
           </select>
         </div>
       </div>
       
-      <!-- 代码编辑器区域 -->
+      <!-- \u4EE3\u7801\u7F16\u8F91\u5668\u533A\u57DF -->
       <div style="margin-bottom: 16px;">
         <label style="
           display: block;
@@ -149,8 +143,8 @@ function showCodeBlockDialog(options = {}) {
           font-size: 14px;
           font-weight: 500;
           color: #374151;
-        ">代码内容</label>
-        <textarea id="codeblock-textarea" placeholder="在此输入或粘贴代码..." style="
+        ">\u4EE3\u7801\u5185\u5BB9</label>
+        <textarea id="codeblock-textarea" placeholder="\u5728\u6B64\u8F93\u5165\u6216\u7C98\u8D34\u4EE3\u7801..." style="
           width: 100%;
           height: 400px;
           padding: 12px;
@@ -168,10 +162,10 @@ function showCodeBlockDialog(options = {}) {
           margin-top: 6px;
           font-size: 12px;
           color: #6b7280;
-        ">提示：使用 Tab 键插入缩进，Ctrl+Enter 快速插入</div>
+        ">\u63D0\u793A\uFF1A\u4F7F\u7528 Tab \u952E\u63D2\u5165\u7F29\u8FDB\uFF0CCtrl+Enter \u5FEB\u901F\u63D2\u5165</div>
       </div>
       
-      <!-- 按钮区域 -->
+      <!-- \u6309\u94AE\u533A\u57DF -->
       <div style="
         display: flex;
         gap: 12px;
@@ -187,7 +181,7 @@ function showCodeBlockDialog(options = {}) {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
-        ">取消</button>
+        ">\u53D6\u6D88</button>
         <button id="codeblock-confirm-btn" style="
           padding: 10px 20px;
           border: none;
@@ -198,15 +192,14 @@ function showCodeBlockDialog(options = {}) {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
-        ">插入代码</button>
+        ">\u63D2\u5165\u4EE3\u7801</button>
       </div>
     </div>
   `;
-    overlay.appendChild(dialog);
-    document.body.appendChild(overlay);
-    // 添加动画样式
-    const style = document.createElement('style');
-    style.textContent = `
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  const style = document.createElement("style");
+  style.textContent = `
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -248,88 +241,76 @@ function showCodeBlockDialog(options = {}) {
       cursor: not-allowed !important;
     }
   `;
-    document.head.appendChild(style);
-    // 获取输入框和按钮
-    const textarea = document.getElementById('codeblock-textarea');
-    const languageSelect = document.getElementById('codeblock-language-select');
-    const themeSelect = document.getElementById('codeblock-theme-select');
-    const confirmBtn = document.getElementById('codeblock-confirm-btn');
-    const cancelBtn = document.getElementById('codeblock-cancel-btn');
-    // 处理Tab键
-    textarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const value = textarea.value;
-            textarea.value = `${value.substring(0, start)}  ${value.substring(end)}`;
-            textarea.selectionStart = textarea.selectionEnd = start + 2;
-        }
-    });
-    // 自动聚焦到文本框
+  document.head.appendChild(style);
+  const textarea = document.getElementById("codeblock-textarea");
+  const languageSelect = document.getElementById("codeblock-language-select");
+  const themeSelect = document.getElementById("codeblock-theme-select");
+  const confirmBtn = document.getElementById("codeblock-confirm-btn");
+  const cancelBtn = document.getElementById("codeblock-cancel-btn");
+  textarea.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      textarea.value = `${value.substring(0, start)}  ${value.substring(end)}`;
+      textarea.selectionStart = textarea.selectionEnd = start + 2;
+    }
+  });
+  setTimeout(() => {
+    textarea.focus();
+  }, 100);
+  const validateInputs = () => {
+    const code = textarea.value.trim();
+    if (code)
+      confirmBtn.disabled = false;
+    else
+      confirmBtn.disabled = true;
+  };
+  textarea.addEventListener("input", validateInputs);
+  validateInputs();
+  const closeDialog = () => {
+    overlay.style.animation = "fadeIn 0.2s ease-out reverse";
+    dialog.style.animation = "slideUp 0.2s ease-out reverse";
     setTimeout(() => {
-        textarea.focus();
-    }, 100);
-    // 验证输入
-    const validateInputs = () => {
-        const code = textarea.value.trim();
-        if (code)
-            confirmBtn.disabled = false;
-        else
-            confirmBtn.disabled = true;
-    };
-    // 监听输入变化
-    textarea.addEventListener('input', validateInputs);
-    // 初始验证
-    validateInputs();
-    // 关闭对话框
-    const closeDialog = () => {
-        overlay.style.animation = 'fadeIn 0.2s ease-out reverse';
-        dialog.style.animation = 'slideUp 0.2s ease-out reverse';
-        setTimeout(() => {
-            overlay.remove();
-            style.remove();
-        }, 200);
-    };
-    // 确认按钮
-    confirmBtn.addEventListener('click', () => {
-        const code = textarea.value.trim();
-        const language = languageSelect.value;
-        const theme = themeSelect.value;
-        if (code && onConfirm) {
-            onConfirm(code, language, theme);
-            closeDialog();
-        }
-    });
-    // 取消按钮
-    cancelBtn.addEventListener('click', () => {
-        if (onCancel)
-            onCancel();
-        closeDialog();
-    });
-    // 点击遮罩层关闭
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            if (onCancel)
-                onCancel();
-            closeDialog();
-        }
-    });
-    // ESC键关闭
-    const handleEsc = (e) => {
-        if (e.key === 'Escape') {
-            if (onCancel)
-                onCancel();
-            closeDialog();
-            document.removeEventListener('keydown', handleEsc);
-        }
-    };
-    document.addEventListener('keydown', handleEsc);
-    // Ctrl+Enter快速插入
-    textarea.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'Enter' && !confirmBtn.disabled)
-            confirmBtn.click();
-    });
+      overlay.remove();
+      style.remove();
+    }, 200);
+  };
+  confirmBtn.addEventListener("click", () => {
+    const code = textarea.value.trim();
+    const language = languageSelect.value;
+    const theme = themeSelect.value;
+    if (code && onConfirm) {
+      onConfirm(code, language, theme);
+      closeDialog();
+    }
+  });
+  cancelBtn.addEventListener("click", () => {
+    if (onCancel)
+      onCancel();
+    closeDialog();
+  });
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      if (onCancel)
+        onCancel();
+      closeDialog();
+    }
+  });
+  const handleEsc = (e) => {
+    if (e.key === "Escape") {
+      if (onCancel)
+        onCancel();
+      closeDialog();
+      document.removeEventListener("keydown", handleEsc);
+    }
+  };
+  document.addEventListener("keydown", handleEsc);
+  textarea.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "Enter" && !confirmBtn.disabled)
+      confirmBtn.click();
+  });
 }
 
 export { showCodeBlockDialog };

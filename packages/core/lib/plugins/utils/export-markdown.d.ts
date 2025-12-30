@@ -12,3 +12,4 @@ export declare function htmlToMarkdown(html: string): string;
  */
 export declare const ExportMarkdownPlugin: Plugin;
 export default ExportMarkdownPlugin;
+//# sourceMappingURL=export-markdown.d.ts.map

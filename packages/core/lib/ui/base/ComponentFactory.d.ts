@@ -172,3 +172,4 @@ export declare function createIconButton(icon: string, options?: Partial<ButtonO
 export declare function createInput(options: InputOptions): HTMLInputElement;
 export declare function createSelect(options: SelectOptions): HTMLSelectElement;
 export declare function createCheckbox(label: string, checked?: boolean, onChange?: (checked: boolean) => void): HTMLLabelElement;
+//# sourceMappingURL=ComponentFactory.d.ts.map

@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -11,80 +11,59 @@
 
 var Plugin = require('../../core/Plugin.cjs');
 
-/**
- * 上标和下标插件
- */
-/**
- * 上标
- */
 const superscript = (state, dispatch) => {
-    if (!dispatch)
-        return true;
-    document.execCommand('superscript', false);
+  if (!dispatch)
     return true;
+  document.execCommand("superscript", false);
+  return true;
 };
-/**
- * 下标
- */
 const subscript = (state, dispatch) => {
-    if (!dispatch)
-        return true;
-    document.execCommand('subscript', false);
+  if (!dispatch)
     return true;
+  document.execCommand("subscript", false);
+  return true;
 };
-/**
- * 检查是否为上标
- */
 function isSuperscriptActive() {
-    return () => {
-        return document.queryCommandState('superscript');
-    };
+  return () => {
+    return document.queryCommandState("superscript");
+  };
 }
-/**
- * 检查是否为下标
- */
 function isSubscriptActive() {
-    return () => {
-        return document.queryCommandState('subscript');
-    };
+  return () => {
+    return document.queryCommandState("subscript");
+  };
 }
-/**
- * 上标插件
- */
 const SuperscriptPlugin = Plugin.createPlugin({
-    name: 'superscript',
-    commands: {
-        toggleSuperscript: superscript,
-    },
-    keys: {
-        'Mod-Shift-.': superscript,
-    },
-    toolbar: [{
-            name: 'superscript',
-            title: '上标',
-            icon: 'superscript',
-            command: superscript,
-            active: isSuperscriptActive(),
-        }],
+  name: "superscript",
+  commands: {
+    toggleSuperscript: superscript
+  },
+  keys: {
+    "Mod-Shift-.": superscript
+  },
+  toolbar: [{
+    name: "superscript",
+    title: "\u4E0A\u6807",
+    icon: "superscript",
+    command: superscript,
+    active: isSuperscriptActive()
+  }]
 });
-/**
- * 下标插件
- */
 const SubscriptPlugin = Plugin.createPlugin({
-    name: 'subscript',
-    commands: {
-        toggleSubscript: subscript,
-    },
-    keys: {
-        'Mod-Shift-,': subscript,
-    },
-    toolbar: [{
-            name: 'subscript',
-            title: '下标',
-            icon: 'subscript',
-            command: subscript,
-            active: isSubscriptActive(),
-        }],
+  name: "subscript",
+  commands: {
+    toggleSubscript: subscript
+  },
+  keys: {
+    "Mod-Shift-,": subscript
+  },
+  toolbar: [{
+    name: "subscript",
+    title: "\u4E0B\u6807",
+    icon: "subscript",
+    command: subscript,
+    active: isSubscriptActive()
+  }]
 });
 
 exports.SubscriptPlugin = SubscriptPlugin;

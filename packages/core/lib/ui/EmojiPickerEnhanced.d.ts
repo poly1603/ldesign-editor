@@ -42,3 +42,4 @@ export declare class EmojiPicker {
  * Utility function to show emoji picker (backward compatibility)
  */
 export declare function showEmojiPicker(button: HTMLElement, onSelect?: (emoji: string) => void): void;
+//# sourceMappingURL=EmojiPickerEnhanced.d.ts.map

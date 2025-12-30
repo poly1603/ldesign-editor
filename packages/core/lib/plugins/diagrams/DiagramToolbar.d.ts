@@ -32,3 +32,4 @@ export declare class DiagramToolbar {
      */
     destroy(): void;
 }
+//# sourceMappingURL=DiagramToolbar.d.ts.map

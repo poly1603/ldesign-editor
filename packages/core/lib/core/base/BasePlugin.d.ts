@@ -82,3 +82,4 @@ export declare abstract class BasePlugin<T extends BasePluginConfig = BasePlugin
      */
     protected getEditor(): Editor;
 }
+//# sourceMappingURL=BasePlugin.d.ts.map

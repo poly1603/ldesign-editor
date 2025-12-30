@@ -14,3 +14,4 @@ export declare class DeepSeekProvider implements AIProviderInterface {
     private parseSuggestions;
     cleanup(): void;
 }
+//# sourceMappingURL=DeepSeekProvider.d.ts.map

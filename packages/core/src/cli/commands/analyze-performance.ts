@@ -42,7 +42,7 @@ export async function analyzePerformance(file: string, options: AnalyzeOptions) 
     try {
       performanceData = JSON.parse(rawData)
     }
-    catch (error) {
+    catch (_error) {
       spinner.fail(chalk.red('无效的JSON文件'))
       process.exit(1)
     }
@@ -162,7 +162,7 @@ function analyzeData(data: PerformanceEntry[], options: AnalyzeOptions) {
 /**
  * 生成优化建议
  */
-function generateSuggestions(stats: any, threshold: number) {
+function generateSuggestions(stats: any, _threshold: number) {
   const suggestions = []
 
   // FPS建议

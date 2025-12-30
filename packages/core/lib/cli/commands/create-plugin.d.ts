@@ -11,3 +11,4 @@ interface PluginOptions {
 }
 export declare function createPlugin(name: string, options: PluginOptions): Promise<void>;
 export {};
+//# sourceMappingURL=create-plugin.d.ts.map

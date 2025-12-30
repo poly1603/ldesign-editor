@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -14,272 +14,257 @@ var FeatureFlags = require('../core/FeatureFlags.cjs');
 var LazyLoader = require('../core/LazyLoader.cjs');
 var PerformanceMonitor = require('./PerformanceMonitor.cjs');
 
-/**
- * 自动优化器
- * 根据性能监控自动调整配置以优化性能
- */
-/**
- * 自动优化器类
- */
 class AutoOptimizer extends event.EventEmitter {
-    constructor(config = {}) {
-        super();
-        this.monitor = PerformanceMonitor.getPerformanceMonitor();
-        this.features = FeatureFlags.getFeatureFlags();
-        this.loader = LazyLoader.getLazyLoader();
-        this.checkTimer = null;
-        this.suggestions = [];
-        this.config = {
-            enabled: true,
-            checkInterval: 30000, // 30秒
-            autoFix: false,
-            thresholds: {
-                minFPS: 50,
-                maxMemory: 100,
-                maxLoadTime: 2000,
-            },
-            ...config,
-        };
+  constructor(config = {}) {
+    super();
+    this.monitor = PerformanceMonitor.getPerformanceMonitor();
+    this.features = FeatureFlags.getFeatureFlags();
+    this.loader = LazyLoader.getLazyLoader();
+    this.checkTimer = null;
+    this.suggestions = [];
+    this.config = {
+      enabled: true,
+      checkInterval: 3e4,
+      // 30秒
+      autoFix: false,
+      thresholds: {
+        minFPS: 50,
+        maxMemory: 100,
+        maxLoadTime: 2e3
+      },
+      ...config
+    };
+  }
+  /**
+   * 启动自动优化
+   */
+  start() {
+    if (!this.config.enabled)
+      return;
+    this.checkTimer = setInterval(() => {
+      this.check();
+    }, this.config.checkInterval);
+    this.check();
+  }
+  /**
+   * 停止自动优化
+   */
+  stop() {
+    if (this.checkTimer) {
+      clearInterval(this.checkTimer);
+      this.checkTimer = null;
     }
-    /**
-     * 启动自动优化
-     */
-    start() {
-        if (!this.config.enabled)
-            return;
-        this.checkTimer = setInterval(() => {
-            this.check();
-        }, this.config.checkInterval);
-        // 立即执行一次检查
-        this.check();
+  }
+  /**
+   * 检查并生成建议
+   */
+  check() {
+    this.suggestions = [];
+    const metrics = this.monitor.getMetrics();
+    const featureStats = this.features.getStats();
+    const loaderStats = this.loader.getStats();
+    this.checkFPS(metrics);
+    this.checkMemory(metrics);
+    this.checkLoadTime(metrics);
+    this.checkFeatureUsage(featureStats, loaderStats);
+    if (this.suggestions.length > 0) {
+      this.emit("suggestions", this.suggestions);
+      if (this.config.autoFix)
+        this.autoFix();
     }
-    /**
-     * 停止自动优化
-     */
-    stop() {
-        if (this.checkTimer) {
-            clearInterval(this.checkTimer);
-            this.checkTimer = null;
+  }
+  /**
+   * 检查FPS
+   */
+  checkFPS(metrics) {
+    if (metrics.fps < this.config.thresholds.minFPS) {
+      this.suggestions.push({
+        type: "rendering",
+        severity: metrics.fps < 40 ? "critical" : "warning",
+        message: `FPS\u8FC7\u4F4E (${metrics.fps})\uFF0C\u5F71\u54CD\u7528\u6237\u4F53\u9A8C`,
+        action: "\u7981\u7528\u4E0D\u5E38\u7528\u7684\u529F\u80FD\uFF0C\u542F\u7528\u865A\u62DF\u6EDA\u52A8",
+        autoFixable: true,
+        fix: () => {
+          this.features.disable("video");
+          this.features.disable("audio");
+          this.features.disable("collaboration");
         }
+      });
     }
-    /**
-     * 检查并生成建议
-     */
-    check() {
-        this.suggestions = [];
-        const metrics = this.monitor.getMetrics();
-        const featureStats = this.features.getStats();
-        const loaderStats = this.loader.getStats();
-        // 检查FPS
-        this.checkFPS(metrics);
-        // 检查内存
-        this.checkMemory(metrics);
-        // 检查加载时间
-        this.checkLoadTime(metrics);
-        // 检查功能使用
-        this.checkFeatureUsage(featureStats, loaderStats);
-        // 触发事件
-        if (this.suggestions.length > 0) {
-            this.emit('suggestions', this.suggestions);
-            // 自动修复
-            if (this.config.autoFix)
-                this.autoFix();
+  }
+  /**
+   * 检查内存
+   */
+  checkMemory(metrics) {
+    if (metrics.memoryUsage > this.config.thresholds.maxMemory) {
+      this.suggestions.push({
+        type: "memory",
+        severity: metrics.memoryUsage > 150 ? "critical" : "warning",
+        message: `\u5185\u5B58\u4F7F\u7528\u8FC7\u9AD8 (${metrics.memoryUsage}MB)`,
+        action: "\u6E05\u7406\u7F13\u5B58\uFF0C\u7981\u7528\u4E0D\u5FC5\u8981\u7684\u529F\u80FD",
+        autoFixable: true,
+        fix: () => {
+          require("../icons/IconManager").getIconManager();
+          this.features.disable("collaboration");
+          this.features.disable("version-control");
         }
+      });
     }
-    /**
-     * 检查FPS
-     */
-    checkFPS(metrics) {
-        if (metrics.fps < this.config.thresholds.minFPS) {
-            this.suggestions.push({
-                type: 'rendering',
-                severity: metrics.fps < 40 ? 'critical' : 'warning',
-                message: `FPS过低 (${metrics.fps})，影响用户体验`,
-                action: '禁用不常用的功能，启用虚拟滚动',
-                autoFixable: true,
-                fix: () => {
-                    // 禁用非核心功能
-                    this.features.disable('video');
-                    this.features.disable('audio');
-                    this.features.disable('collaboration');
-                },
-            });
+  }
+  /**
+   * 检查加载时间
+   */
+  checkLoadTime(metrics) {
+    if (metrics.loadTime > this.config.thresholds.maxLoadTime) {
+      this.suggestions.push({
+        type: "loading",
+        severity: metrics.loadTime > 3e3 ? "critical" : "warning",
+        message: `\u52A0\u8F7D\u65F6\u95F4\u8FC7\u957F (${metrics.loadTime}ms)`,
+        action: "\u542F\u7528\u61D2\u52A0\u8F7D\uFF0C\u51CF\u5C11\u521D\u59CB\u52A0\u8F7D\u7684\u529F\u80FD",
+        autoFixable: true,
+        fix: () => {
+          const allFeatures = this.features.getAllFeatures();
+          allFeatures.forEach((f) => {
+            if (!["basic-editing", "selection", "history", "bold", "italic"].includes(f.id))
+              f.lazy = true;
+          });
         }
+      });
     }
-    /**
-     * 检查内存
-     */
-    checkMemory(metrics) {
-        if (metrics.memoryUsage > this.config.thresholds.maxMemory) {
-            this.suggestions.push({
-                type: 'memory',
-                severity: metrics.memoryUsage > 150 ? 'critical' : 'warning',
-                message: `内存使用过高 (${metrics.memoryUsage}MB)`,
-                action: '清理缓存，禁用不必要的功能',
-                autoFixable: true,
-                fix: () => {
-                    // 清理缓存
-                    require('../icons/IconManager').getIconManager();
-                    // 禁用高内存功能
-                    this.features.disable('collaboration');
-                    this.features.disable('version-control');
-                },
-            });
-        }
+  }
+  /**
+   * 检查功能使用
+   */
+  checkFeatureUsage(featureStats, loaderStats) {
+    const enabledButNotLoaded = featureStats.enabled - featureStats.loaded;
+    if (enabledButNotLoaded > 5) {
+      this.suggestions.push({
+        type: "feature",
+        severity: "info",
+        message: `\u6709${enabledButNotLoaded}\u4E2A\u5DF2\u542F\u7528\u7684\u529F\u80FD\u672A\u88AB\u4F7F\u7528`,
+        action: "\u8003\u8651\u7981\u7528\u8FD9\u4E9B\u529F\u80FD\u4EE5\u8282\u7701\u8D44\u6E90",
+        autoFixable: false
+      });
     }
-    /**
-     * 检查加载时间
-     */
-    checkLoadTime(metrics) {
-        if (metrics.loadTime > this.config.thresholds.maxLoadTime) {
-            this.suggestions.push({
-                type: 'loading',
-                severity: metrics.loadTime > 3000 ? 'critical' : 'warning',
-                message: `加载时间过长 (${metrics.loadTime}ms)`,
-                action: '启用懒加载，减少初始加载的功能',
-                autoFixable: true,
-                fix: () => {
-                    // 将更多功能设置为懒加载
-                    const allFeatures = this.features.getAllFeatures();
-                    allFeatures.forEach((f) => {
-                        if (!['basic-editing', 'selection', 'history', 'bold', 'italic'].includes(f.id))
-                            f.lazy = true;
-                    });
-                },
-            });
-        }
+    if (loaderStats.queued > 3) {
+      this.suggestions.push({
+        type: "loading",
+        severity: "warning",
+        message: `\u52A0\u8F7D\u961F\u5217\u8FC7\u957F (${loaderStats.queued}\u4E2A)`,
+        action: "\u589E\u52A0\u5E76\u53D1\u52A0\u8F7D\u6570\u91CF\u6216\u51CF\u5C11\u542F\u7528\u7684\u529F\u80FD",
+        autoFixable: false
+      });
     }
-    /**
-     * 检查功能使用
-     */
-    checkFeatureUsage(featureStats, loaderStats) {
-        // 检查已启用但未使用的功能
-        const enabledButNotLoaded = featureStats.enabled - featureStats.loaded;
-        if (enabledButNotLoaded > 5) {
-            this.suggestions.push({
-                type: 'feature',
-                severity: 'info',
-                message: `有${enabledButNotLoaded}个已启用的功能未被使用`,
-                action: '考虑禁用这些功能以节省资源',
-                autoFixable: false,
-            });
+  }
+  /**
+   * 自动修复
+   */
+  autoFix() {
+    const fixable = this.suggestions.filter((s) => s.autoFixable);
+    fixable.forEach((suggestion) => {
+      if (suggestion.fix) {
+        try {
+          suggestion.fix();
+          this.emit("auto-fixed", suggestion);
+        } catch (error) {
+          console.error("Auto-fix failed:", error);
         }
-        // 检查加载队列
-        if (loaderStats.queued > 3) {
-            this.suggestions.push({
-                type: 'loading',
-                severity: 'warning',
-                message: `加载队列过长 (${loaderStats.queued}个)`,
-                action: '增加并发加载数量或减少启用的功能',
-                autoFixable: false,
-            });
-        }
+      }
+    });
+  }
+  /**
+   * 获取建议
+   */
+  getSuggestions() {
+    return [...this.suggestions];
+  }
+  /**
+   * 应用建议
+   */
+  applySuggestion(index) {
+    const suggestion = this.suggestions[index];
+    if (suggestion && suggestion.fix) {
+      suggestion.fix();
+      this.emit("suggestion-applied", suggestion);
     }
-    /**
-     * 自动修复
-     */
-    autoFix() {
-        const fixable = this.suggestions.filter(s => s.autoFixable);
-        fixable.forEach((suggestion) => {
-            if (suggestion.fix) {
-                try {
-                    suggestion.fix();
-                    this.emit('auto-fixed', suggestion);
-                }
-                catch (error) {
-                    console.error('Auto-fix failed:', error);
-                }
-            }
+  }
+  /**
+   * 生成优化报告
+   */
+  generateReport() {
+    let report = "\u81EA\u52A8\u4F18\u5316\u62A5\u544A\n";
+    report += "============\n\n";
+    const metrics = this.monitor.getMetrics();
+    report += "\u5F53\u524D\u6027\u80FD:\n";
+    report += `  FPS: ${metrics.fps}
+`;
+    report += `  \u5185\u5B58: ${metrics.memoryUsage}MB
+`;
+    report += `  \u52A0\u8F7D\u65F6\u95F4: ${metrics.loadTime}ms
+
+`;
+    if (this.suggestions.length === 0) {
+      report += "\u2705 \u6027\u80FD\u826F\u597D\uFF0C\u65E0\u9700\u4F18\u5316\n";
+    } else {
+      report += `\u4F18\u5316\u5EFA\u8BAE (${this.suggestions.length}\u6761):
+`;
+      const critical = this.suggestions.filter((s) => s.severity === "critical");
+      const warnings = this.suggestions.filter((s) => s.severity === "warning");
+      const info = this.suggestions.filter((s) => s.severity === "info");
+      if (critical.length > 0) {
+        report += `
+\u{1F534} \u4E25\u91CD (${critical.length}):
+`;
+        critical.forEach((s) => {
+          report += `  \u2022 ${s.message}
+`;
+          report += `    \u2192 ${s.action}
+`;
         });
+      }
+      if (warnings.length > 0) {
+        report += `
+\u{1F7E1} \u8B66\u544A (${warnings.length}):
+`;
+        warnings.forEach((s) => {
+          report += `  \u2022 ${s.message}
+`;
+          report += `    \u2192 ${s.action}
+`;
+        });
+      }
+      if (info.length > 0) {
+        report += `
+\u{1F7E2} \u63D0\u793A (${info.length}):
+`;
+        info.forEach((s) => {
+          report += `  \u2022 ${s.message}
+`;
+        });
+      }
     }
-    /**
-     * 获取建议
-     */
-    getSuggestions() {
-        return [...this.suggestions];
-    }
-    /**
-     * 应用建议
-     */
-    applySuggestion(index) {
-        const suggestion = this.suggestions[index];
-        if (suggestion && suggestion.fix) {
-            suggestion.fix();
-            this.emit('suggestion-applied', suggestion);
-        }
-    }
-    /**
-     * 生成优化报告
-     */
-    generateReport() {
-        let report = '自动优化报告\n';
-        report += '============\n\n';
-        const metrics = this.monitor.getMetrics();
-        report += '当前性能:\n';
-        report += `  FPS: ${metrics.fps}\n`;
-        report += `  内存: ${metrics.memoryUsage}MB\n`;
-        report += `  加载时间: ${metrics.loadTime}ms\n\n`;
-        if (this.suggestions.length === 0) {
-            report += '✅ 性能良好，无需优化\n';
-        }
-        else {
-            report += `优化建议 (${this.suggestions.length}条):\n`;
-            const critical = this.suggestions.filter(s => s.severity === 'critical');
-            const warnings = this.suggestions.filter(s => s.severity === 'warning');
-            const info = this.suggestions.filter(s => s.severity === 'info');
-            if (critical.length > 0) {
-                report += `\n🔴 严重 (${critical.length}):\n`;
-                critical.forEach((s) => {
-                    report += `  • ${s.message}\n`;
-                    report += `    → ${s.action}\n`;
-                });
-            }
-            if (warnings.length > 0) {
-                report += `\n🟡 警告 (${warnings.length}):\n`;
-                warnings.forEach((s) => {
-                    report += `  • ${s.message}\n`;
-                    report += `    → ${s.action}\n`;
-                });
-            }
-            if (info.length > 0) {
-                report += `\n🟢 提示 (${info.length}):\n`;
-                info.forEach((s) => {
-                    report += `  • ${s.message}\n`;
-                });
-            }
-        }
-        return report;
-    }
-    /**
-     * 销毁
-     */
-    destroy() {
-        this.stop();
-        this.removeAllListeners();
-    }
+    return report;
+  }
+  /**
+   * 销毁
+   */
+  destroy() {
+    this.stop();
+    this.removeAllListeners();
+  }
 }
-// 全局实例
 let optimizerInstance = null;
-/**
- * 获取自动优化器
- */
 function getAutoOptimizer(config) {
-    if (!optimizerInstance)
-        optimizerInstance = new AutoOptimizer(config);
-    return optimizerInstance;
+  if (!optimizerInstance)
+    optimizerInstance = new AutoOptimizer(config);
+  return optimizerInstance;
 }
-/**
- * 启动自动优化
- */
 function startAutoOptimization(config) {
-    getAutoOptimizer(config).start();
+  getAutoOptimizer(config).start();
 }
-/**
- * 停止自动优化
- */
 function stopAutoOptimization() {
-    if (optimizerInstance)
-        optimizerInstance.stop();
+  if (optimizerInstance)
+    optimizerInstance.stop();
 }
 
 exports.AutoOptimizer = AutoOptimizer;

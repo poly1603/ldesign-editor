@@ -57,3 +57,4 @@ export declare class ServiceWorkerManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=ServiceWorkerManager.d.ts.map

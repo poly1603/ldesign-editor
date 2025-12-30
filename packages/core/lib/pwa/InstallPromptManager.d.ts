@@ -38,3 +38,4 @@ export declare class InstallPromptManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=InstallPromptManager.d.ts.map

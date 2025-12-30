@@ -115,3 +115,4 @@ export declare function startTimer(name: string): void;
  * 便捷函数：结束计时
  */
 export declare function endTimer(name: string): number;
+//# sourceMappingURL=PerformanceMonitor.d.ts.map

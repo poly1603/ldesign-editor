@@ -11,3 +11,4 @@ export declare const templatesByCategory: {
     technical: never[];
     custom: never[];
 };
+//# sourceMappingURL=index.d.ts.map

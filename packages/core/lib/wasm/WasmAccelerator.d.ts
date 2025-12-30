@@ -121,3 +121,4 @@ export declare class WasmAccelerator {
         exceptions: boolean;
     };
 }
+//# sourceMappingURL=WasmAccelerator.d.ts.map

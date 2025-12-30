@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -13,191 +13,153 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var Plugin = require('../../core/Plugin.cjs');
 
-/**
- * 查找替换插件
- */
-/**
- * 查找文本
- */
 function findText(editorElement, searchText, options = {}) {
-    if (!searchText)
-        return 0;
-    // 清除之前的高亮
-    clearHighlights(editorElement);
-    editorElement.textContent || '';
-    let pattern;
-    try {
-        if (options.fuzzySearch) {
-            // 模糊搜索：将搜索文本转换为允许字符间有其他字符的模式
-            const fuzzyPattern = searchText
-                .split('')
-                .map(char => char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-                .join('.*?');
-            pattern = new RegExp(fuzzyPattern, options.caseSensitive ? 'g' : 'gi');
-        }
-        else if (options.useRegex) {
-            pattern = new RegExp(searchText, options.caseSensitive ? 'g' : 'gi');
-        }
-        else {
-            const escapedText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const wordBoundary = options.wholeWord ? '\\b' : '';
-            pattern = new RegExp(`${wordBoundary}${escapedText}${wordBoundary}`, options.caseSensitive ? 'g' : 'gi');
-        }
+  if (!searchText)
+    return 0;
+  clearHighlights(editorElement);
+  editorElement.textContent || "";
+  let pattern;
+  try {
+    if (options.fuzzySearch) {
+      const fuzzyPattern = searchText.split("").map((char) => char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".*?");
+      pattern = new RegExp(fuzzyPattern, options.caseSensitive ? "g" : "gi");
+    } else if (options.useRegex) {
+      pattern = new RegExp(searchText, options.caseSensitive ? "g" : "gi");
+    } else {
+      const escapedText = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordBoundary = options.wholeWord ? "\\b" : "";
+      pattern = new RegExp(`${wordBoundary}${escapedText}${wordBoundary}`, options.caseSensitive ? "g" : "gi");
     }
-    catch (e) {
-        console.error('Invalid regex pattern:', e);
-        return 0;
+  } catch (e) {
+    console.error("Invalid regex pattern:", e);
+    return 0;
+  }
+  let count = 0;
+  const walker = document.createTreeWalker(editorElement, NodeFilter.SHOW_TEXT, null);
+  const nodesToProcess = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const text = node.textContent || "";
+    const matches = [];
+    let match;
+    pattern.lastIndex = 0;
+    while ((match = pattern.exec(text)) !== null) {
+      matches.push([...match]);
+      if (!pattern.global)
+        break;
     }
-    let count = 0;
-    const walker = document.createTreeWalker(editorElement, NodeFilter.SHOW_TEXT, null);
-    const nodesToProcess = [];
-    // 收集所有匹配的文本节点
-    while (walker.nextNode()) {
-        const node = walker.currentNode;
-        const text = node.textContent || '';
-        const matches = [];
-        let match;
-        pattern.lastIndex = 0;
-        while ((match = pattern.exec(text)) !== null) {
-            matches.push([...match]);
-            if (!pattern.global)
-                break;
-        }
-        if (matches.length > 0) {
-            nodesToProcess.push({ node, matches });
-            count += matches.length;
-        }
+    if (matches.length > 0) {
+      nodesToProcess.push({
+        node,
+        matches
+      });
+      count += matches.length;
     }
-    // 高亮所有匹配
-    nodesToProcess.forEach(({ node, matches }) => {
-        highlightMatches(node, matches);
+  }
+  nodesToProcess.forEach(({
+    node,
+    matches
+  }) => {
+    highlightMatches(node, matches);
+  });
+  const firstHighlight = editorElement.querySelector(".editor-highlight");
+  if (firstHighlight) {
+    firstHighlight.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
     });
-    // 滚动到第一个匹配
-    const firstHighlight = editorElement.querySelector('.editor-highlight');
-    if (firstHighlight) {
-        firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstHighlight.classList.add('editor-highlight-active');
-    }
-    return count;
+    firstHighlight.classList.add("editor-highlight-active");
+  }
+  return count;
 }
-/**
- * 高亮匹配的文本
- */
 function highlightMatches(node, matches, pattern) {
-    const parent = node.parentNode;
-    if (!parent)
-        return;
-    const text = node.textContent || '';
-    const fragments = [];
-    let lastIndex = 0;
-    // 按匹配位置排序
-    matches.sort((a, b) => (a.index || 0) - (b.index || 0));
-    matches.forEach((match) => {
-        const matchIndex = match.index || 0;
-        const matchText = match[0];
-        // 添加匹配前的文本
-        if (matchIndex > lastIndex)
-            fragments.push(document.createTextNode(text.slice(lastIndex, matchIndex)));
-        // 添加高亮的匹配文本
-        const span = document.createElement('span');
-        span.className = 'editor-highlight';
-        span.textContent = matchText;
-        fragments.push(span);
-        lastIndex = matchIndex + matchText.length;
-    });
-    // 添加剩余文本
-    if (lastIndex < text.length)
-        fragments.push(document.createTextNode(text.slice(lastIndex)));
-    // 替换原节点
-    fragments.forEach((fragment) => {
-        parent.insertBefore(fragment, node);
-    });
-    parent.removeChild(node);
+  const parent = node.parentNode;
+  if (!parent)
+    return;
+  const text = node.textContent || "";
+  const fragments = [];
+  let lastIndex = 0;
+  matches.sort((a, b) => (a.index || 0) - (b.index || 0));
+  matches.forEach((match) => {
+    const matchIndex = match.index || 0;
+    const matchText = match[0];
+    if (matchIndex > lastIndex)
+      fragments.push(document.createTextNode(text.slice(lastIndex, matchIndex)));
+    const span = document.createElement("span");
+    span.className = "editor-highlight";
+    span.textContent = matchText;
+    fragments.push(span);
+    lastIndex = matchIndex + matchText.length;
+  });
+  if (lastIndex < text.length)
+    fragments.push(document.createTextNode(text.slice(lastIndex)));
+  fragments.forEach((fragment) => {
+    parent.insertBefore(fragment, node);
+  });
+  parent.removeChild(node);
 }
-/**
- * 替换文本
- */
-function replaceText(editorElement, searchText, replaceText, options = {}) {
-    if (!searchText)
-        return 0;
-    let count = 0;
-    const selection = window.getSelection();
-    // 保存选区
-    const savedSelection = selection && selection.rangeCount > 0
-        ? selection.getRangeAt(0).cloneRange()
-        : null;
-    // 执行替换
-    const walker = document.createTreeWalker(editorElement, NodeFilter.SHOW_TEXT, null);
-    while (walker.nextNode()) {
-        const node = walker.currentNode;
-        const text = node.textContent || '';
-        if (options.useRegex) {
-            const pattern = new RegExp(searchText, options.caseSensitive ? 'g' : 'gi');
-            const newText = text.replace(pattern, replaceText);
-            if (newText !== text) {
-                node.textContent = newText;
-                count++;
-            }
-        }
-        else {
-            const escapedText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const wordBoundary = options.wholeWord ? '\\b' : '';
-            const pattern = new RegExp(`${wordBoundary}${escapedText}${wordBoundary}`, options.caseSensitive ? 'g' : 'gi');
-            const newText = text.replace(pattern, replaceText);
-            if (newText !== text) {
-                node.textContent = newText;
-                count++;
-            }
-        }
+function replaceText(editorElement, searchText, replaceText2, options = {}) {
+  if (!searchText)
+    return 0;
+  let count = 0;
+  const selection = window.getSelection();
+  const savedSelection = selection && selection.rangeCount > 0 ? selection.getRangeAt(0).cloneRange() : null;
+  const walker = document.createTreeWalker(editorElement, NodeFilter.SHOW_TEXT, null);
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const text = node.textContent || "";
+    if (options.useRegex) {
+      const pattern = new RegExp(searchText, options.caseSensitive ? "g" : "gi");
+      const newText = text.replace(pattern, replaceText2);
+      if (newText !== text) {
+        node.textContent = newText;
+        count++;
+      }
+    } else {
+      const escapedText = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordBoundary = options.wholeWord ? "\\b" : "";
+      const pattern = new RegExp(`${wordBoundary}${escapedText}${wordBoundary}`, options.caseSensitive ? "g" : "gi");
+      const newText = text.replace(pattern, replaceText2);
+      if (newText !== text) {
+        node.textContent = newText;
+        count++;
+      }
     }
-    // 恢复选区
-    if (savedSelection && selection) {
-        selection.removeAllRanges();
-        selection.addRange(savedSelection);
-    }
-    // 清除高亮
-    clearHighlights(editorElement);
-    return count;
+  }
+  if (savedSelection && selection) {
+    selection.removeAllRanges();
+    selection.addRange(savedSelection);
+  }
+  clearHighlights(editorElement);
+  return count;
 }
-/**
- * 替换所有文本
- */
-function replaceAll(editorElement, searchText, replaceText, options = {}) {
-    return replaceText(editorElement, searchText, replaceText, {
-        ...options,
-        useRegex: options.useRegex,
-    });
+function replaceAll(editorElement, searchText, replaceText2, options = {}) {
+  return replaceText2(editorElement, searchText, replaceText2, {
+    ...options,
+    useRegex: options.useRegex
+  });
 }
-/**
- * 清除高亮
- */
 function clearHighlights(editorElement) {
-    const highlights = editorElement.querySelectorAll('.editor-highlight');
-    highlights.forEach((highlight) => {
-        const parent = highlight.parentNode;
-        if (!parent)
-            return;
-        const text = highlight.textContent || '';
-        const textNode = document.createTextNode(text);
-        parent.insertBefore(textNode, highlight);
-        parent.removeChild(highlight);
-    });
+  const highlights = editorElement.querySelectorAll(".editor-highlight");
+  highlights.forEach((highlight) => {
+    const parent = highlight.parentNode;
+    if (!parent)
+      return;
+    const text = highlight.textContent || "";
+    const textNode = document.createTextNode(text);
+    parent.insertBefore(textNode, highlight);
+    parent.removeChild(highlight);
+  });
 }
-/**
- * 显示查找替换对话框 - 无遮罩可拖拽版本
- */
 function showFindReplaceDialog(editor) {
-    // 如果对话框已存在，先移除
-    const existingDialog = document.querySelector('.find-replace-dialog');
-    if (existingDialog)
-        document.body.removeChild(existingDialog);
-    // 获取编辑器元素
-    const editorElement = editor.contentElement || editor.getElement();
-    clearHighlights(editorElement);
-    // 创建对话框容器 - 无遮罩，可拖拽
-    const dialog = document.createElement('div');
-    dialog.className = 'find-replace-dialog';
-    dialog.style.cssText = `
+  const existingDialog = document.querySelector(".find-replace-dialog");
+  if (existingDialog)
+    document.body.removeChild(existingDialog);
+  const editorElement = editor.contentElement || editor.getElement();
+  clearHighlights(editorElement);
+  const dialog = document.createElement("div");
+  dialog.className = "find-replace-dialog";
+  dialog.style.cssText = `
     position: fixed;
     top: 60px;
     right: 20px;
@@ -209,230 +171,200 @@ function showFindReplaceDialog(editor) {
     min-width: 400px;
     font-family: system-ui, -apple-system, sans-serif;
   `;
-    // 拖拽功能变量
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let dialogStartX = 0;
-    let dialogStartY = 0;
-    // 拖拽事件处理
-    const startDrag = (e) => {
-        isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        const rect = dialog.getBoundingClientRect();
-        dialogStartX = rect.left;
-        dialogStartY = rect.top;
-        dialog.style.cursor = 'grabbing';
-        e.preventDefault();
-    };
-    const onDrag = (e) => {
-        if (!isDragging)
-            return;
-        const deltaX = e.clientX - dragStartX;
-        const deltaY = e.clientY - dragStartY;
-        dialog.style.left = `${dialogStartX + deltaX}px`;
-        dialog.style.top = `${dialogStartY + deltaY}px`;
-        dialog.style.right = 'auto';
-    };
-    const stopDrag = () => {
-        if (isDragging) {
-            isDragging = false;
-            dialog.style.cursor = 'move';
-        }
-    };
-    // 清理函数
-    const cleanup = () => {
-        document.body.removeChild(dialog);
-        document.removeEventListener('mousemove', onDrag);
-        document.removeEventListener('mouseup', stopDrag);
-        clearHighlights(editorElement);
-    };
-    // 标题栏（可拖拽区域）
-    const titleBar = document.createElement('div');
-    titleBar.innerHTML = `
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dialogStartX = 0;
+  let dialogStartY = 0;
+  const startDrag = (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    const rect = dialog.getBoundingClientRect();
+    dialogStartX = rect.left;
+    dialogStartY = rect.top;
+    dialog.style.cursor = "grabbing";
+    e.preventDefault();
+  };
+  const onDrag = (e) => {
+    if (!isDragging)
+      return;
+    const deltaX = e.clientX - dragStartX;
+    const deltaY = e.clientY - dragStartY;
+    dialog.style.left = `${dialogStartX + deltaX}px`;
+    dialog.style.top = `${dialogStartY + deltaY}px`;
+    dialog.style.right = "auto";
+  };
+  const stopDrag = () => {
+    if (isDragging) {
+      isDragging = false;
+      dialog.style.cursor = "move";
+    }
+  };
+  const cleanup = () => {
+    document.body.removeChild(dialog);
+    document.removeEventListener("mousemove", onDrag);
+    document.removeEventListener("mouseup", stopDrag);
+    clearHighlights(editorElement);
+  };
+  const titleBar = document.createElement("div");
+  titleBar.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb; cursor: move; user-select: none;">
-      <h3 style="margin: 0; font-size: 16px; font-weight: 600;">🔍 查找和替换</h3>
+      <h3 style="margin: 0; font-size: 16px; font-weight: 600;">\u{1F50D} \u67E5\u627E\u548C\u66FF\u6362</h3>
       <button class="close-btn" style="border: none; background: none; font-size: 20px; cursor: pointer; padding: 0; width: 24px; height: 24px; color: #666;">&times;</button>
     </div>
   `;
-    dialog.appendChild(titleBar);
-    // 绑定拖拽
-    const title = titleBar.querySelector('h3');
-    title.addEventListener('mousedown', startDrag);
-    titleBar.addEventListener('mousedown', (e) => {
-        if (e.target === titleBar || e.target === title)
-            startDrag(e);
-    });
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', stopDrag);
-    // 关闭按钮
-    titleBar.querySelector('.close-btn').addEventListener('click', cleanup);
-    // 创建查找输入框
-    const findInput = document.createElement('input');
-    findInput.type = 'text';
-    findInput.placeholder = '查找...';
-    findInput.style.cssText = `
+  dialog.appendChild(titleBar);
+  const title = titleBar.querySelector("h3");
+  title.addEventListener("mousedown", startDrag);
+  titleBar.addEventListener("mousedown", (e) => {
+    if (e.target === titleBar || e.target === title)
+      startDrag(e);
+  });
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", stopDrag);
+  titleBar.querySelector(".close-btn").addEventListener("click", cleanup);
+  const findInput = document.createElement("input");
+  findInput.type = "text";
+  findInput.placeholder = "\u67E5\u627E...";
+  findInput.style.cssText = `
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
   `;
-    // 实时高亮 - 输入时自动查找
-    findInput.addEventListener('input', () => {
-        if (findInput.value) {
-            findText(editorElement, findInput.value, {
-                caseSensitive: caseSensitive.checkbox.checked,
-                wholeWord: wholeWord.checkbox.checked,
-                useRegex: useRegex.checkbox.checked,
-            });
-        }
-        else {
-            clearHighlights(editorElement);
-        }
-    });
-    // 创建替换输入框
-    const replaceInput = document.createElement('input');
-    replaceInput.type = 'text';
-    replaceInput.placeholder = '替换为...';
-    replaceInput.style.cssText = `
+  findInput.addEventListener("input", () => {
+    if (findInput.value) {
+      findText(editorElement, findInput.value, {
+        caseSensitive: caseSensitive.checkbox.checked,
+        wholeWord: wholeWord.checkbox.checked,
+        useRegex: useRegex.checkbox.checked
+      });
+    } else {
+      clearHighlights(editorElement);
+    }
+  });
+  const replaceInput = document.createElement("input");
+  replaceInput.type = "text";
+  replaceInput.placeholder = "\u66FF\u6362\u4E3A...";
+  replaceInput.style.cssText = `
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
   `;
-    // 创建选项复选框
-    const options = document.createElement('div');
-    options.style.marginBottom = '10px';
-    const caseSensitive = createCheckbox('区分大小写');
-    const wholeWord = createCheckbox('全词匹配');
-    const useRegex = createCheckbox('使用正则表达式');
-    options.appendChild(caseSensitive.container);
-    options.appendChild(wholeWord.container);
-    options.appendChild(useRegex.container);
-    // 创建按钮组
-    const buttons = document.createElement('div');
-    buttons.style.cssText = `
+  const options = document.createElement("div");
+  options.style.marginBottom = "10px";
+  const caseSensitive = createCheckbox("\u533A\u5206\u5927\u5C0F\u5199");
+  const wholeWord = createCheckbox("\u5168\u8BCD\u5339\u914D");
+  const useRegex = createCheckbox("\u4F7F\u7528\u6B63\u5219\u8868\u8FBE\u5F0F");
+  options.appendChild(caseSensitive.container);
+  options.appendChild(wholeWord.container);
+  options.appendChild(useRegex.container);
+  const buttons = document.createElement("div");
+  buttons.style.cssText = `
     display: flex;
     justify-content: flex-end;
     gap: 10px;
   `;
-    const findButton = createButton('查找', () => {
-        const count = findText(editor.getElement(), findInput.value, {
-            caseSensitive: caseSensitive.checkbox.checked,
-            wholeWord: wholeWord.checkbox.checked,
-            useRegex: useRegex.checkbox.checked,
-        });
-        alert(`找到 ${count} 个匹配项`);
+  const findButton = createButton("\u67E5\u627E", () => {
+    const count = findText(editor.getElement(), findInput.value, {
+      caseSensitive: caseSensitive.checkbox.checked,
+      wholeWord: wholeWord.checkbox.checked,
+      useRegex: useRegex.checkbox.checked
     });
-    const replaceButton = createButton('替换', () => {
-        const count = replaceText(editor.getElement(), findInput.value, replaceInput.value, {
-            caseSensitive: caseSensitive.checkbox.checked,
-            wholeWord: wholeWord.checkbox.checked,
-            useRegex: useRegex.checkbox.checked,
-        });
-        alert(`替换了 ${count} 处`);
+    alert(`\u627E\u5230 ${count} \u4E2A\u5339\u914D\u9879`);
+  });
+  const replaceButton = createButton("\u66FF\u6362", () => {
+    const count = replaceText(editor.getElement(), findInput.value, replaceInput.value, {
+      caseSensitive: caseSensitive.checkbox.checked,
+      wholeWord: wholeWord.checkbox.checked,
+      useRegex: useRegex.checkbox.checked
     });
-    const replaceAllButton = createButton('全部替换', () => {
-        const count = replaceAll(editor.getElement(), findInput.value, replaceInput.value, {
-            caseSensitive: caseSensitive.checkbox.checked,
-            wholeWord: wholeWord.checkbox.checked,
-            useRegex: useRegex.checkbox.checked,
-        });
-        alert(`替换了 ${count} 处`);
+    alert(`\u66FF\u6362\u4E86 ${count} \u5904`);
+  });
+  const replaceAllButton = createButton("\u5168\u90E8\u66FF\u6362", () => {
+    const count = replaceAll(editor.getElement(), findInput.value, replaceInput.value, {
+      caseSensitive: caseSensitive.checkbox.checked,
+      wholeWord: wholeWord.checkbox.checked,
+      useRegex: useRegex.checkbox.checked
     });
-    const closeButton = createButton('关闭', cleanup);
-    buttons.appendChild(findButton);
-    buttons.appendChild(replaceButton);
-    buttons.appendChild(replaceAllButton);
-    buttons.appendChild(closeButton);
-    // 组装对话框
-    dialog.appendChild(findInput);
-    dialog.appendChild(replaceInput);
-    dialog.appendChild(options);
-    dialog.appendChild(buttons);
-    // 添加到页面
-    document.body.appendChild(dialog);
-    // 聚焦到查找输入框
-    findInput.focus();
-    // ESC 键关闭
-    dialog.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape')
-            cleanup();
-    });
+    alert(`\u66FF\u6362\u4E86 ${count} \u5904`);
+  });
+  const closeButton = createButton("\u5173\u95ED", cleanup);
+  buttons.appendChild(findButton);
+  buttons.appendChild(replaceButton);
+  buttons.appendChild(replaceAllButton);
+  buttons.appendChild(closeButton);
+  dialog.appendChild(findInput);
+  dialog.appendChild(replaceInput);
+  dialog.appendChild(options);
+  dialog.appendChild(buttons);
+  document.body.appendChild(dialog);
+  findInput.focus();
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key === "Escape")
+      cleanup();
+  });
 }
-/**
- * 创建复选框
- */
 function createCheckbox(label) {
-    const container = document.createElement('label');
-    container.style.cssText = `
+  const container = document.createElement("label");
+  container.style.cssText = `
     display: inline-block;
     margin-right: 15px;
     cursor: pointer;
   `;
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.style.marginRight = '5px';
-    const text = document.createElement('span');
-    text.textContent = label;
-    container.appendChild(checkbox);
-    container.appendChild(text);
-    return { container, checkbox };
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.style.marginRight = "5px";
+  const text = document.createElement("span");
+  text.textContent = label;
+  container.appendChild(checkbox);
+  container.appendChild(text);
+  return {
+    container,
+    checkbox
+  };
 }
-/**
- * 创建按钮
- */
 function createButton(text, onClick) {
-    const button = document.createElement('button');
-    button.textContent = text;
-    button.style.cssText = `
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.style.cssText = `
     padding: 8px 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background: white;
     cursor: pointer;
   `;
-    button.addEventListener('click', onClick);
-    return button;
+  button.addEventListener("click", onClick);
+  return button;
 }
-/**
- * 查找命令
- */
 const findCommand = {
-    id: 'find',
-    name: '查找',
-    execute: (editor) => {
-        showFindReplaceDialog(editor);
-    },
+  id: "find",
+  name: "\u67E5\u627E",
+  execute: (editor) => {
+    showFindReplaceDialog(editor);
+  }
 };
-/**
- * 替换命令
- */
 const replaceCommand = {
-    id: 'replace',
-    name: '替换',
-    execute: (editor) => {
-        showFindReplaceDialog(editor);
-    },
+  id: "replace",
+  name: "\u66FF\u6362",
+  execute: (editor) => {
+    showFindReplaceDialog(editor);
+  }
 };
-/**
- * 创建查找替换插件
- */
 const FindReplacePlugin = Plugin.createPlugin({
-    name: 'find-replace',
-    version: '1.0.0',
-    description: '查找和替换文本',
-    author: 'LDesign Team',
-    install(editor) {
-        // 注册命令
-        editor.commands.register(findCommand);
-        editor.commands.register(replaceCommand);
-        // 添加样式
-        const style = document.createElement('style');
-        style.textContent = `
+  name: "find-replace",
+  version: "1.0.0",
+  description: "\u67E5\u627E\u548C\u66FF\u6362\u6587\u672C",
+  author: "LDesign Team",
+  install(editor) {
+    editor.commands.register(findCommand);
+    editor.commands.register(replaceCommand);
+    const style = document.createElement("style");
+    style.textContent = `
       .editor-highlight {
         background-color: #ffeb3b;
         color: inherit;
@@ -442,22 +374,20 @@ const FindReplacePlugin = Plugin.createPlugin({
         color: white;
       }
     `;
-        document.head.appendChild(style);
-        // 快捷键
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                e.preventDefault();
-                showFindReplaceDialog(editor);
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
-                e.preventDefault();
-                showFindReplaceDialog(editor);
-            }
-        });
-    },
-    destroy() {
-        // 清理资源
-    },
+    document.head.appendChild(style);
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        showFindReplaceDialog(editor);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "h") {
+        e.preventDefault();
+        showFindReplaceDialog(editor);
+      }
+    });
+  },
+  destroy() {
+  }
 });
 
 exports.FindReplacePlugin = FindReplacePlugin;

@@ -49,3 +49,4 @@ export declare function useEditor(options?: EditorOptions): {
     setJSON: (json: any) => void | undefined;
 };
 export default RichEditor;
+//# sourceMappingURL=index.d.ts.map

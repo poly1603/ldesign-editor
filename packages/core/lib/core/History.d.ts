@@ -96,3 +96,4 @@ export declare class History {
      */
     destroy(): void;
 }
+//# sourceMappingURL=History.d.ts.map

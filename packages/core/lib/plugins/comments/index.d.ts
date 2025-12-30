@@ -183,3 +183,4 @@ export declare const CommentsPlugin: import("../../types").Plugin;
  * @returns 评论管理器
  */
 export declare function getCommentsManager(editor: EditorInstance): CommentsManager | null;
+//# sourceMappingURL=index.d.ts.map

@@ -9,6 +9,7 @@ export declare class OpenAIProvider implements AIProviderInterface {
     private apiKey;
     private baseURL;
     private model;
+    private defaultConfig;
     constructor(config: AIModelConfig);
     initialize(config: AIModelConfig): Promise<void>;
     validateConfig(): boolean;
@@ -17,3 +18,4 @@ export declare class OpenAIProvider implements AIProviderInterface {
     stream(request: AIRequest, onChunk: (chunk: string) => void): Promise<void>;
     getSupportedModels(): string[];
 }
+//# sourceMappingURL=OpenAIProvider.d.ts.map

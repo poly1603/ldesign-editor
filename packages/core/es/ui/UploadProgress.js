@@ -2,31 +2,27 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
-/**
- * 上传进度组件
- * 显示文件上传进度和状态
- */
 class UploadProgress {
-    constructor(options = {}) {
-        this.cancelled = false;
-        this.options = options;
-        this.container = this.createContainer();
-        this.progressBar = this.container.querySelector('.progress-fill');
-        this.percentText = this.container.querySelector('.percent');
-        this.statusText = this.container.querySelector('.status');
-    }
-    /**
-     * 创建容器
-     */
-    createContainer() {
-        const container = document.createElement('div');
-        container.className = 'upload-progress';
-        container.style.cssText = `
+  constructor(options = {}) {
+    this.cancelled = false;
+    this.options = options;
+    this.container = this.createContainer();
+    this.progressBar = this.container.querySelector(".progress-fill");
+    this.percentText = this.container.querySelector(".percent");
+    this.statusText = this.container.querySelector(".status");
+  }
+  /**
+   * 创建容器
+   */
+  createContainer() {
+    const container = document.createElement("div");
+    container.className = "upload-progress";
+    container.style.cssText = `
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -38,16 +34,15 @@ class UploadProgress {
       z-index: 10000;
       animation: slideIn 0.3s ease;
     `;
-        // 添加动画
-        this.addAnimation();
-        container.innerHTML = `
+    this.addAnimation();
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div>
           <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">
-            ${this.options.fileName || '上传文件'}
+            ${this.options.fileName || "\u4E0A\u4F20\u6587\u4EF6"}
           </div>
           <div class="status" style="font-size: 12px; color: #6b7280;">
-            准备上传...
+            \u51C6\u5907\u4E0A\u4F20...
           </div>
         </div>
         <button class="cancel-btn" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #666; padding: 0; width: 24px; height: 24px;">&times;</button>
@@ -63,22 +58,21 @@ class UploadProgress {
         </div>
       </div>
     `;
-        // 取消按钮
-        const cancelBtn = container.querySelector('.cancel-btn');
-        cancelBtn?.addEventListener('click', () => {
-            this.cancel();
-        });
-        return container;
-    }
-    /**
-     * 添加动画样式
-     */
-    addAnimation() {
-        if (document.getElementById('upload-progress-animation'))
-            return;
-        const style = document.createElement('style');
-        style.id = 'upload-progress-animation';
-        style.textContent = `
+    const cancelBtn = container.querySelector(".cancel-btn");
+    cancelBtn?.addEventListener("click", () => {
+      this.cancel();
+    });
+    return container;
+  }
+  /**
+   * 添加动画样式
+   */
+  addAnimation() {
+    if (document.getElementById("upload-progress-animation"))
+      return;
+    const style = document.createElement("style");
+    style.id = "upload-progress-animation";
+    style.textContent = `
       @keyframes slideIn {
         from {
           transform: translateX(400px);
@@ -101,110 +95,103 @@ class UploadProgress {
         }
       }
     `;
-        document.head.appendChild(style);
+    document.head.appendChild(style);
+  }
+  /**
+   * 更新进度
+   */
+  updateProgress(percent, status) {
+    const clampedPercent = Math.min(100, Math.max(0, percent));
+    this.progressBar.style.width = `${clampedPercent}%`;
+    this.percentText.textContent = `${Math.round(clampedPercent)}%`;
+    if (status) {
+      this.statusText.textContent = status;
+    } else {
+      if (clampedPercent === 0)
+        this.statusText.textContent = "\u51C6\u5907\u4E0A\u4F20...";
+      else if (clampedPercent < 100)
+        this.statusText.textContent = "\u4E0A\u4F20\u4E2D...";
+      else
+        this.statusText.textContent = "\u4E0A\u4F20\u5B8C\u6210\uFF01";
     }
-    /**
-     * 更新进度
-     */
-    updateProgress(percent, status) {
-        const clampedPercent = Math.min(100, Math.max(0, percent));
-        this.progressBar.style.width = `${clampedPercent}%`;
-        this.percentText.textContent = `${Math.round(clampedPercent)}%`;
-        if (status) {
-            this.statusText.textContent = status;
-        }
-        else {
-            if (clampedPercent === 0)
-                this.statusText.textContent = '准备上传...';
-            else if (clampedPercent < 100)
-                this.statusText.textContent = '上传中...';
-            else
-                this.statusText.textContent = '上传完成！';
-        }
-    }
-    /**
-     * 设置为成功状态
-     */
-    success(message = '上传成功！') {
-        this.progressBar.style.background = '#10b981';
-        this.statusText.textContent = message;
-        this.statusText.style.color = '#10b981';
-        setTimeout(() => {
-            this.hide();
-        }, 2000);
-    }
-    /**
-     * 设置为错误状态
-     */
-    error(message = '上传失败') {
-        this.progressBar.style.background = '#ef4444';
-        this.statusText.textContent = message;
-        this.statusText.style.color = '#ef4444';
-        setTimeout(() => {
-            this.hide();
-        }, 3000);
-    }
-    /**
-     * 取消上传
-     */
-    cancel() {
-        this.cancelled = true;
-        this.statusText.textContent = '已取消';
-        this.statusText.style.color = '#f59e0b';
-        if (this.options.onCancel)
-            this.options.onCancel();
-        setTimeout(() => {
-            this.hide();
-        }, 1000);
-    }
-    /**
-     * 检查是否已取消
-     */
-    isCancelled() {
-        return this.cancelled;
-    }
-    /**
-     * 显示
-     */
-    show() {
-        if (!this.container.parentElement)
-            document.body.appendChild(this.container);
-    }
-    /**
-     * 隐藏
-     */
-    hide() {
-        this.container.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            if (this.container.parentElement)
-                this.container.parentElement.removeChild(this.container);
-        }, 300);
-    }
-    /**
-     * 格式化文件大小
-     */
-    formatSize(bytes) {
-        if (bytes === 0)
-            return '0 B';
-        const units = ['B', 'KB', 'MB', 'GB'];
-        const k = 1024;
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${(bytes / k ** i).toFixed(2)} ${units[i]}`;
-    }
+  }
+  /**
+   * 设置为成功状态
+   */
+  success(message = "\u4E0A\u4F20\u6210\u529F\uFF01") {
+    this.progressBar.style.background = "#10b981";
+    this.statusText.textContent = message;
+    this.statusText.style.color = "#10b981";
+    setTimeout(() => {
+      this.hide();
+    }, 2e3);
+  }
+  /**
+   * 设置为错误状态
+   */
+  error(message = "\u4E0A\u4F20\u5931\u8D25") {
+    this.progressBar.style.background = "#ef4444";
+    this.statusText.textContent = message;
+    this.statusText.style.color = "#ef4444";
+    setTimeout(() => {
+      this.hide();
+    }, 3e3);
+  }
+  /**
+   * 取消上传
+   */
+  cancel() {
+    this.cancelled = true;
+    this.statusText.textContent = "\u5DF2\u53D6\u6D88";
+    this.statusText.style.color = "#f59e0b";
+    if (this.options.onCancel)
+      this.options.onCancel();
+    setTimeout(() => {
+      this.hide();
+    }, 1e3);
+  }
+  /**
+   * 检查是否已取消
+   */
+  isCancelled() {
+    return this.cancelled;
+  }
+  /**
+   * 显示
+   */
+  show() {
+    if (!this.container.parentElement)
+      document.body.appendChild(this.container);
+  }
+  /**
+   * 隐藏
+   */
+  hide() {
+    this.container.style.animation = "slideOut 0.3s ease";
+    setTimeout(() => {
+      if (this.container.parentElement)
+        this.container.parentElement.removeChild(this.container);
+    }, 300);
+  }
+  /**
+   * 格式化文件大小
+   */
+  formatSize(bytes) {
+    if (bytes === 0)
+      return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    const k = 1024;
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / k ** i).toFixed(2)} ${units[i]}`;
+  }
 }
-/**
- * 创建上传进度实例
- */
 function createUploadProgress(options) {
-    return new UploadProgress(options);
+  return new UploadProgress(options);
 }
-/**
- * 显示上传进度
- */
 function showUploadProgress(options) {
-    const progress = new UploadProgress(options);
-    progress.show();
-    return progress;
+  const progress = new UploadProgress(options);
+  progress.show();
+  return progress;
 }
 
 export { UploadProgress, createUploadProgress, showUploadProgress };

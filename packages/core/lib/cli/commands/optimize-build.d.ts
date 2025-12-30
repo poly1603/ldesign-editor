@@ -12,3 +12,4 @@ interface OptimizeOptions {
 }
 export declare function optimizeBuild(options: OptimizeOptions): Promise<void>;
 export {};
+//# sourceMappingURL=optimize-build.d.ts.map

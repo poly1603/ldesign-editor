@@ -24,3 +24,4 @@ export declare class MaterialIconSet implements IconSet {
     getIconsByCategory(category: IconCategory): IconDefinition[];
     searchIcons(query: string): IconDefinition[];
 }
+//# sourceMappingURL=material.d.ts.map

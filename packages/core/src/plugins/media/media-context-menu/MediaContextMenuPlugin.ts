@@ -1,4 +1,4 @@
-import type { MenuItem } from '../../../components/ContextMenuSystem'
+import type { MenuItem } from '../../../ui/ContextMenuSystem'
 import type { Editor } from '../../../core/Editor'
 import type { Plugin } from '../../../types'
 import { getContextMenuManager, registerContextMenu } from '../../../core/ContextMenuManager'

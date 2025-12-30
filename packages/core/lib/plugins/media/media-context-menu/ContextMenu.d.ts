@@ -55,3 +55,4 @@ export interface MenuItem {
 export interface ContextMenuOptions {
     className?: string;
 }
+//# sourceMappingURL=ContextMenu.d.ts.map

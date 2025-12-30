@@ -79,3 +79,4 @@ export declare class TemplateManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=TemplateManager.d.ts.map

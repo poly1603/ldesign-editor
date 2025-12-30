@@ -6,7 +6,6 @@
 import type { Editor } from '../core/Editor'
 import type {
   CollaborationConfig,
-  CollaborationEvents,
   CollaborationMessage,
   CollaborationUser,
   ConnectionStatus,

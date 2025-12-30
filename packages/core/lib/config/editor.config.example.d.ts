@@ -313,3 +313,4 @@ export declare const fullFeaturedConfig: {
         roomId: string;
     };
 };
+//# sourceMappingURL=editor.config.example.d.ts.map

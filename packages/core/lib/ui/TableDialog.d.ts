@@ -10,3 +10,4 @@ export interface TableDialogOptions {
  * 显示表格插入对话框
  */
 export declare function showTableDialog(options: TableDialogOptions): void;
+//# sourceMappingURL=TableDialog.d.ts.map

@@ -18,3 +18,4 @@ export declare class BaiduProvider implements AIProviderInterface {
     private refreshAccessToken;
     private ensureAccessToken;
 }
+//# sourceMappingURL=BaiduProvider.d.ts.map

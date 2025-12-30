@@ -80,3 +80,4 @@ export declare function formatFileSize(bytes: number): string;
  * 格式化时间
  */
 export declare function formatDuration(ms: number): string;
+//# sourceMappingURL=helpers.d.ts.map

@@ -24,11 +24,12 @@ export declare class Popover extends BaseComponent {
     private popoverElement;
     private arrowElement?;
     private contentContainer;
-    private isVisible;
+    private isVisibleState;
     private showTimeout?;
     private hideTimeout?;
     private boundUpdatePosition;
     constructor(config: PopoverConfig);
+    protected createElement(): HTMLElement;
     protected init(): void;
     private createElements;
     private bindEvents;
@@ -39,7 +40,7 @@ export declare class Popover extends BaseComponent {
     show(triggerElement?: HTMLElement): void;
     hide(): void;
     toggle(): void;
-    getElement(): HTMLElement | null;
+    getElement(): HTMLElement;
     private updatePosition;
     private calculateBestPlacement;
     private calculatePosition;
@@ -49,3 +50,4 @@ export declare class Popover extends BaseComponent {
     isShown(): boolean;
     destroy(): void;
 }
+//# sourceMappingURL=Popover.d.ts.map

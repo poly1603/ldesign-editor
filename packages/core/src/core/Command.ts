@@ -248,13 +248,13 @@ export class KeymapManager {
  */
 
 // 撤销
-export const undo: Command = (state, dispatch) => {
+export const undo: Command = (_state, _dispatch) => {
   // 撤销由 CommandManager 中的 History 实例处理
   return true
 }
 
 // 重做
-export const redo: Command = (state, dispatch) => {
+export const redo: Command = (_state, _dispatch) => {
   // 重做由 CommandManager 中的 History 实例处理
   return true
 }

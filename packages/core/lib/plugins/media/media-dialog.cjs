@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -13,53 +13,42 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var lucide = require('../../ui/icons/lucide.cjs');
 
-/**
- * Enhanced Media Dialog Plugin
- * Provides modern dialogs for inserting images, videos, and audio
- */
-/**
- * Media Dialog Class
- */
 class MediaDialog {
-    constructor() {
-        this.dialog = null;
-        this.overlay = null;
-        this.callback = null;
-        this.uploadHandler = null;
-        this.activeProgresses = new Map();
-        this.updateInsertButton = null;
-        this.escHandler = null;
-    }
-    /**
-     * Set upload handler
-     */
-    setUploadHandler(uploadHandler) {
-        this.uploadHandler = uploadHandler || null;
-    }
-    /**
-     * Show the media dialog
-     */
-    show(type, callback) {
-        console.log('[MediaDialog.show] Called with type:', type);
-        // Ensure any previous dialog is closed BEFORE setting the new callback
-        // Important: previously createDialog() would call close() which cleared the callback set here
-        // That caused this.callback to be null when clicking the Insert button.
-        this.close();
-        this.callback = callback;
-        console.log('[MediaDialog.show] Callback set. Creating dialog now.');
-        this.createDialog(type);
-        console.log('[MediaDialog.show] createDialog completed');
-    }
-    /**
-     * Create the dialog elements
-     */
-    createDialog(type) {
-        console.log('[MediaDialog.createDialog] Starting creation for type:', type);
-        // Create overlay
-        this.overlay = document.createElement('div');
-        console.log('[MediaDialog.createDialog] Overlay created:', this.overlay);
-        this.overlay.className = 'ldesign-media-overlay';
-        this.overlay.style.cssText = `
+  constructor() {
+    this.dialog = null;
+    this.overlay = null;
+    this.callback = null;
+    this.uploadHandler = null;
+    this.activeProgresses = /* @__PURE__ */ new Map();
+    this.updateInsertButton = null;
+    this.escHandler = null;
+  }
+  /**
+   * Set upload handler
+   */
+  setUploadHandler(uploadHandler) {
+    this.uploadHandler = uploadHandler || null;
+  }
+  /**
+   * Show the media dialog
+   */
+  show(type, callback) {
+    console.log("[MediaDialog.show] Called with type:", type);
+    this.close();
+    this.callback = callback;
+    console.log("[MediaDialog.show] Callback set. Creating dialog now.");
+    this.createDialog(type);
+    console.log("[MediaDialog.show] createDialog completed");
+  }
+  /**
+   * Create the dialog elements
+   */
+  createDialog(type) {
+    console.log("[MediaDialog.createDialog] Starting creation for type:", type);
+    this.overlay = document.createElement("div");
+    console.log("[MediaDialog.createDialog] Overlay created:", this.overlay);
+    this.overlay.className = "ldesign-media-overlay";
+    this.overlay.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
@@ -73,10 +62,9 @@ class MediaDialog {
       justify-content: center;
       animation: fadeIn 0.2s ease;
     `;
-        // Create dialog
-        this.dialog = document.createElement('div');
-        this.dialog.className = 'ldesign-media-dialog';
-        this.dialog.style.cssText = `
+    this.dialog = document.createElement("div");
+    this.dialog.className = "ldesign-media-dialog";
+    this.dialog.style.cssText = `
       background: white;
       border-radius: 12px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -86,23 +74,24 @@ class MediaDialog {
       z-index: 99999;
       overflow: hidden;
     `;
-        // Create dialog content
-        const typeLabels = {
-            image: '插入图片',
-            video: '插入视频',
-            audio: '插入音频',
-        };
-        const acceptTypes = {
-            image: 'image/*',
-            video: 'video/*',
-            audio: 'audio/*',
-        };
-        const icons = {
-            image: 'image',
-            video: 'image', // 使用 image 作为备用
-            audio: 'image', // 使用 image 作为备用
-        };
-        this.dialog.innerHTML = `
+    const typeLabels = {
+      image: "\u63D2\u5165\u56FE\u7247",
+      video: "\u63D2\u5165\u89C6\u9891",
+      audio: "\u63D2\u5165\u97F3\u9891"
+    };
+    const acceptTypes = {
+      image: "image/*",
+      video: "video/*",
+      audio: "audio/*"
+    };
+    const icons = {
+      image: "image",
+      video: "image",
+      // 使用 image 作为备用
+      audio: "image"
+      // 使用 image 作为备用
+    };
+    this.dialog.innerHTML = `
       <div class="dialog-header" style="padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
         <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #111827; display: flex; align-items: center; gap: 10px;">
           <span style="width: 24px; height: 24px; color: #3b82f6;">${lucide.getLucideIcon(icons[type])}</span>
@@ -124,13 +113,13 @@ class MediaDialog {
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            本地文件
+            \u672C\u5730\u6587\u4EF6
           </span>
         </button>
         <button class="tab-btn" data-tab="url" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-weight: 500; color: #6b7280; transition: all 0.2s;">
           <span style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-            <span style="width: 16px; height: 16px;">${lucide.getLucideIcon('link')}</span>
-            网络地址
+            <span style="width: 16px; height: 16px;">${lucide.getLucideIcon("link")}</span>
+            \u7F51\u7EDC\u5730\u5740
           </span>
         </button>
       </div>
@@ -147,8 +136,8 @@ class MediaDialog {
                 <rect width="20" height="8" x="2" y="14" rx="2"/>
               </svg>
             </div>
-            <p style="margin: 0 0 8px 0; font-size: 16px; color: #374151;">点击或拖拽文件到这里</p>
-            <p style="margin: 0; font-size: 14px; color: #6b7280;">支持 ${type === 'image' ? 'JPG, PNG, GIF, SVG' : type === 'video' ? 'MP4, WebM, OGG' : 'MP3, WAV, OGG'} 格式（可多选）</p>
+            <p style="margin: 0 0 8px 0; font-size: 16px; color: #374151;">\u70B9\u51FB\u6216\u62D6\u62FD\u6587\u4EF6\u5230\u8FD9\u91CC</p>
+            <p style="margin: 0; font-size: 14px; color: #6b7280;">\u652F\u6301 ${type === "image" ? "JPG, PNG, GIF, SVG" : type === "video" ? "MP4, WebM, OGG" : "MP3, WAV, OGG"} \u683C\u5F0F\uFF08\u53EF\u591A\u9009\uFF09</p>
           </div>
           <div class="file-preview" style="margin-top: 16px; display: none;">
             <div style="padding: 12px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
@@ -171,34 +160,31 @@ class MediaDialog {
         <div class="tab-content" data-tab="url" style="display: none;">
           <div style="margin-bottom: 16px;">
             <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: #374151;">
-              ${type === 'video' ? '视频地址（支持YouTube、Bilibili等，每行一个）' : type === 'audio' ? '音频地址（每行一个）' : '图片地址（每行一个）'}
+              ${type === "video" ? "\u89C6\u9891\u5730\u5740\uFF08\u652F\u6301YouTube\u3001Bilibili\u7B49\uFF0C\u6BCF\u884C\u4E00\u4E2A\uFF09" : type === "audio" ? "\u97F3\u9891\u5730\u5740\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF09" : "\u56FE\u7247\u5730\u5740\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF09"}
             </label>
             <textarea class="url-input" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" rows="4" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; outline: none; resize: vertical; font-family: inherit;"></textarea>
           </div>
-          ${type === 'image'
-            ? `
+          ${type === "image" ? `
           <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 6px;">
-            <p style="margin: 0 0 8px 0; font-size: 12px; color: #1e40af; font-weight: 500;">支持的图片格式：</p>
-            <p style="margin: 0; font-size: 12px; color: #3730a3;">�?直接链接：JPG, PNG, GIF, SVG, WebP</p>
-            <p style="margin: 0; font-size: 12px; color: #3730a3;">�?图床服务：Imgur, 图床�?/p>
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #1e40af; font-weight: 500;">\u652F\u6301\u7684\u56FE\u7247\u683C\u5F0F\uFF1A</p>
+            <p style="margin: 0; font-size: 12px; color: #3730a3;">\uFFFD?\u76F4\u63A5\u94FE\u63A5\uFF1AJPG, PNG, GIF, SVG, WebP</p>
+            <p style="margin: 0; font-size: 12px; color: #3730a3;">\uFFFD?\u56FE\u5E8A\u670D\u52A1\uFF1AImgur, \u56FE\u5E8A\uFFFD?/p>
           </div>
-          `
-            : ''}
+          ` : ""}
         </div>
       </div>
       
       <div class="dialog-footer" style="padding: 16px 24px; border-top: 1px solid #e5e7eb; display: none; justify-content: flex-end; gap: 12px; background: #f9fafb;">
         <button class="cancel-btn" style="padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 14px; color: #374151; transition: all 0.2s;">
-          取消
+          \u53D6\u6D88
         </button>
         <button class="insert-btn" style="padding: 8px 16px; background: #3b82f6; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: white; transition: all 0.2s;" disabled>
-          插入
+          \u63D2\u5165
         </button>
       </div>
     `;
-        // Add styles
-        const style = document.createElement('style');
-        style.textContent = `
+    const style = document.createElement("style");
+    style.textContent = `
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -237,228 +223,189 @@ class MediaDialog {
         color: #374151;
       }
     `;
-        document.head.appendChild(style);
-        // Add event handlers
-        console.log('[MediaDialog.createDialog] Setting up event handlers');
-        this.setupEventHandlers();
-        // Append to body
-        console.log('[MediaDialog.createDialog] Appending dialog to overlay');
-        this.overlay.appendChild(this.dialog);
-        console.log('[MediaDialog.createDialog] Appending overlay to body');
-        console.log('[MediaDialog.createDialog] document.body exists:', !!document.body);
-        document.body.appendChild(this.overlay);
-        console.log('[MediaDialog.createDialog] Dialog appended to DOM successfully!');
-        console.log('[MediaDialog.createDialog] Overlay in DOM:', document.body.contains(this.overlay));
-    }
-    /**
-     * Setup event handlers
-     */
-    setupEventHandlers() {
-        if (!this.dialog || !this.overlay)
-            return;
-        let selectedFile = null;
-        let selectedUrl = '';
-        // Tab switching
-        const tabBtns = this.dialog.querySelectorAll('.tab-btn');
-        const tabContents = this.dialog.querySelectorAll('.tab-content');
-        tabBtns.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const tabName = btn.dataset.tab;
-                // Update active tab
-                tabBtns.forEach((b) => {
-                    b.classList.toggle('active', b === btn);
-                    if (b === btn) {
-                        b.style.background = 'white';
-                        b.style.borderBottomColor = '#3b82f6';
-                        b.style.color = '#3b82f6';
-                    }
-                    else {
-                        b.style.background = 'transparent';
-                        b.style.borderBottomColor = 'transparent';
-                        b.style.color = '#6b7280';
-                    }
-                });
-                // Show corresponding content
-                tabContents.forEach((content) => {
-                    content.style.display = content.dataset.tab === tabName ? 'block' : 'none';
-                });
-                // Show/hide footer based on active tab
-                const footer = this.dialog.querySelector('.dialog-footer');
-                if (tabName === 'local')
-                    footer.style.display = 'none';
-                else
-                    footer.style.display = 'flex';
-                // Update insert button state
-                this.updateInsertButton();
+    document.head.appendChild(style);
+    console.log("[MediaDialog.createDialog] Setting up event handlers");
+    this.setupEventHandlers();
+    console.log("[MediaDialog.createDialog] Appending dialog to overlay");
+    this.overlay.appendChild(this.dialog);
+    console.log("[MediaDialog.createDialog] Appending overlay to body");
+    console.log("[MediaDialog.createDialog] document.body exists:", !!document.body);
+    document.body.appendChild(this.overlay);
+    console.log("[MediaDialog.createDialog] Dialog appended to DOM successfully!");
+    console.log("[MediaDialog.createDialog] Overlay in DOM:", document.body.contains(this.overlay));
+  }
+  /**
+   * Setup event handlers
+   */
+  setupEventHandlers() {
+    if (!this.dialog || !this.overlay)
+      return;
+    let selectedFile = null;
+    let selectedUrl = "";
+    const tabBtns = this.dialog.querySelectorAll(".tab-btn");
+    const tabContents = this.dialog.querySelectorAll(".tab-content");
+    tabBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tabName = btn.dataset.tab;
+        tabBtns.forEach((b) => {
+          b.classList.toggle("active", b === btn);
+          if (b === btn) {
+            b.style.background = "white";
+            b.style.borderBottomColor = "#3b82f6";
+            b.style.color = "#3b82f6";
+          } else {
+            b.style.background = "transparent";
+            b.style.borderBottomColor = "transparent";
+            b.style.color = "#6b7280";
+          }
+        });
+        tabContents.forEach((content) => {
+          content.style.display = content.dataset.tab === tabName ? "block" : "none";
+        });
+        const footer = this.dialog.querySelector(".dialog-footer");
+        if (tabName === "local")
+          footer.style.display = "none";
+        else
+          footer.style.display = "flex";
+        this.updateInsertButton();
+      });
+    });
+    const uploadArea = this.dialog.querySelector(".upload-area");
+    const fileInput = this.dialog.querySelector(".file-input");
+    const filePreview = this.dialog.querySelector(".file-preview");
+    uploadArea.addEventListener("click", () => fileInput.click());
+    uploadArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      uploadArea.classList.add("dragging");
+    });
+    uploadArea.addEventListener("dragleave", () => {
+      uploadArea.classList.remove("dragging");
+    });
+    uploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove("dragging");
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleMultipleFiles(files);
+      }
+    });
+    fileInput.addEventListener("change", (e) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        handleMultipleFiles(files);
+      }
+    });
+    const handleMultipleFiles = async (files) => {
+      const cb = this.callback;
+      if (!cb) {
+        console.warn("[MediaDialog] No callback available");
+        return;
+      }
+      console.log(`[MediaDialog] Processing ${files.length} file(s) for auto-insertion`);
+      this.close();
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        try {
+          if (this.uploadHandler) {
+            console.log(`[MediaDialog] Uploading file ${i + 1}/${files.length}: ${file.name}`);
+            const progressUI = this.createUploadProgress(file.name, file.size);
+            try {
+              const url = await this.uploadHandler(file, (progress) => {
+                console.log(`[MediaDialog] Upload progress for ${file.name}: ${progress.percent}%`);
+                progressUI.updateProgress(progress.percent, `\u4E0A\u4F20\u4E2D... ${progress.loaded} / ${progress.total}`);
+              });
+              console.log(`[MediaDialog] File uploaded successfully: ${url}`);
+              progressUI.success("\u4E0A\u4F20\u5B8C\u6210\uFF01");
+              cb(url, file);
+            } catch (err) {
+              console.error(`[MediaDialog] Upload failed for ${file.name}:`, err);
+              progressUI.error("\u4E0A\u4F20\u5931\u8D25");
+              throw err;
+            }
+          } else {
+            const reader = new FileReader();
+            const dataUrl = await new Promise((resolve, reject) => {
+              reader.onload = (e) => resolve(e.target?.result);
+              reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
+              reader.readAsDataURL(file);
             });
+            console.log(`[MediaDialog] Auto-inserting file ${i + 1}/${files.length}: ${file.name}`);
+            cb(dataUrl, file);
+          }
+        } catch (err) {
+          console.error(`[MediaDialog] Error processing file ${file.name}:`, err);
+        }
+      }
+    };
+    const removeFileBtn = this.dialog.querySelector(".remove-file");
+    removeFileBtn?.addEventListener("click", () => {
+      selectedFile = null;
+      fileInput.value = "";
+      filePreview.style.display = "none";
+      this.updateInsertButton();
+    });
+    const urlInput = this.dialog.querySelector(".url-input");
+    urlInput.addEventListener("input", (e) => {
+      selectedUrl = e.target.value;
+      this.updateInsertButton();
+    });
+    const updateInsertButton = () => {
+      const insertBtn2 = this.dialog.querySelector(".insert-btn");
+      const activeTab = this.dialog.querySelector(".tab-btn.active").dataset.tab;
+      if (activeTab === "local")
+        insertBtn2.disabled = !selectedFile;
+      else
+        insertBtn2.disabled = !selectedUrl || !selectedUrl.trim();
+    };
+    this.updateInsertButton = updateInsertButton;
+    const closeBtn = this.dialog.querySelector(".close-btn");
+    closeBtn.addEventListener("click", () => this.close());
+    const cancelBtn = this.dialog.querySelector(".cancel-btn");
+    cancelBtn.addEventListener("click", () => this.close());
+    const insertBtn = this.dialog.querySelector(".insert-btn");
+    insertBtn.addEventListener("click", () => {
+      const activeTab = this.dialog.querySelector(".tab-btn.active").dataset.tab;
+      console.log("[MediaDialog] Insert button clicked. Active tab:", activeTab);
+      const cb = this.callback;
+      if (!cb) {
+        console.warn("[MediaDialog] No callback set at insert time");
+        return;
+      }
+      if (activeTab === "url" && selectedUrl) {
+        const urls = selectedUrl.split("\n").map((u) => u.trim()).filter((u) => u.length > 0);
+        console.log(`[MediaDialog] Inserting ${urls.length} URL(s)`);
+        this.close();
+        urls.forEach((url, index) => {
+          try {
+            console.log(`[MediaDialog] Inserting URL ${index + 1}/${urls.length}:`, url);
+            cb(url);
+          } catch (err) {
+            console.error(`[MediaDialog] Error inserting URL ${url}:`, err);
+          }
         });
-        // File upload
-        const uploadArea = this.dialog.querySelector('.upload-area');
-        const fileInput = this.dialog.querySelector('.file-input');
-        const filePreview = this.dialog.querySelector('.file-preview');
-        uploadArea.addEventListener('click', () => fileInput.click());
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragging');
-        });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragging');
-        });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragging');
-            const files = e.dataTransfer?.files;
-            if (files && files.length > 0) {
-                // 支持多文件拖放，自动插入
-                handleMultipleFiles(files);
-            }
-        });
-        fileInput.addEventListener('change', (e) => {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-                // 支持多文件选择，自动插�?
-                handleMultipleFiles(files);
-            }
-        });
-        // 处理多个文件，自动插�?
-        const handleMultipleFiles = async (files) => {
-            const cb = this.callback;
-            if (!cb) {
-                console.warn('[MediaDialog] No callback available');
-                return;
-            }
-            console.log(`[MediaDialog] Processing ${files.length} file(s) for auto-insertion`);
-            // 关闭对话�?
-            this.close();
-            // 处理每个文件
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                try {
-                    // 如果有上传处理器，先上传
-                    if (this.uploadHandler) {
-                        console.log(`[MediaDialog] Uploading file ${i + 1}/${files.length}: ${file.name}`);
-                        // 创建并显示上传进度条
-                        const progressUI = this.createUploadProgress(file.name, file.size);
-                        try {
-                            const url = await this.uploadHandler(file, (progress) => {
-                                console.log(`[MediaDialog] Upload progress for ${file.name}: ${progress.percent}%`);
-                                // 更新进度条
-                                progressUI.updateProgress(progress.percent, `上传中... ${progress.loaded} / ${progress.total}`);
-                            });
-                            console.log(`[MediaDialog] File uploaded successfully: ${url}`);
-                            progressUI.success('上传完成！');
-                            cb(url, file);
-                        }
-                        catch (err) {
-                            console.error(`[MediaDialog] Upload failed for ${file.name}:`, err);
-                            progressUI.error('上传失败');
-                            throw err;
-                        }
-                    }
-                    else {
-                        // 没有上传处理器，使用 data URL
-                        const reader = new FileReader();
-                        const dataUrl = await new Promise((resolve, reject) => {
-                            reader.onload = e => resolve(e.target?.result);
-                            reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
-                            reader.readAsDataURL(file);
-                        });
-                        console.log(`[MediaDialog] Auto-inserting file ${i + 1}/${files.length}: ${file.name}`);
-                        cb(dataUrl, file);
-                    }
-                }
-                catch (err) {
-                    console.error(`[MediaDialog] Error processing file ${file.name}:`, err);
-                    // 继续处理下一个文�?
-                }
-            }
-        };
-        // Remove file
-        const removeFileBtn = this.dialog.querySelector('.remove-file');
-        removeFileBtn?.addEventListener('click', () => {
-            selectedFile = null;
-            fileInput.value = '';
-            filePreview.style.display = 'none';
-            this.updateInsertButton();
-        });
-        // URL input
-        const urlInput = this.dialog.querySelector('.url-input');
-        urlInput.addEventListener('input', (e) => {
-            selectedUrl = e.target.value;
-            this.updateInsertButton();
-        });
-        // Update insert button state
-        const updateInsertButton = () => {
-            const insertBtn = this.dialog.querySelector('.insert-btn');
-            const activeTab = this.dialog.querySelector('.tab-btn.active').dataset.tab;
-            if (activeTab === 'local')
-                insertBtn.disabled = !selectedFile;
-            else
-                insertBtn.disabled = !selectedUrl || !selectedUrl.trim();
-        };
-        this.updateInsertButton = updateInsertButton;
-        // Close button
-        const closeBtn = this.dialog.querySelector('.close-btn');
-        closeBtn.addEventListener('click', () => this.close());
-        // Cancel button
-        const cancelBtn = this.dialog.querySelector('.cancel-btn');
-        cancelBtn.addEventListener('click', () => this.close());
-        // Insert button
-        const insertBtn = this.dialog.querySelector('.insert-btn');
-        insertBtn.addEventListener('click', () => {
-            const activeTab = this.dialog.querySelector('.tab-btn.active').dataset.tab;
-            console.log('[MediaDialog] Insert button clicked. Active tab:', activeTab);
-            // Preserve callback before close(), because close() clears it
-            const cb = this.callback;
-            if (!cb) {
-                console.warn('[MediaDialog] No callback set at insert time');
-                return;
-            }
-            if (activeTab === 'url' && selectedUrl) {
-                // 支持多个 URL（每行一个）
-                const urls = selectedUrl.split('\n')
-                    .map(u => u.trim())
-                    .filter(u => u.length > 0);
-                console.log(`[MediaDialog] Inserting ${urls.length} URL(s)`);
-                // Close dialog before insertion
-                this.close();
-                // Insert each URL
-                urls.forEach((url, index) => {
-                    try {
-                        console.log(`[MediaDialog] Inserting URL ${index + 1}/${urls.length}:`, url);
-                        cb(url);
-                    }
-                    catch (err) {
-                        console.error(`[MediaDialog] Error inserting URL ${url}:`, err);
-                    }
-                });
-            }
-            else {
-                console.warn('[MediaDialog] Insert button clicked but no valid URL input');
-            }
-        });
-        // Close on overlay click
-        this.overlay.addEventListener('click', (e) => {
-            if (e.target === this.overlay)
-                this.close();
-        });
-        // Close on ESC key
-        const handleEsc = (e) => {
-            if (e.key === 'Escape')
-                this.close();
-        };
-        document.addEventListener('keydown', handleEsc);
-        this.escHandler = handleEsc;
-    }
-    /**
-     * 创建上传进度条
-     */
-    createUploadProgress(fileName, fileSize) {
-        const progressId = `progress-${Date.now()}`;
-        const container = document.createElement('div');
-        container.className = 'upload-progress';
-        container.style.cssText = `
+      } else {
+        console.warn("[MediaDialog] Insert button clicked but no valid URL input");
+      }
+    });
+    this.overlay.addEventListener("click", (e) => {
+      if (e.target === this.overlay)
+        this.close();
+    });
+    const handleEsc = (e) => {
+      if (e.key === "Escape")
+        this.close();
+    };
+    document.addEventListener("keydown", handleEsc);
+    this.escHandler = handleEsc;
+  }
+  /**
+   * 创建上传进度条
+   */
+  createUploadProgress(fileName, fileSize) {
+    const progressId = `progress-${Date.now()}`;
+    const container = document.createElement("div");
+    container.className = "upload-progress";
+    container.style.cssText = `
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -469,11 +416,11 @@ class MediaDialog {
       padding: 16px;
       z-index: 10000;
     `;
-        container.innerHTML = `
+    container.innerHTML = `
       <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
         <div style="flex: 1;">
           <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${fileName}</div>
-          <div class="status" style="font-size: 12px; color: #6b7280;">准备上传...</div>
+          <div class="status" style="font-size: 12px; color: #6b7280;">\u51C6\u5907\u4E0A\u4F20...</div>
         </div>
       </div>
       <div>
@@ -486,218 +433,198 @@ class MediaDialog {
         </div>
       </div>
     `;
-        document.body.appendChild(container);
-        const progressBar = container.querySelector('.progress-fill');
-        const percentText = container.querySelector('.percent');
-        const statusText = container.querySelector('.status');
-        const progressAPI = {
-            updateProgress: (percent, status) => {
-                progressBar.style.width = `${percent}%`;
-                percentText.textContent = `${Math.round(percent)}%`;
-                if (status)
-                    statusText.textContent = status;
-            },
-            success: (message = '上传完成！') => {
-                progressBar.style.background = '#10b981';
-                statusText.textContent = message;
-                statusText.style.color = '#10b981';
-                setTimeout(() => {
-                    container.remove();
-                    this.activeProgresses.delete(progressId);
-                }, 2000);
-            },
-            error: (message = '上传失败') => {
-                progressBar.style.background = '#ef4444';
-                statusText.textContent = message;
-                statusText.style.color = '#ef4444';
-                setTimeout(() => {
-                    container.remove();
-                    this.activeProgresses.delete(progressId);
-                }, 3000);
-            },
-        };
-        this.activeProgresses.set(progressId, progressAPI);
-        return progressAPI;
+    document.body.appendChild(container);
+    const progressBar = container.querySelector(".progress-fill");
+    const percentText = container.querySelector(".percent");
+    const statusText = container.querySelector(".status");
+    const progressAPI = {
+      updateProgress: (percent, status) => {
+        progressBar.style.width = `${percent}%`;
+        percentText.textContent = `${Math.round(percent)}%`;
+        if (status)
+          statusText.textContent = status;
+      },
+      success: (message = "\u4E0A\u4F20\u5B8C\u6210\uFF01") => {
+        progressBar.style.background = "#10b981";
+        statusText.textContent = message;
+        statusText.style.color = "#10b981";
+        setTimeout(() => {
+          container.remove();
+          this.activeProgresses.delete(progressId);
+        }, 2e3);
+      },
+      error: (message = "\u4E0A\u4F20\u5931\u8D25") => {
+        progressBar.style.background = "#ef4444";
+        statusText.textContent = message;
+        statusText.style.color = "#ef4444";
+        setTimeout(() => {
+          container.remove();
+          this.activeProgresses.delete(progressId);
+        }, 3e3);
+      }
+    };
+    this.activeProgresses.set(progressId, progressAPI);
+    return progressAPI;
+  }
+  /**
+   * 格式化文件大小
+   */
+  formatFileSize(bytes) {
+    if (bytes === 0)
+      return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    const k = 1024;
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / k ** i).toFixed(2)} ${units[i]}`;
+  }
+  /**
+   * Close the dialog
+   */
+  close() {
+    if (this.escHandler) {
+      document.removeEventListener("keydown", this.escHandler);
+      this.escHandler = null;
     }
-    /**
-     * 格式化文件大小
-     */
-    formatFileSize(bytes) {
-        if (bytes === 0)
-            return '0 B';
-        const units = ['B', 'KB', 'MB', 'GB'];
-        const k = 1024;
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${(bytes / k ** i).toFixed(2)} ${units[i]}`;
+    if (this.overlay) {
+      this.overlay.style.animation = "fadeIn 0.2s ease reverse";
+      setTimeout(() => {
+        this.overlay?.remove();
+        this.overlay = null;
+      }, 200);
     }
-    /**
-     * Close the dialog
-     */
-    close() {
-        if (this.escHandler) {
-            document.removeEventListener('keydown', this.escHandler);
-            this.escHandler = null;
-        }
-        if (this.overlay) {
-            this.overlay.style.animation = 'fadeIn 0.2s ease reverse';
-            setTimeout(() => {
-                this.overlay?.remove();
-                this.overlay = null;
-            }, 200);
-        }
-        this.dialog = null;
-        this.callback = null;
-    }
+    this.dialog = null;
+    this.callback = null;
+  }
 }
-// Single instance
 let mediaDialog = null;
-/**
- * Media Dialog Plugin
- */
 const MediaDialogPlugin = {
-    name: 'media-dialog',
-    install(editor) {
-        console.log('[MediaDialogPlugin] Installing plugin...');
-        // Initialize media dialog
-        if (!mediaDialog) {
-            console.log('[MediaDialogPlugin] Creating MediaDialog instance');
-            mediaDialog = new MediaDialog();
+  name: "media-dialog",
+  install(editor) {
+    console.log("[MediaDialogPlugin] Installing plugin...");
+    if (!mediaDialog) {
+      console.log("[MediaDialogPlugin] Creating MediaDialog instance");
+      mediaDialog = new MediaDialog();
+    }
+    if (editor.options?.uploadHandler) {
+      console.log("[MediaDialogPlugin] Setting upload handler from editor options");
+      mediaDialog.setUploadHandler(editor.options.uploadHandler);
+    } else {
+      console.log("[MediaDialogPlugin] No upload handler configured, will use data URLs");
+    }
+    if (!editor.commands.get("insertImage")) {
+      console.log("[MediaDialogPlugin] Registering command: insertImage");
+      editor.commands.register("insertImage", () => {
+        console.log("[MediaDialog] insertImage command triggered");
+        console.log("[MediaDialog] typeof editor.insertHTML:", typeof editor.insertHTML);
+        try {
+          editor.saveSelection?.();
+        } catch {
         }
-        // 设置上传处理器（如果有）
-        if (editor.options?.uploadHandler) {
-            console.log('[MediaDialogPlugin] Setting upload handler from editor options');
-            mediaDialog.setUploadHandler(editor.options.uploadHandler);
+        mediaDialog.show("image", (url, file) => {
+          try {
+            console.log("[MediaDialog] Image callback - url:", url, "file:", file);
+            const alt = file ? file.name : "Image";
+            const html = `<img src="${url}" alt="${alt}" style="max-width: 100%; height: auto; display: block; margin: 10px 0;">`;
+            console.log("[MediaDialog] Inserting image HTML length:", html.length);
+            if (typeof editor.insertHTML === "function") {
+              editor.insertHTML(html);
+              console.log("[MediaDialog] Image inserted via editor.insertHTML");
+            } else {
+              console.warn("[MediaDialog] editor.insertHTML not found, trying execCommand fallback");
+              document.execCommand("insertHTML", false, html);
+            }
+          } catch (err) {
+            console.error("[MediaDialog] Error while inserting image:", err);
+          }
+        });
+        return true;
+      });
+    } else {
+      console.log("[MediaDialogPlugin] Command already exists: insertImage");
+    }
+    if (!editor.commands.get("insertVideo")) {
+      console.log("[MediaDialogPlugin] Registering command: insertVideo");
+      editor.commands.register("insertVideo", () => {
+        console.log("[MediaDialog] insertVideo command triggered");
+        console.log("[MediaDialog] typeof editor.insertHTML:", typeof editor.insertHTML);
+        try {
+          editor.saveSelection?.();
+        } catch {
         }
-        else {
-            console.log('[MediaDialogPlugin] No upload handler configured, will use data URLs');
+        mediaDialog.show("video", (url, file) => {
+          try {
+            console.log("[MediaDialog] Video callback - url:", url, "file:", file);
+            let html = "";
+            if (url.includes("youtube.com") || url.includes("youtu.be")) {
+              const videoId = url.split("v=")[1] || url.split("/").pop();
+              const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+              html = `<iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen style="display: block; margin: 10px 0;"></iframe>`;
+            } else if (url.includes("bilibili.com")) {
+              const bvid = url.match(/BV\w+/)?.[0];
+              if (bvid)
+                html = `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}" width="560" height="315" frameborder="0" allowfullscreen style="display: block; margin: 10px 0;"></iframe>`;
+            } else {
+              html = `<video controls style="max-width: 100%; height: auto; display: block; margin: 10px 0;">
+              <source src="${url}" type="${file ? file.type : "video/mp4"}">
+              \u60A8\u7684\u6D4F\u89C8\u5668\u4E0D\u652F\u6301\u89C6\u9891\u6807\u7B7E\u3002
+            </video>`;
+            }
+            if (html) {
+              console.log("[MediaDialog] Inserting video HTML length:", html.length);
+              if (typeof editor.insertHTML === "function") {
+                editor.insertHTML(html);
+                console.log("[MediaDialog] Video inserted via editor.insertHTML");
+              } else {
+                console.warn("[MediaDialog] editor.insertHTML not found, trying execCommand fallback");
+                document.execCommand("insertHTML", false, html);
+              }
+            } else {
+              console.warn("[MediaDialog] Video HTML not generated");
+            }
+          } catch (err) {
+            console.error("[MediaDialog] Error while inserting video:", err);
+          }
+        });
+        return true;
+      });
+    } else {
+      console.log("[MediaDialogPlugin] Command already exists: insertVideo");
+    }
+    if (!editor.commands.get("insertAudio")) {
+      console.log("[MediaDialogPlugin] Registering command: insertAudio");
+      editor.commands.register("insertAudio", () => {
+        console.log("[MediaDialog] insertAudio command triggered");
+        console.log("[MediaDialog] typeof editor.insertHTML:", typeof editor.insertHTML);
+        try {
+          editor.saveSelection?.();
+        } catch {
         }
-        // Register image insertion command (only if not already registered)
-        if (!editor.commands.get('insertImage')) {
-            console.log('[MediaDialogPlugin] Registering command: insertImage');
-            editor.commands.register('insertImage', () => {
-                console.log('[MediaDialog] insertImage command triggered');
-                console.log('[MediaDialog] typeof editor.insertHTML:', typeof editor.insertHTML);
-                // 进入弹窗前保存当前选区，以便插入时能回到光标处
-                try {
-                    editor.saveSelection?.();
-                }
-                catch { }
-                mediaDialog.show('image', (url, file) => {
-                    try {
-                        console.log('[MediaDialog] Image callback - url:', url, 'file:', file);
-                        const alt = file ? file.name : 'Image';
-                        const html = `<img src="${url}" alt="${alt}" style="max-width: 100%; height: auto; display: block; margin: 10px 0;">`;
-                        console.log('[MediaDialog] Inserting image HTML length:', html.length);
-                        // 使用编辑器的 insertHTML 方法
-                        if (typeof editor.insertHTML === 'function') {
-                            editor.insertHTML(html);
-                            console.log('[MediaDialog] Image inserted via editor.insertHTML');
-                        }
-                        else {
-                            console.warn('[MediaDialog] editor.insertHTML not found, trying execCommand fallback');
-                            document.execCommand('insertHTML', false, html);
-                        }
-                    }
-                    catch (err) {
-                        console.error('[MediaDialog] Error while inserting image:', err);
-                    }
-                });
-                return true;
-            });
-        }
-        else {
-            console.log('[MediaDialogPlugin] Command already exists: insertImage');
-        }
-        // Register video insertion command (only if not already registered)
-        if (!editor.commands.get('insertVideo')) {
-            console.log('[MediaDialogPlugin] Registering command: insertVideo');
-            editor.commands.register('insertVideo', () => {
-                console.log('[MediaDialog] insertVideo command triggered');
-                console.log('[MediaDialog] typeof editor.insertHTML:', typeof editor.insertHTML);
-                try {
-                    editor.saveSelection?.();
-                }
-                catch { }
-                mediaDialog.show('video', (url, file) => {
-                    try {
-                        console.log('[MediaDialog] Video callback - url:', url, 'file:', file);
-                        let html = '';
-                        // Check if it's a platform video
-                        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                            const videoId = url.split('v=')[1] || url.split('/').pop();
-                            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                            html = `<iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen style="display: block; margin: 10px 0;"></iframe>`;
-                        }
-                        else if (url.includes('bilibili.com')) {
-                            const bvid = url.match(/BV\w+/)?.[0];
-                            if (bvid)
-                                html = `<iframe src="//player.bilibili.com/player.html?bvid=${bvid}" width="560" height="315" frameborder="0" allowfullscreen style="display: block; margin: 10px 0;"></iframe>`;
-                        }
-                        else {
-                            // Regular video
-                            html = `<video controls style=\"max-width: 100%; height: auto; display: block; margin: 10px 0;\">\n              <source src=\"${url}\" type=\"${file ? file.type : 'video/mp4'}\">\n              您的浏览器不支持视频标签。\n            </video>`;
-                        }
-                        if (html) {
-                            console.log('[MediaDialog] Inserting video HTML length:', html.length);
-                            if (typeof editor.insertHTML === 'function') {
-                                editor.insertHTML(html);
-                                console.log('[MediaDialog] Video inserted via editor.insertHTML');
-                            }
-                            else {
-                                console.warn('[MediaDialog] editor.insertHTML not found, trying execCommand fallback');
-                                document.execCommand('insertHTML', false, html);
-                            }
-                        }
-                        else {
-                            console.warn('[MediaDialog] Video HTML not generated');
-                        }
-                    }
-                    catch (err) {
-                        console.error('[MediaDialog] Error while inserting video:', err);
-                    }
-                });
-                return true;
-            });
-        }
-        else {
-            console.log('[MediaDialogPlugin] Command already exists: insertVideo');
-        }
-        // Register audio insertion command (only if not already registered)
-        if (!editor.commands.get('insertAudio')) {
-            console.log('[MediaDialogPlugin] Registering command: insertAudio');
-            editor.commands.register('insertAudio', () => {
-                console.log('[MediaDialog] insertAudio command triggered');
-                console.log('[MediaDialog] typeof editor.insertHTML:', typeof editor.insertHTML);
-                try {
-                    editor.saveSelection?.();
-                }
-                catch { }
-                mediaDialog.show('audio', (url, file) => {
-                    try {
-                        console.log('[MediaDialog] Audio callback - url:', url, 'file:', file);
-                        const html = `<audio controls style=\"width: 100%; max-width: 400px; display: block; margin: 10px 0;\">\n            <source src=\"${url}\" type=\"${file ? file.type : 'audio/mpeg'}\">\n            您的浏览器不支持音频标签。\n          </audio>`;
-                        console.log('[MediaDialog] Inserting audio HTML length:', html.length);
-                        if (typeof editor.insertHTML === 'function') {
-                            editor.insertHTML(html);
-                            console.log('[MediaDialog] Audio inserted via editor.insertHTML');
-                        }
-                        else {
-                            console.warn('[MediaDialog] editor.insertHTML not found, trying execCommand fallback');
-                            document.execCommand('insertHTML', false, html);
-                        }
-                    }
-                    catch (err) {
-                        console.error('[MediaDialog] Error while inserting audio:', err);
-                    }
-                });
-                return true;
-            });
-        }
-        else {
-            console.log('[MediaDialogPlugin] Command already exists: insertAudio');
-        }
-        console.log('[MediaDialogPlugin] Installation complete. Commands:', editor.commands.getCommands?.());
-    },
+        mediaDialog.show("audio", (url, file) => {
+          try {
+            console.log("[MediaDialog] Audio callback - url:", url, "file:", file);
+            const html = `<audio controls style="width: 100%; max-width: 400px; display: block; margin: 10px 0;">
+            <source src="${url}" type="${file ? file.type : "audio/mpeg"}">
+            \u60A8\u7684\u6D4F\u89C8\u5668\u4E0D\u652F\u6301\u97F3\u9891\u6807\u7B7E\u3002
+          </audio>`;
+            console.log("[MediaDialog] Inserting audio HTML length:", html.length);
+            if (typeof editor.insertHTML === "function") {
+              editor.insertHTML(html);
+              console.log("[MediaDialog] Audio inserted via editor.insertHTML");
+            } else {
+              console.warn("[MediaDialog] editor.insertHTML not found, trying execCommand fallback");
+              document.execCommand("insertHTML", false, html);
+            }
+          } catch (err) {
+            console.error("[MediaDialog] Error while inserting audio:", err);
+          }
+        });
+        return true;
+      });
+    } else {
+      console.log("[MediaDialogPlugin] Command already exists: insertAudio");
+    }
+    console.log("[MediaDialogPlugin] Installation complete. Commands:", editor.commands.getCommands?.());
+  }
 };
 
 exports.MediaDialogPlugin = MediaDialogPlugin;

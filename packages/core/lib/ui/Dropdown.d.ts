@@ -26,3 +26,4 @@ export declare function createDropdown(options: DropdownOptions): HTMLElement;
  * 显示下拉选择器
  */
 export declare function showDropdown(button: HTMLElement, options: DropdownOptions): void;
+//# sourceMappingURL=Dropdown.d.ts.map

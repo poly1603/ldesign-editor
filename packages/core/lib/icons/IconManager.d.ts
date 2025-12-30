@@ -113,3 +113,4 @@ export declare function getIconManager(config?: IconManagerConfig): IconManager;
  * 重置全局图标管理器
  */
 export declare function resetIconManager(): void;
+//# sourceMappingURL=IconManager.d.ts.map

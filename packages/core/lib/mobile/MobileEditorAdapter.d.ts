@@ -205,3 +205,4 @@ export declare class MobileEditorAdapter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=MobileEditorAdapter.d.ts.map

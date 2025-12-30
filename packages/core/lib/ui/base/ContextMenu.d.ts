@@ -60,3 +60,4 @@ export declare class ContextMenu extends BaseComponent {
     addItem(item: MenuItem, index?: number): void;
     removeItem(id: string): void;
 }
+//# sourceMappingURL=ContextMenu.d.ts.map

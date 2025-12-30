@@ -2,7 +2,7 @@
  * 工具栏组件
  * 使用 Lucide 图标
  */
-import type { Editor as EditorType, ToolbarItem } from '../types';
+import type { EditorInstance as EditorType, ToolbarItem } from '../types';
 export interface ToolbarOptions {
     items?: ToolbarItem[];
     container?: HTMLElement;
@@ -43,3 +43,4 @@ export declare class Toolbar {
      */
     destroy(): void;
 }
+//# sourceMappingURL=Toolbar.d.ts.map

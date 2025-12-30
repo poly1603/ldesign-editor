@@ -146,3 +146,4 @@ export declare function getThemeManager(): ThemeManager;
 export declare function setTheme(themeName: string): void;
 export declare function getCurrentTheme(): Theme | undefined;
 export declare function getAvailableThemes(): string[];
+//# sourceMappingURL=index.d.ts.map

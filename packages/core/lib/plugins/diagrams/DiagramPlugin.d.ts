@@ -2,13 +2,17 @@
  * 图表插件
  * 提供思维导图、流程图、UML图等图表编辑支持
  */
-import type { Plugin, PluginContext } from '../../core/Plugin';
+import type { Plugin } from '../../core/Plugin';
+import type { EditorInstance } from '../../types';
 import type { DiagramData, DiagramType } from './types';
 export declare class DiagramPlugin implements Plugin {
     name: string;
+    config: {
+        name: string;
+    };
     version: string;
     description: string;
-    private context?;
+    private editor?;
     private renderer?;
     private toolbar?;
     private editors;
@@ -18,7 +22,7 @@ export declare class DiagramPlugin implements Plugin {
     /**
      * 初始化插件
      */
-    init(context: PluginContext): Promise<void>;
+    install(editor: EditorInstance): Promise<void>;
     /**
      * 注册编辑器
      */
@@ -76,3 +80,4 @@ export declare class DiagramPlugin implements Plugin {
      */
     destroy(): void;
 }
+//# sourceMappingURL=DiagramPlugin.d.ts.map

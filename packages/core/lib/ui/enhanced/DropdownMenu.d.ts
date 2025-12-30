@@ -38,6 +38,7 @@ export declare class DropdownMenu extends BaseComponent {
     private isOpen;
     private subMenus;
     constructor(config: DropdownMenuConfig);
+    protected createElement(): HTMLElement;
     protected init(): void;
     private createElements;
     private renderItems;
@@ -63,3 +64,4 @@ export declare class DropdownMenu extends BaseComponent {
     clearSelection(): void;
     destroy(): void;
 }
+//# sourceMappingURL=DropdownMenu.d.ts.map

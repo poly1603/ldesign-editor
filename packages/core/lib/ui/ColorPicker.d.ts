@@ -15,3 +15,4 @@ export declare function createColorPicker(options: ColorPickerOptions): HTMLElem
  * 显示颜色选择器
  */
 export declare function showColorPicker(button: HTMLElement, options: ColorPickerOptions): void;
+//# sourceMappingURL=ColorPicker.d.ts.map

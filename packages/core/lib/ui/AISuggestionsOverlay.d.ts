@@ -30,3 +30,4 @@ declare class AISuggestionsOverlay {
  */
 export declare function showAISuggestionsOverlay(editor: any, suggestions: string[], onSelect: (suggestion: string) => void, options?: AISuggestionsOverlayOptions): AISuggestionsOverlay;
 export {};
+//# sourceMappingURL=AISuggestionsOverlay.d.ts.map

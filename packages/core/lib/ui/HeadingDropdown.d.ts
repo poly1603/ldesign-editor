@@ -57,3 +57,4 @@ export declare class HeadingDropdown {
     destroy(): void;
 }
 export default HeadingDropdown;
+//# sourceMappingURL=HeadingDropdown.d.ts.map

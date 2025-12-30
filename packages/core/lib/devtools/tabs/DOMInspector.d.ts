@@ -103,3 +103,4 @@ export declare class DOMInspector {
      */
     destroy(): void;
 }
+//# sourceMappingURL=DOMInspector.d.ts.map

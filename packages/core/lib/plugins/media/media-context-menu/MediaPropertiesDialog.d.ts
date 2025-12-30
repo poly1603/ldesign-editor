@@ -13,7 +13,8 @@ export declare class MediaPropertiesDialog extends BaseComponent {
     private onCancel?;
     private dialogElement?;
     private overlayElement?;
-    constructor(container: HTMLElement);
+    constructor(container?: HTMLElement);
+    protected createElement(): HTMLElement;
     show(properties: MediaProperties, onSave: (props: MediaProperties) => void, onCancel?: () => void): void;
     private render;
     private save;
@@ -22,3 +23,4 @@ export declare class MediaPropertiesDialog extends BaseComponent {
     destroy(): void;
 }
 export default MediaPropertiesDialog;
+//# sourceMappingURL=MediaPropertiesDialog.d.ts.map

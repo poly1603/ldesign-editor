@@ -121,3 +121,4 @@ export declare class ToolbarManager extends EventEmitter {
      */
     destroy(): void;
 }
+//# sourceMappingURL=ToolbarManager.d.ts.map

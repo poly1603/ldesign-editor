@@ -7,3 +7,4 @@ import type { Plugin } from '../../types';
  * 标题插件
  */
 export declare const HeadingPlugin: Plugin;
+//# sourceMappingURL=heading.d.ts.map

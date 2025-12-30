@@ -52,3 +52,4 @@ export declare class PluginMarketPanel {
  * 显示插件市场
  */
 export declare function showPluginMarket(): PluginMarketPanel;
+//# sourceMappingURL=PluginMarketPanel.d.ts.map

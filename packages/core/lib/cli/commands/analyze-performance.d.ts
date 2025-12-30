@@ -10,3 +10,4 @@ interface AnalyzeOptions {
 }
 export declare function analyzePerformance(file: string, options: AnalyzeOptions): Promise<void>;
 export {};
+//# sourceMappingURL=analyze-performance.d.ts.map

@@ -15,3 +15,4 @@ export declare const TextColorPlugin: Plugin;
  * 背景颜色插件
  */
 export declare const BackgroundColorPlugin: Plugin;
+//# sourceMappingURL=color.d.ts.map

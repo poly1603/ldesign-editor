@@ -22,3 +22,4 @@ export declare function insertMedia(type: MediaType, urls: string[], options?: {
     height?: number;
     controls?: boolean;
 }): void;
+//# sourceMappingURL=MediaInsert.d.ts.map

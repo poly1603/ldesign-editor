@@ -10,3 +10,4 @@ export declare function showColorDropdown(button: HTMLElement, onSelect: (color:
  * 显示表情选择下拉框
  */
 export declare function showEmojiDropdown(button: HTMLElement, onSelect: (emoji: string) => void): void;
+//# sourceMappingURL=UnifiedDropdown.d.ts.map

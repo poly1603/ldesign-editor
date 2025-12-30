@@ -1,0 +1,24 @@
+{
+  "name": "@ldesign/editor-playground",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LDesign Editor Vue 3 演示项目",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ldesign/editor-core": "workspace:*",
+    "@ldesign/editor-vue": "workspace:*",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitejs/plugin-vue-jsx": "^4.1.0",
+    "typescript": "^5.7.0",
+    "vite": "^5.0.0",
+    "vue-tsc": "^2.2.0"
+  }
+}

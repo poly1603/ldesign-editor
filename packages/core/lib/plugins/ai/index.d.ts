@@ -3,3 +3,4 @@
  */
 export { default } from './AIPluginV2';
 export { default as AIPlugin } from './AIPluginV2';
+//# sourceMappingURL=index.d.ts.map

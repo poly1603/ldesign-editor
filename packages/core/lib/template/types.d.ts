@@ -82,3 +82,4 @@ export interface TemplateManagerConfig {
     maxCustomTemplates?: number;
     enableVariables?: boolean;
 }
+//# sourceMappingURL=types.d.ts.map

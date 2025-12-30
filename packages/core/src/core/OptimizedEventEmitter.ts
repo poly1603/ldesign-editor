@@ -361,13 +361,10 @@ export class OptimizedEventEmitter {
   }
 
   /**
-   * 获取监听器数量
+   * 获取指定事件的监听器数量
    */
-  listenerCount(event?: string): number {
-    if (event)
-      return this.events.get(event)?.length || 0
-
-    return this.listenerCount
+  getEventListenerCount(event: string): number {
+    return this.events.get(event)?.length || 0
   }
 
   /**
@@ -375,14 +372,6 @@ export class OptimizedEventEmitter {
    */
   eventNames(): string[] {
     return Array.from(this.events.keys())
-  }
-
-  /**
-   * 设置最大监听器数量
-   */
-  setMaxListeners(n: number): this {
-    this.maxListeners = n
-    return this
   }
 
   /**

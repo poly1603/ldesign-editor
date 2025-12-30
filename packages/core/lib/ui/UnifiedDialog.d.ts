@@ -129,3 +129,4 @@ export declare function showPromptDialog(title: string, label: string, onConfirm
     type?: 'text' | 'email' | 'url' | 'number';
     validator?: (value: any) => string | null;
 }): UnifiedDialog;
+//# sourceMappingURL=UnifiedDialog.d.ts.map

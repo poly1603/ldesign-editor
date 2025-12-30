@@ -40,3 +40,4 @@ export declare class Schema {
  * 默认 Schema
  */
 export declare const defaultSchema: Schema;
+//# sourceMappingURL=Schema.d.ts.map

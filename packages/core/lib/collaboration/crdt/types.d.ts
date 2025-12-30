@@ -179,3 +179,4 @@ export interface SyncState {
     /** 冲突数 */
     conflicts: number;
 }
+//# sourceMappingURL=types.d.ts.map

@@ -9,3 +9,4 @@ export { default as FullscreenPlugin } from './fullscreen';
 export { default as HistoryPlugin } from './history';
 export { default as WordCountPlugin } from './word-count';
 export declare const utilPlugins: string[];
+//# sourceMappingURL=index.d.ts.map

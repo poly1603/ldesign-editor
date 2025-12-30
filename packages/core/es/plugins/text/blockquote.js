@@ -2,70 +2,57 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
  */
 import { createPlugin } from '../../core/Plugin.js';
 
-/**
- * 引用块插�?
- */
-/**
- * 切换引用�?
- */
 const toggleBlockquote = (state, dispatch) => {
-    if (!dispatch)
-        return true;
+  if (!dispatch)
+    return true;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0)
+    return false;
+  let node = selection.anchorNode;
+  while (node && node !== document.body) {
+    if (node.nodeName === "BLOCKQUOTE") {
+      break;
+    }
+    node = node.parentNode;
+  }
+  return true;
+};
+function isBlockquoteActive() {
+  return () => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0)
-        return false;
-    // 检查当前是否在引用块中
+      return false;
     let node = selection.anchorNode;
     while (node && node !== document.body) {
-        if (node.nodeName === 'BLOCKQUOTE') {
-            break;
-        }
-        node = node.parentNode;
+      if (node.nodeName === "BLOCKQUOTE")
+        return true;
+      node = node.parentNode;
     }
-    return true;
-};
-/**
- * 检查是否在引用块中
- */
-function isBlockquoteActive() {
-    return () => {
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0)
-            return false;
-        let node = selection.anchorNode;
-        while (node && node !== document.body) {
-            if (node.nodeName === 'BLOCKQUOTE')
-                return true;
-            node = node.parentNode;
-        }
-        return false;
-    };
+    return false;
+  };
 }
-/**
- * 引用块插�?
- */
 const BlockquotePlugin = createPlugin({
-    name: 'blockquote',
-    commands: {
-        toggleBlockquote,
-    },
-    keys: {
-        'Mod-Shift-B': toggleBlockquote,
-    },
-    toolbar: [{
-            name: 'blockquote',
-            title: '引用',
-            icon: 'quote',
-            command: toggleBlockquote,
-            active: isBlockquoteActive(),
-        }],
+  name: "blockquote",
+  commands: {
+    toggleBlockquote
+  },
+  keys: {
+    "Mod-Shift-B": toggleBlockquote
+  },
+  toolbar: [{
+    name: "blockquote",
+    title: "\u5F15\u7528",
+    icon: "quote",
+    command: toggleBlockquote,
+    active: isBlockquoteActive()
+  }]
 });
 
 export { BlockquotePlugin };

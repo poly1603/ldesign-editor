@@ -107,3 +107,4 @@ export declare class VirtualScroller extends EventEmitter {
     };
     private estimateMemoryUsage;
 }
+//# sourceMappingURL=VirtualScroller.d.ts.map

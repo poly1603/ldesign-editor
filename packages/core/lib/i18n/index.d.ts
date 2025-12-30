@@ -66,3 +66,4 @@ export declare function t(key: string, params?: Record<string, any>): string;
  * 导出类型
  */
 export type { I18nConfig, LocaleMessages };
+//# sourceMappingURL=index.d.ts.map

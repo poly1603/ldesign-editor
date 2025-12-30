@@ -109,3 +109,4 @@ export declare class AuditLogger extends EventEmitter<AuditEvents> {
      */
     destroy(): void;
 }
+//# sourceMappingURL=AuditLogger.d.ts.map

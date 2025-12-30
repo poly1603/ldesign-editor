@@ -15,3 +15,4 @@ export declare const OrderedListPlugin: Plugin;
  * 任务列表插件
  */
 export declare const TaskListPlugin: Plugin;
+//# sourceMappingURL=list.d.ts.map

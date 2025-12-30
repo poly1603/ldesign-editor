@@ -3,3 +3,4 @@
  * 包含基本操作、历史记录、对齐等常用图标
  */
 export declare const basicIcons: Record<string, string>;
+//# sourceMappingURL=basic.d.ts.map

@@ -4,7 +4,7 @@
 
 import { defineComponent, onMounted, onUnmounted, ref, watch, type PropType } from 'vue'
 import type { EditorOptions } from '@ldesign/editor-core'
-import { Editor } from '@ldesign/editor-core'
+import { Editor, standardPlugins } from '@ldesign/editor-core'
 
 export interface EditorProps extends Omit<EditorOptions, 'onChange' | 'onUpdate'> {
   /** v-model绑定的内容 */
@@ -25,10 +25,10 @@ export interface EditorEmits {
 export interface EditorInstance {
   /** 编辑器实例 */
   editor: Editor | null
-  /** 获取内容 */
-  getContent: () => string
-  /** 设置内容 */
-  setContent: (content: string) => void
+  /** 获取HTML内容 */
+  getHTML: () => string
+  /** 设置HTML内容 */
+  setHTML: (content: string) => void
   /** 聚焦 */
   focus: () => void
 }
@@ -103,14 +103,6 @@ export const LdEditor = defineComponent({
     },
 
     /**
-     * AI配置
-     */
-    ai: {
-      type: Object as PropType<EditorOptions['ai']>,
-      default: undefined
-    },
-
-    /**
      * PWA配置
      */
     pwa: {
@@ -128,10 +120,11 @@ export const LdEditor = defineComponent({
 
     /**
      * 插件列表
+     * @default standardPlugins
      */
     plugins: {
       type: Array as PropType<EditorOptions['plugins']>,
-      default: () => []
+      default: () => standardPlugins
     }
   },
 
@@ -171,7 +164,6 @@ export const LdEditor = defineComponent({
         autofocus: props.autofocus,
         virtualScroll: props.virtualScroll,
         wasm: props.wasm,
-        ai: props.ai,
         pwa: props.pwa,
         debugPanel: props.debugPanel,
         plugins: props.plugins,
@@ -197,8 +189,8 @@ export const LdEditor = defineComponent({
 
     // 监听 modelValue 变化
     watch(() => props.modelValue, (newValue) => {
-      if (editor && newValue !== editor.getContent?.()) {
-        editor.setContent?.(newValue)
+      if (editor && newValue !== editor.getHTML?.()) {
+        editor.setHTML?.(newValue)
       }
     })
 
@@ -217,8 +209,8 @@ export const LdEditor = defineComponent({
     // 暴露方法给父组件
     const instance: EditorInstance = {
       editor,
-      getContent: () => editor?.getContent?.() || '',
-      setContent: (content: string) => editor?.setContent?.(content),
+      getHTML: () => editor?.getHTML?.() || '',
+      setHTML: (content: string) => editor?.setHTML?.(content),
       focus: () => editor?.focus?.()
     }
 

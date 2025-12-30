@@ -40,3 +40,4 @@ export declare function setGlobalLogLevel(level: LogLevel): void;
  * 设置全局日志选项
  */
 export declare function setGlobalLogOptions(options: LoggerOptions): void;
+//# sourceMappingURL=logger.d.ts.map

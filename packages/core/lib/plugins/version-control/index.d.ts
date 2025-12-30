@@ -177,3 +177,4 @@ export declare const VersionControlPlugin: import("../../types").Plugin;
  * @returns 版本控制管理器
  */
 export declare function getVersionControlManager(editor: EditorInstance): VersionControlManager | null;
+//# sourceMappingURL=index.d.ts.map

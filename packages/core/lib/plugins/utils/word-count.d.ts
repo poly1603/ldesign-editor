@@ -5,3 +5,4 @@
 import type { Plugin } from '../../types';
 declare const WordCountPlugin: Plugin;
 export default WordCountPlugin;
+//# sourceMappingURL=word-count.d.ts.map

@@ -19,3 +19,4 @@ export declare const LowerCasePlugin: Plugin;
  * 首字母大写插件（快捷方式）
  */
 export declare const CapitalizePlugin: Plugin;
+//# sourceMappingURL=text-transform.d.ts.map

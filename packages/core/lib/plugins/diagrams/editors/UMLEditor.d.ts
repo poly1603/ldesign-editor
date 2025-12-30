@@ -16,3 +16,4 @@ export declare class UMLEditor implements DiagramEditor {
     private bindEvents;
     destroy(): void;
 }
+//# sourceMappingURL=UMLEditor.d.ts.map

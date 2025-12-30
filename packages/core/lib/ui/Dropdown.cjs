@@ -2,7 +2,7 @@
  * ***********************************
  * @ldesign/editor-core v3.0.0     *
  * Built with rollup               *
- * Build time: 2024-10-30 16:01:17 *
+ * Build time: 2024-12-30 18:10:25 *
  * Build mode: production          *
  * Minified: No                    *
  * ***********************************
@@ -11,212 +11,172 @@
 
 var index = require('./icons/index.cjs');
 
-/**
- * 下拉选择器
- */
-/**
- * 创建下拉选择器
- */
 function createDropdown(options) {
-    const { options: items, onSelect, customContent, width, maxHeight, selectedValue, renderOption } = options;
-    const dropdown = document.createElement('div');
-    dropdown.className = 'editor-dropdown';
-    // 设置自定义宽度
-    if (width)
-        dropdown.style.width = typeof width === 'number' ? `${width}px` : width;
-    // 设置自定义最大高度
-    if (maxHeight)
-        dropdown.style.maxHeight = typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight;
-    // 如果有自定义内容，直接使用
-    if (customContent) {
-        dropdown.appendChild(customContent);
-        return dropdown;
-    }
-    // 创建选项列表
-    const list = document.createElement('div');
-    list.className = 'editor-dropdown-list';
-    if (items && items.length > 0) {
-        items.forEach((item) => {
-            // 如果有自定义渲染函数
-            if (renderOption) {
-                const customElement = renderOption(item);
-                if (customElement) {
-                    list.appendChild(customElement);
-                    return;
-                }
-            }
-            // 处理分隔线
-            if (item.value === 'separator' || item.label === '---') {
-                const separator = document.createElement('div');
-                separator.className = 'editor-dropdown-separator';
-                separator.style.cssText = 'height: 1px; background: #e0e0e0; margin: 4px 8px;';
-                list.appendChild(separator);
-                return;
-            }
-            const optionElement = document.createElement('div');
-            optionElement.className = 'editor-dropdown-option';
-            optionElement.dataset.value = item.value;
-            // 如果是当前选中项，添加活动类
-            if (selectedValue && item.value === selectedValue)
-                optionElement.classList.add('active');
-            // 如果有图标，添加lucide图标
-            if (item.icon) {
-                const iconElement = index.createIcon(item.icon);
-                if (iconElement) {
-                    iconElement.style.width = '16px';
-                    iconElement.style.height = '16px';
-                    iconElement.style.marginRight = '8px';
-                    iconElement.style.verticalAlign = 'middle';
-                    iconElement.style.opacity = '0.7';
-                    optionElement.appendChild(iconElement);
-                }
-            }
-            // 如果有颜色，创建颜色预览
-            if (item.color) {
-                const colorPreview = document.createElement('span');
-                colorPreview.className = 'editor-dropdown-color-preview';
-                colorPreview.style.backgroundColor = item.color;
-                optionElement.appendChild(colorPreview);
-            }
-            // 如果有表情，显示表情
-            if (item.emoji) {
-                const emojiSpan = document.createElement('span');
-                emojiSpan.className = 'editor-dropdown-emoji';
-                emojiSpan.textContent = item.emoji;
-                optionElement.appendChild(emojiSpan);
-            }
-            // 添加文本标签
-            const labelSpan = document.createElement('span');
-            labelSpan.className = 'editor-dropdown-label';
-            labelSpan.textContent = item.label;
-            optionElement.appendChild(labelSpan);
-            // 如果是字体家族，应用字体样式
-            if (item.value !== 'inherit' && item.value.includes(',') && !item.color && !item.emoji)
-                optionElement.style.fontFamily = item.value;
-            // 防止选项获取焦点导致选区丢失
-            optionElement.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-            });
-            optionElement.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (onSelect) {
-                    // 添加关闭动画后再执行回调
-                    dropdown.classList.add('closing');
-                    // 延迟执行选择回调，让用户看到选中效果
-                    setTimeout(() => {
-                        onSelect(item.value);
-                        dropdown.remove();
-                    }, 150); // 与关闭动画时长一致
-                }
-            });
-            list.appendChild(optionElement);
-        });
-    }
-    dropdown.appendChild(list);
+  const {
+    options: items,
+    onSelect,
+    customContent,
+    width,
+    maxHeight,
+    selectedValue,
+    renderOption
+  } = options;
+  const dropdown = document.createElement("div");
+  dropdown.className = "editor-dropdown";
+  if (width)
+    dropdown.style.width = typeof width === "number" ? `${width}px` : width;
+  if (maxHeight)
+    dropdown.style.maxHeight = typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight;
+  if (customContent) {
+    dropdown.appendChild(customContent);
     return dropdown;
+  }
+  const list = document.createElement("div");
+  list.className = "editor-dropdown-list";
+  if (items && items.length > 0) {
+    items.forEach((item) => {
+      if (renderOption) {
+        const customElement = renderOption(item);
+        if (customElement) {
+          list.appendChild(customElement);
+          return;
+        }
+      }
+      if (item.value === "separator" || item.label === "---") {
+        const separator = document.createElement("div");
+        separator.className = "editor-dropdown-separator";
+        separator.style.cssText = "height: 1px; background: #e0e0e0; margin: 4px 8px;";
+        list.appendChild(separator);
+        return;
+      }
+      const optionElement = document.createElement("div");
+      optionElement.className = "editor-dropdown-option";
+      optionElement.dataset.value = item.value;
+      if (selectedValue && item.value === selectedValue)
+        optionElement.classList.add("active");
+      if (item.icon) {
+        const iconElement = index.createIcon(item.icon);
+        if (iconElement) {
+          iconElement.style.width = "16px";
+          iconElement.style.height = "16px";
+          iconElement.style.marginRight = "8px";
+          iconElement.style.verticalAlign = "middle";
+          iconElement.style.opacity = "0.7";
+          optionElement.appendChild(iconElement);
+        }
+      }
+      if (item.color) {
+        const colorPreview = document.createElement("span");
+        colorPreview.className = "editor-dropdown-color-preview";
+        colorPreview.style.backgroundColor = item.color;
+        optionElement.appendChild(colorPreview);
+      }
+      if (item.emoji) {
+        const emojiSpan = document.createElement("span");
+        emojiSpan.className = "editor-dropdown-emoji";
+        emojiSpan.textContent = item.emoji;
+        optionElement.appendChild(emojiSpan);
+      }
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "editor-dropdown-label";
+      labelSpan.textContent = item.label;
+      optionElement.appendChild(labelSpan);
+      if (item.value !== "inherit" && item.value.includes(",") && !item.color && !item.emoji)
+        optionElement.style.fontFamily = item.value;
+      optionElement.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+      });
+      optionElement.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (onSelect) {
+          dropdown.classList.add("closing");
+          setTimeout(() => {
+            onSelect(item.value);
+            dropdown.remove();
+          }, 150);
+        }
+      });
+      list.appendChild(optionElement);
+    });
+  }
+  dropdown.appendChild(list);
+  return dropdown;
 }
-/**
- * 显示下拉选择器
- */
 function showDropdown(button, options) {
-    // 移除已存在的下拉框（带动画）
-    const existing = document.querySelector('.editor-dropdown');
-    if (existing) {
-        // 如果已经在关闭动画中，直接移除
-        if (existing.classList.contains('closing')) {
-            existing.remove();
-        }
-        else {
-            // 添加关闭动画
-            existing.classList.add('closing');
-            setTimeout(() => {
-                existing.remove();
-            }, 150); // 与关闭动画时长一致
-        }
+  const existing = document.querySelector(".editor-dropdown");
+  if (existing) {
+    if (existing.classList.contains("closing")) {
+      existing.remove();
+    } else {
+      existing.classList.add("closing");
+      setTimeout(() => {
+        existing.remove();
+      }, 150);
     }
-    const dropdown = createDropdown(options);
-    // 初始定位
-    const rect = button.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.zIndex = '10000';
-    // 先添加到DOM中以获取准确尺寸
-    dropdown.style.visibility = 'hidden';
-    dropdown.style.opacity = '0';
-    document.body.appendChild(dropdown);
-    // 获取下拉框的尺寸
-    const dropdownRect = dropdown.getBoundingClientRect();
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const padding = 10; // 距离窗口边缘的最小间距
-    // 计算最佳位置
-    let top = rect.bottom + 5;
-    let left = rect.left;
-    // 检查右边界
-    if (left + dropdownRect.width > windowWidth - padding) {
-        // 如果超出右边界，尝试右对齐
-        left = rect.right - dropdownRect.width;
-        // 如果右对齐后超出左边界，则贴右边
-        if (left < padding)
-            left = windowWidth - dropdownRect.width - padding;
-    }
-    // 检查左边界
+  }
+  const dropdown = createDropdown(options);
+  const rect = button.getBoundingClientRect();
+  dropdown.style.position = "fixed";
+  dropdown.style.zIndex = "10000";
+  dropdown.style.visibility = "hidden";
+  dropdown.style.opacity = "0";
+  document.body.appendChild(dropdown);
+  const dropdownRect = dropdown.getBoundingClientRect();
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  const padding = 10;
+  let top = rect.bottom + 5;
+  let left = rect.left;
+  if (left + dropdownRect.width > windowWidth - padding) {
+    left = rect.right - dropdownRect.width;
     if (left < padding)
-        left = padding;
-    // 检查下边界
-    if (top + dropdownRect.height > windowHeight - padding) {
-        // 如果下方空间不足，尝试显示在按钮上方
-        const topAbove = rect.top - dropdownRect.height - 5;
-        if (topAbove >= padding) {
-            // 上方有足够空间
-            top = topAbove;
-            // 修改动画起点为底部
-            dropdown.style.transformOrigin = 'bottom';
-        }
-        else {
-            // 上下都不够，限制高度并显示在下方
-            top = rect.bottom + 5;
-            const maxHeight = windowHeight - top - padding;
-            dropdown.style.maxHeight = `${maxHeight}px`;
-            dropdown.style.overflowY = 'auto';
-        }
+      left = windowWidth - dropdownRect.width - padding;
+  }
+  if (left < padding)
+    left = padding;
+  if (top + dropdownRect.height > windowHeight - padding) {
+    const topAbove = rect.top - dropdownRect.height - 5;
+    if (topAbove >= padding) {
+      top = topAbove;
+      dropdown.style.transformOrigin = "bottom";
+    } else {
+      top = rect.bottom + 5;
+      const maxHeight = windowHeight - top - padding;
+      dropdown.style.maxHeight = `${maxHeight}px`;
+      dropdown.style.overflowY = "auto";
     }
-    // 应用计算后的位置
-    dropdown.style.top = `${top}px`;
-    dropdown.style.left = `${left}px`;
-    // 显示下拉框
-    dropdown.style.visibility = 'visible';
-    dropdown.style.opacity = '1';
-    // 触发动画
-    dropdown.classList.remove('editor-dropdown');
-    void dropdown.offsetWidth; // 强制重排
-    dropdown.classList.add('editor-dropdown');
-    // 点击外部关闭（带动画）
-    const closeOnClickOutside = (e) => {
-        if (!dropdown.contains(e.target) && e.target !== button) {
-            // 添加关闭动画
-            dropdown.classList.add('closing');
-            setTimeout(() => {
-                dropdown.remove();
-            }, 150); // 与关闭动画时长一致
-            document.removeEventListener('click', closeOnClickOutside);
-        }
-    };
-    // ESC键关闭下拉框
-    const closeOnEsc = (e) => {
-        if (e.key === 'Escape') {
-            dropdown.classList.add('closing');
-            setTimeout(() => {
-                dropdown.remove();
-            }, 150);
-            document.removeEventListener('keydown', closeOnEsc);
-            document.removeEventListener('click', closeOnClickOutside);
-        }
-    };
-    setTimeout(() => {
-        document.addEventListener('click', closeOnClickOutside);
-        document.addEventListener('keydown', closeOnEsc);
-    }, 0);
+  }
+  dropdown.style.top = `${top}px`;
+  dropdown.style.left = `${left}px`;
+  dropdown.style.visibility = "visible";
+  dropdown.style.opacity = "1";
+  dropdown.classList.remove("editor-dropdown");
+  void dropdown.offsetWidth;
+  dropdown.classList.add("editor-dropdown");
+  const closeOnClickOutside = (e) => {
+    if (!dropdown.contains(e.target) && e.target !== button) {
+      dropdown.classList.add("closing");
+      setTimeout(() => {
+        dropdown.remove();
+      }, 150);
+      document.removeEventListener("click", closeOnClickOutside);
+    }
+  };
+  const closeOnEsc = (e) => {
+    if (e.key === "Escape") {
+      dropdown.classList.add("closing");
+      setTimeout(() => {
+        dropdown.remove();
+      }, 150);
+      document.removeEventListener("keydown", closeOnEsc);
+      document.removeEventListener("click", closeOnClickOutside);
+    }
+  };
+  setTimeout(() => {
+    document.addEventListener("click", closeOnClickOutside);
+    document.addEventListener("keydown", closeOnEsc);
+  }, 0);
 }
 
 exports.createDropdown = createDropdown;

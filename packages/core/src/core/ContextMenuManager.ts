@@ -3,8 +3,8 @@
  * 统一管理编辑器中所有的右键菜单，提供注册、注销、更新等功能
  */
 
-import type { ContextMenuOptions, MenuItem } from '../components/ContextMenuSystem'
-import { ContextMenuSystem } from '../components/ContextMenuSystem'
+import type { ContextMenuOptions, MenuItem } from '../ui/ContextMenuSystem'
+import { ContextMenuSystem } from '../ui/ContextMenuSystem'
 import { EventEmitter } from './EventEmitter'
 
 export interface MenuRegistration {
@@ -235,7 +235,7 @@ export class ContextMenuManager extends EventEmitter {
   /**
    * 手动触发右键菜单
    */
-  public trigger(e: MouseEvent, menuId: string, context?: any): void {
+  public trigger(e: MouseEvent, menuId: string, _context?: any): void {
     const registration = this.registrations.get(menuId)
     if (!registration) {
       console.warn(`Menu with id "${menuId}" not found`)

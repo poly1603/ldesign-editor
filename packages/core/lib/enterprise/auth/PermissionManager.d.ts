@@ -84,3 +84,4 @@ export declare class PermissionManager extends EventEmitter<PermissionEvents> {
      */
     destroy(): void;
 }
+//# sourceMappingURL=PermissionManager.d.ts.map

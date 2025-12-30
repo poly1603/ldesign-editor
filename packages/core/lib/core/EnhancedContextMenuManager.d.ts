@@ -137,3 +137,4 @@ export declare function unregisterContextMenu(id: string): void;
 export declare function updateContextMenu(id: string, updates: Partial<MenuRegistration>): void;
 export declare function triggerContextMenu(e: MouseEvent, menuId: string, context?: any): void;
 export declare function hideContextMenu(): void;
+//# sourceMappingURL=EnhancedContextMenuManager.d.ts.map

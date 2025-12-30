@@ -8,3 +8,4 @@ import type { Plugin } from '../../types';
  */
 export declare const MediaDialogPlugin: Plugin;
 export default MediaDialogPlugin;
+//# sourceMappingURL=media-dialog.d.ts.map

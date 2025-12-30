@@ -115,3 +115,4 @@ export declare class ConfigTab {
      */
     destroy(): void;
 }
+//# sourceMappingURL=ConfigTab.d.ts.map

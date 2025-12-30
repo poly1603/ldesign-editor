@@ -116,3 +116,4 @@ export declare function createFullFeaturedEditor(element: string | HTMLElement):
  * 便捷函数：快速创建仅格式化编辑器
  */
 export declare function createFormatOnlyEditor(element: string | HTMLElement): Promise<Editor>;
+//# sourceMappingURL=EditorBuilder.d.ts.map
